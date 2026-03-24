@@ -8,19 +8,9 @@ from PIL import Image
 import nibabel as nib
 from torchvision import transforms
 import cfg
+import dcm_utils as du
 
-
-sam2_checkpoint = cfg.sam2_checkpoint_path
-model_cfg = cfg.model_cfg_path
-
-video_dir = cfg.data_dir
-ann_frame_idx = 0  
-ann_obj_id = 1
-#nii_mask_path = "/home/will/Work/CVEnv1/SAM2/sam2-main/notebooks/videos/BraTS20_Training_001_seg.nii"
-#comman_img_mask_path = "/home/will/Work/CVEnv1/SAM2/sam2-main/notebooks/videos/bird_masks"
-last_frame_idx = 0
-special = 70
-vis_frame_stride = special
+# build model
 
 # cuda ONLY
 if torch.cuda.is_available():
@@ -42,45 +32,36 @@ else:
 
 from sam2.build_sam import build_sam2_video_predictor
 
-predictor = build_sam2_video_predictor(model_cfg, sam2_checkpoint, device=device)
+predictor = build_sam2_video_predictor(cfg.model_cfg_path, cfg.sam2_checkpoint_path, device=device)
 
-def show_mask(mask, ax, obj_id=None, random_color=False):
-    if random_color:
-        color = np.concatenate([np.random.random(3), np.array([0.6])], axis=0)
-    else:
-        cmap = plt.get_cmap("tab10")
-        cmap_idx = 0 if obj_id is None else obj_id
-        color = np.array([*cmap(cmap_idx)[:3], 0.6])
-    h, w = mask.shape[-2:]
-    mask_image = mask.reshape(h, w, 1) * color.reshape(1, 1, -1)
-    ax.imshow(mask_image)
+# pre-process dcm files
 
+# convert dcm data tp jpg files then store them in a folder specified.
+# if the files have existed in the data folder, do nothing. (wont do it again in your test.)
+if len(os.listdir(cfg.test_data_folder)) == 0:
+    du.convert_all_dcm_files(cfg.raw_data_dir, cfg.test_data_folder, "IM-")
 
-def show_points(coords, labels, ax, marker_size=200):
-    pos_points = coords[labels==1]
-    neg_points = coords[labels==0]
-    ax.scatter(pos_points[:, 0], pos_points[:, 1], color='green', marker='*', s=marker_size, edgecolor='white', linewidth=1.25)
-    ax.scatter(neg_points[:, 0], neg_points[:, 1], color='red', marker='*', s=marker_size, edgecolor='white', linewidth=1.25)
+# add prompts
 
-
-def show_box(box, ax):
-    x0, y0 = box[0], box[1]
-    w, h = box[2] - box[0], box[3] - box[1]
-    ax.add_patch(plt.Rectangle((x0, y0), w, h, edgecolor='green', facecolor=(0, 0, 0, 0), lw=2))
-
+ann_frame_idx = 0  
+ann_obj_id = 1
 
 # scan all the JPEG frame names in this directory
 frame_names = [
-    p for p in os.listdir(video_dir)
+    p for p in os.listdir(cfg.test_data_folder)
     if os.path.splitext(p)[-1] in [".jpg", ".jpeg", ".JPG", ".JPEG"]
 ]
-frame_names.sort(key=lambda p: int(os.path.splitext(p)[0]))
+# remove prefix and order files.
+frame_names = du.file_name_process(frame_names)
+# concat relative path to file name
+frame_names = [f"{cfg.test_data_folder}{name}" for name in frame_names]
 
 # take a look the first video frame
 frame_idx = 0
 plt.figure(figsize=(9, 6))
 plt.title(f"frame {frame_idx}")
-plt.imshow(Image.open(os.path.join(video_dir, frame_names[frame_idx])))
+#plt.imshow(Image.open(os.path.join(cfg.test_data_folder, frame_names[frame_idx])))
+plt.imshow(Image.open(frame_names[frame_idx]), cmap='gray')
 plt.show()
 '''
 inference_state = predictor.init_state(video_path=video_dir)
