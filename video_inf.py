@@ -36,58 +36,49 @@ predictor = build_sam2_video_predictor(cfg.model_cfg_path, cfg.sam2_checkpoint_p
 
 # pre-process dcm files
 
+if any("IM" in filename for filename in os.listdir(cfg.raw_data_dir)):
+    du.file_name_process(cfg.raw_data_dir)
 # convert dcm data tp jpg files then store them in a folder specified.
 # if the files have existed in the data folder, do nothing. (wont do it again in your test.)
 if len(os.listdir(cfg.test_data_folder)) == 0:
-    du.convert_all_dcm_files(cfg.raw_data_dir, cfg.test_data_folder, "IM-")
+    du.convert_all_dcm_files(cfg.raw_data_dir, cfg.test_data_folder)
 
 # add prompts
-
-ann_frame_idx = 0  
+ann_frame_idx = 18
 ann_obj_id = 1
 
 # scan all the JPEG frame names in this directory
-frame_names = [
-    p for p in os.listdir(cfg.test_data_folder)
-    if os.path.splitext(p)[-1] in [".jpg", ".jpeg", ".JPG", ".JPEG"]
-]
-# remove prefix and order files.
-frame_names = du.file_name_process(frame_names)
-# concat relative path to file name
-frame_names = [f"{cfg.test_data_folder}{name}" for name in frame_names]
-
+frame_names = du.order_file_names(cfg.test_data_folder)
 # take a look the first video frame
-frame_idx = 0
+frame_idx = ann_frame_idx
 plt.figure(figsize=(9, 6))
 plt.title(f"frame {frame_idx}")
-#plt.imshow(Image.open(os.path.join(cfg.test_data_folder, frame_names[frame_idx])))
 plt.imshow(Image.open(frame_names[frame_idx]), cmap='gray')
 plt.show()
+
+# init state
+inference_state = predictor.init_state(video_path = cfg.test_data_folder)
+
+points = np.array([[128, 212]], dtype=np.float32)
+# for labels, `1` means positive click and `0` means negative click
+labels = np.array([1], np.int32)
+_, out_obj_ids, out_mask_logits = predictor.add_new_points_or_box(
+    inference_state=inference_state,
+    frame_idx=ann_frame_idx,
+    obj_id=ann_obj_id,
+    points=points,
+    labels=labels,
+)
+
+# show the results on the current (interacted) frame
+plt.figure(figsize=(9, 6))
+plt.title(f"frame {ann_frame_idx}")
+#plt.imshow(Image.open(os.path.join(cfg.test_data_folder, frame_names[ann_frame_idx])))
+plt.imshow(Image.open(frame_names[ann_frame_idx]))
+du.show_points(points, labels, plt.gca())
+du.show_mask((out_mask_logits[0] > 0.0).cpu().numpy(), plt.gca(), obj_id=out_obj_ids[0])
+plt.show()
 '''
-inference_state = predictor.init_state(video_path=video_dir)
-
-#predictor.reset_state(inference_state)
-
-# Let's add a positive click at (x, y) = (210, 350) to get started
-# points = np.array([[107, 93]], dtype=np.float32)
-# # for labels, `1` means positive click and `0` means negative click
-# labels = np.array([1], np.int32)
-# _, out_obj_ids, out_mask_logits = predictor.add_new_points_or_box(
-#     inference_state=inference_state,
-#     frame_idx=ann_frame_idx,
-#     obj_id=ann_obj_id,
-#     points=points,
-#     labels=labels,
-# )
-
-# # show the results on the current (interacted) frame
-# plt.figure(figsize=(9, 6))
-# plt.title(f"frame {ann_frame_idx}")
-# plt.imshow(Image.open(os.path.join(video_dir, frame_names[ann_frame_idx])))
-# show_points(points, labels, plt.gca())
-# show_mask((out_mask_logits[0] > 0.0).cpu().numpy(), plt.gca(), obj_id=out_obj_ids[0])
-# plt.show()
-
 #ann_frame_idx = 28  # the frame index we interact with
 #ann_obj_id = 1  # give a unique id to each object we interact with (it can be any integers)
 

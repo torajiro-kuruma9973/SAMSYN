@@ -4,6 +4,9 @@ import torch
 from collections import OrderedDict
 from PIL import Image
 import numpy as np
+import re
+import os
+import matplotlib.pyplot as plt
 
 def get_normed_tensor_from_dcm(dicom_dir): #normed result into [0, 1]
     sitk_image = sitk.ReadImage(dicom_dir)
@@ -23,10 +26,9 @@ def get_normed_tensor_from_dcm(dicom_dir): #normed result into [0, 1]
     return normalized_slice
 
 # special_str: the prefix or other str in file name to be removed
-def dcm2jpg(dicom_dir, output_dir, special_str):
+def dcm2jpg(dicom_dir, output_dir):
     name = Path(dicom_dir).stem
     name = output_dir + name + ".jpg"
-    #name = name.replace(special_str, "")
     
     slice = get_normed_tensor_from_dcm(dicom_dir)
     slice = slice * 255
@@ -37,7 +39,7 @@ def dcm2jpg(dicom_dir, output_dir, special_str):
     img.save(name, format="JPEG")
     
 
-def convert_all_dcm_files(dicom_dir, output_dir, special_str):
+def convert_all_dcm_files(dicom_dir, output_dir):
     folder = Path(dicom_dir)
     file_paths = sorted(folder.glob('*.dcm'))
 
@@ -46,7 +48,42 @@ def convert_all_dcm_files(dicom_dir, output_dir, special_str):
         return None
     
     for file_path in file_paths:
-        dcm2jpg(file_path, output_dir, special_str)
+        dcm2jpg(file_path, output_dir)
+
+
+def file_name_process(dicom_dir):
+    pattern = re.compile(r'^IM-(\d+)-(\d+)\.dcm$')
+    valid_files = []
+    for filename in os.listdir(dicom_dir):
+        match = pattern.match(filename)
+        if match:
+            x = int(match.group(1))
+            y = int(match.group(2))
+            valid_files.append((x, y, filename))
+    valid_files.sort(key=lambda item: (item[0], item[1]))
+    for index, item in enumerate(valid_files, start=0):
+        original_name = item[2]
+        new_name = f"{index}.dcm"
+        
+        old_filepath = os.path.join(dicom_dir, original_name)
+        new_filepath = os.path.join(dicom_dir, new_name)
+        
+        try:
+            os.rename(old_filepath, new_filepath)
+            print(f"done: {original_name} -> {new_name}")
+        except FileExistsError:
+            print(f"ERROR: {new_name} existed，skip {original_name}")
+
+def order_file_names(folder):
+    frame_names = [
+    p for p in os.listdir(folder)
+    if os.path.splitext(p)[-1] in [".jpg", ".jpeg", ".JPG", ".JPEG"]
+    ]
+    frame_names.sort(key=lambda name: int(name[:-4]))
+    ordered_file_names = []
+    for name in frame_names:
+        ordered_file_names.append(folder + name)
+    return ordered_file_names
         
 
 def dicom_to_nifti_sitk(dicom_dir, output_filepath):
@@ -64,16 +101,6 @@ def dicom_to_nifti_sitk(dicom_dir, output_filepath):
     sitk.WriteImage(sitk_image, output_filepath)
     print(f"Done! The file is saved in: {output_filepath}")
 
-def file_name_process(folder):
-    processed_list = [name.replace("IM-", "") for name in folder] # remove prefix "IM-"
-    def get_sort_key(filename):
-        core_part = filename.replace(".jpg", "")
-        x_str, y_str = core_part.split("-")
-        return (int(x_str), int(y_str))
-    processed_list.sort(key=get_sort_key)
-    rst = []
-
-    return processed_list
 
 def is_folder_empty_pathlib(folder_path):
     folder = Path(folder_path)
@@ -105,4 +132,4 @@ def show_box(box, ax):
     ax.add_patch(plt.Rectangle((x0, y0), w, h, edgecolor='green', facecolor=(0, 0, 0, 0), lw=2))
 
 if __name__=='__main__':
-    convert_all_dcm_files("raw_datasets/BrainTumorMRI/", "jpg_datasets/")
+    file_name_process("raw_datasets/BrainTumorMRI/")
