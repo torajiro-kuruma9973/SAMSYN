@@ -7,6 +7,7 @@ import numpy as np
 import re
 import os
 import matplotlib.pyplot as plt
+import pydicom
 
 def get_normed_tensor_from_dcm(dicom_dir): #normed result into [0, 1]
     sitk_image = sitk.ReadImage(dicom_dir)
@@ -131,5 +132,159 @@ def show_box(box, ax):
     w, h = box[2] - box[0], box[3] - box[1]
     ax.add_patch(plt.Rectangle((x0, y0), w, h, edgecolor='green', facecolor=(0, 0, 0, 0), lw=2))
 
+
+# list all the ref mapping between mask slice to PET slice
+# e.g. idx 10 in masks is the segmentation of idx 50 of PET slice.
+def get_referenced_imaging_info(seg_dcm_path):
+ 
+    if not os.path.exists(seg_dcm_path):
+        print(f"Error: cannot find {seg_dcm_path}")
+        return
+
+    ds = pydicom.dcmread(seg_dcm_path)
+
+    print(f"{'='*60}")
+    print(f"Analyzing masks: {os.path.basename(seg_dcm_path)}")
+    print(f"{'='*60}")
+
+    rows = getattr(ds, 'Rows', '未知')
+    cols = getattr(ds, 'Columns', '未知')
+    num_frames = getattr(ds, 'NumberOfFrames', 1)
+    
+    print(f"[-] matix shape: {rows} x {cols}")
+    print(f"[-] Mask Slices: {num_frames}")
+
+    try:
+        ref_series_seq = ds.ReferencedSeriesSequence[0]
+        ref_series_uid = ref_series_seq.SeriesInstanceUID
+        
+        print(f"    >>> Original PET Series UID: {ref_series_uid}")
+        
+        if hasattr(ref_series_seq, 'ReferencedInstanceSequence'):
+            num_ref_instances = len(ref_series_seq.ReferencedInstanceSequence)
+            print(f"    >>> num of slice reffered: {num_ref_instances}")
+            
+    except (AttributeError, IndexError):
+        # in some non-standard cases
+        if hasattr(ds, 'ReferencedImageSequence'):
+            ref_image = ds.ReferencedImageSequence[0]
+            print(f"\n[?] cannot find Series UID，but find image instance refferd ID:")
+            print(f"    >>> Referenced SOP Instance UID: {ref_image.ReferencedSOPInstanceUID}")
+        else:
+            print("\n[x] Warning: This DICOM does not contain any ReferencedSeriesSequence labels")
+    
+    print(f"{'='*60}\n")
+
+# segmentation file sometimes is shaped different then PET file by whiich is refered,
+# due to sparse annotation.
+# e.g. the seg shape is [33. 200, 200], while the PET file is [300, 200, 300].
+# So we should add whole black frame in seg file to make which has the same shape as the PET file.
+def convert_seg_to_nifti_sitk(seg_path, dicom_series_dir, output_path):
+    """
+    Use SimpleITK to align DICOM-SEG and PET
+    :param seg_path: Segmentation folder
+    :param dicom_series_dir: PET folder
+    :param output_path: output path
+    """
+    
+    reader = sitk.ImageSeriesReader()
+    dicom_names = reader.GetGDCMSeriesFileNames(dicom_series_dir)
+    reader.SetFileNames(dicom_names)
+    reference_img = reader.Execute()
+    
+    ref_uids = [pydicom.dcmread(f).SOPInstanceUID for f in dicom_names]
+    
+    mask_array = np.zeros(reference_img.GetSize()[::-1], dtype=np.uint8) 
+
+    seg_ds = pydicom.dcmread(seg_path)
+    seg_array = seg_ds.pixel_array
+    
+    per_frame_seq = seg_ds.PerFrameFunctionalGroupsSequence
+    
+    for i, frame in enumerate(per_frame_seq):
+        referenced_uid = frame.DerivationImageSequence[0].SourceImageSequence[0].ReferencedSOPInstanceUID
+        print(f"@@ {i} : {referenced_uid}")
+        if referenced_uid in ref_uids:
+            z_index = ref_uids.index(referenced_uid)
+            print(f"idx: {z_index}")
+            mask_array[z_index, :, :] = seg_array[i]
+            
+    final_mask = sitk.GetImageFromArray(mask_array)
+    final_mask.CopyInformation(reference_img)
+    
+    sitk.WriteImage(final_mask, output_path)
+    print(f"Done! Saved to: {output_path}")
+    print(f"Mask shape: {final_mask.GetSize()}, num of non-all-zero intervals: {np.sum(np.any(mask_array, axis=(1,2)))}")
+
+def find_slice_index(dicom_dir, target_uid):
+    files = [os.path.join(dicom_dir, f) for f in os.listdir(dicom_dir) if f.endswith('.dcm')]
+    
+    slice_info = []
+    for f in files:
+        ds = pydicom.dcmread(f)
+        # ImagePositionPatient[2]
+        slice_info.append((ds.ImagePositionPatient[2], ds.SOPInstanceUID, os.path.basename(f)))
+    
+    # order by z
+    slice_info.sort(key=lambda x: x[0])
+    
+    for index, (pos, uid, name) in enumerate(slice_info):
+        if uid == target_uid:
+            return index, name, pos
+    return None
+
+def read_segment_sequence(seg_dcm_path):
+    ds = pydicom.pydicom.dcmread(seg_dcm_path)
+    
+    # check if Segment Sequence (0062, 0002) exsited.
+    if hasattr(ds, 'SegmentSequence'):
+        segments = ds.SegmentSequence
+        print(f"this file contains {len(segments)} defined Segment(s):\n")
+        
+        for i, segment in enumerate(segments):
+           
+            seg_num = getattr(segment, 'SegmentNumber', i + 1)
+            
+            # Segment Label
+            label = getattr(segment, 'SegmentLabel', 'Unamed')
+            
+            description = getattr(segment, 'SegmentDescription', 'No description')
+            
+            color = getattr(segment, 'RecommendedDisplayCIELabValue', 'default color')
+
+            print(f"--- Segment {seg_num} ---")
+            print(f"    Label: {label}")
+            print(f"    Descrption: {description}")
+            
+            if hasattr(segment, 'SegmentedPropertyCategoryCodeSequence'):
+                category = segment.SegmentedPropertyCategoryCodeSequence[0].CodeMeaning
+                print(f"    Category: {category}")
+                
+            print("-" * 20)
+    else:
+        print("No Segment Sequence is found...")
+
+# how many objs in this 3D masks.
+def count_lesions(nifti_mask_path):
+    mask_img = sitk.ReadImage(nifti_mask_path)
+    cc_filter = sitk.ConnectedComponentImageFilter()
+    cc_filter.SetFullyConnected(True)
+    label_img = cc_filter.Execute(mask_img)
+    
+    num_lesions = cc_filter.GetObjectCount()
+    
+    print(f"There is/are {num_lesions} tumors in total...")
+    return num_lesions
+
 if __name__=='__main__':
-    file_name_process("raw_datasets/BrainTumorMRI/")
+    #file_name_process("raw_datasets/BrainTumorMRI/")
+    #dicom_to_nifti_sitk("PET_raw_files/3.000000-PET-01743", "nii_files/PET_nii_files/PSMA_0a3fdc59c5e700d8PET.nii.gz")
+    #get_referenced_imaging_info("./1-1.dcm")
+    seg_file = "./1-1.dcm"
+    ref_dir = "PET_raw_files/3.000000-PET-01743" 
+    output_nii = "./case_0001seg.nii.gz"
+    #convert_seg_to_nifti_sitk(seg_file, ref_dir, output_nii)
+    #index, filename, z_pos = find_slice_index(ref_dir, "1.3.6.1.4.1.14519.5.2.1.162115129127399650767843649836237257916")
+    #print(f"该 UID 对应物理层序第 {index} 层，文件名是 {filename}")
+    #read_segment_sequence("./1-1.dcm")
+    count_lesions("case_0001seg.nii.gz")
