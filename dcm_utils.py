@@ -195,7 +195,6 @@ def convert_seg_to_nifti_sitk(seg_path, dicom_series_dir, output_path):
     ref_uids = [pydicom.dcmread(f).SOPInstanceUID for f in dicom_names]
     
     mask_array = np.zeros(reference_img.GetSize()[::-1], dtype=np.uint8) 
-
     seg_ds = pydicom.dcmread(seg_path)
     seg_array = seg_ds.pixel_array
     
@@ -276,15 +275,134 @@ def count_lesions(nifti_mask_path):
     print(f"There is/are {num_lesions} tumors in total...")
     return num_lesions
 
+def dump_dicom_metadata(dcm_path):
+    
+    ds = pydicom.dcmread(dcm_path, stop_before_pixels=True)
+    
+    print("-" * 80)
+    print(f"{'Tag':<15} | {'VR':<4} | {'Name':<35} | {'Value'}")
+    print("-" * 80)
+    
+    for elem in ds:
+        tag_str = f"({elem.tag.group:04x},{elem.tag.element:04x})".upper()
+        
+        name = elem.name[:33] + ".." if len(elem.name) > 35 else elem.name
+        vr = elem.VR
+        
+        value_str = str(elem.value)
+        if len(value_str) > 50:
+            value_str = value_str[:47] + "..."
+            
+        print(f"{tag_str:<15} | {vr:<4} | {name:<35} | {value_str}")
+        
+    print("-" * 80)
+
+# some dcm file contain extra info which is not mandatory.
+# e.g. in the PSMA datasets, PET dcm contains segmentation info.
+def print_segment_sequence_details(dcm_path):
+    
+    ds = pydicom.dcmread(dcm_path, stop_before_pixels=True)
+    
+    if 'SegmentSequence' not in ds:
+        print("Warning: This DICOM does NOT contain Segment Sequence (0062,0002)。")
+        return
+        
+    seq = ds.SegmentSequence
+    print(f"\nSegment Sequence contains {len(seq)} Segments.\n")
+    print("=" * 60)
+    
+    for i, item in enumerate(seq):
+        print(f" Segment #{i+1}")
+        print("-" * 60)
+        
+        seg_num = item.get('SegmentNumber', 'Unknown')
+        seg_label = item.get('SegmentLabel', 'No label')
+        seg_desc = item.get('SegmentDescription', 'No description')
+        
+        print(f"  Segment Number  : {seg_num}")
+        print(f"  Segment Label   : {seg_label}")
+        print(f"  Description     : {seg_desc}")
+        
+        algo_type = item.get('SegmentAlgorithmType', 'Unknown')
+        algo_name = item.get('SegmentAlgorithmName', 'Unrecorded')
+        print(f"  Algorithm Type  : {algo_type}")
+        if algo_type != 'MANUAL':
+            print(f"  Algorithm Name  : {algo_name}")
+            
+        if 'SegmentedPropertyCategoryCodeSequence' in item:
+            cat_seq = item.SegmentedPropertyCategoryCodeSequence[0]
+            cat_meaning = cat_seq.get('CodeMeaning', 'Unknown')
+            print(f"  Category        : {cat_meaning}")
+            
+        if 'SegmentedPropertyTypeCodeSequence' in item:
+            type_seq = item.SegmentedPropertyTypeCodeSequence[0]
+            type_meaning = type_seq.get('CodeMeaning', 'Unknown')
+            print(f"  Property Type   : {type_meaning}")
+            
+        print("=" * 60 + "\n")
+
+
+# output all the points whose value >= value_threshold
+def map_pixels_to_physical_coords(dcm_path, value_threshold=10000):
+    ds = pydicom.dcmread(dcm_path)
+    pixel_matrix = ds.pixel_array
+    
+    # Image Position (Patient): [X0, Y0, Z0]
+    origin_x, origin_y, origin_z = [float(val) for val in ds.ImagePositionPatient]
+    
+    # Pixel Spacing: [Row Spacing (Y), Column Spacing (X)]
+    spacing_y, spacing_x = [float(val) for val in ds.PixelSpacing]
+    
+    print("====== Coordinators mapping info ======")
+    print(f"O (X0, Y0, Z0): ({origin_x:.2f}, {origin_y:.2f}, {origin_z:.2f}) mm")
+    print(f"pix dist (X, Y): ({spacing_x:.2f}, {spacing_y:.2f}) mm")
+    print(f"threshold: Only output values > {value_threshold} \n")
+    print(f"{'pix coordinators (row, col)':<15} | {'phy coordinators (X, Y, Z) mm':<35} | {'original pix val'}")
+    print("-" * 75)
+    
+    rows, cols = np.where(pixel_matrix > value_threshold)
+    
+    point_count = len(rows)
+    
+    if point_count == 0:
+        print("No points are found, please devrease the threshold.")
+        return
+        
+    #max_print = min(point_count, 50) # for in case there are too many points to be printed
+    max_print = point_count
+    
+    for i in range(max_print):
+        r = rows[i]
+        c = cols[i]
+        val = pixel_matrix[r, c]
+        
+        phys_x = origin_x + c * spacing_x
+        phys_y = origin_y + r * spacing_y
+        phys_z = origin_z
+        
+        pixel_str = f"({r:3d}, {c:3d})"
+        phys_str = f"({phys_x:7.2f}, {phys_y:7.2f}, {phys_z:7.2f})"
+        print(f"{pixel_str:<15} | {phys_str:<35} | {val}")
+        
+    print("-" * 75)
+    print(f"Find {point_count} points >= {value_threshold}")
+    
+
 if __name__=='__main__':
     #file_name_process("raw_datasets/BrainTumorMRI/")
     #dicom_to_nifti_sitk("PET_raw_files/3.000000-PET-01743", "nii_files/PET_nii_files/PSMA_0a3fdc59c5e700d8PET.nii.gz")
     #get_referenced_imaging_info("./1-1.dcm")
-    seg_file = "./1-1.dcm"
-    ref_dir = "PET_raw_files/3.000000-PET-01743" 
+    seg_file = "temp/1-1.dcm"
+    ref_dir = "temp/3.000000-PET-01743" 
     output_nii = "./case_0001seg.nii.gz"
     #convert_seg_to_nifti_sitk(seg_file, ref_dir, output_nii)
     #index, filename, z_pos = find_slice_index(ref_dir, "1.3.6.1.4.1.14519.5.2.1.162115129127399650767843649836237257916")
     #print(f"该 UID 对应物理层序第 {index} 层，文件名是 {filename}")
     #read_segment_sequence("./1-1.dcm")
-    count_lesions("case_0001seg.nii.gz")
+    #count_lesions("case_0001seg.nii.gz")
+    #ds = pydicom.dcmread("temp/4.000000-CT-00452/1-001.dcm")
+    #print(f"像素矩阵 Shape: {ds.pixel_array.shape}")
+    #visualize_pet_slice("temp/3.000000-PET-01743/1-168.dcm")
+    #dump_dicom_metadata("temp/3.000000-PET-01743/1-168.dcm")
+    #print_segment_sequence_details("temp/3.000000-PET-01743/1-168.dcm")
+    map_pixels_to_physical_coords("temp/3.000000-PET-01743/1-168.dcm")
