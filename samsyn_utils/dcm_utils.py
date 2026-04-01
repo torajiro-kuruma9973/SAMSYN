@@ -175,46 +175,6 @@ def get_referenced_imaging_info(seg_dcm_path):
     
     print(f"{'='*60}\n")
 
-# segmentation file sometimes is shaped different then PET file by whiich is refered,
-# due to sparse annotation.
-# e.g. the seg shape is [33. 200, 200], while the PET file is [300, 200, 300].
-# So we should add whole black frame in seg file to make which has the same shape as the PET file.
-def convert_seg_to_nifti_sitk(seg_path, dicom_series_dir, output_path):
-    """
-    Use SimpleITK to align DICOM-SEG and PET
-    :param seg_path: Segmentation folder
-    :param dicom_series_dir: PET folder
-    :param output_path: output path
-    """
-    
-    reader = sitk.ImageSeriesReader()
-    dicom_names = reader.GetGDCMSeriesFileNames(dicom_series_dir)
-    reader.SetFileNames(dicom_names)
-    reference_img = reader.Execute()
-    
-    ref_uids = [pydicom.dcmread(f).SOPInstanceUID for f in dicom_names]
-    
-    mask_array = np.zeros(reference_img.GetSize()[::-1], dtype=np.uint8) 
-    seg_ds = pydicom.dcmread(seg_path)
-    seg_array = seg_ds.pixel_array
-    
-    per_frame_seq = seg_ds.PerFrameFunctionalGroupsSequence
-    
-    for i, frame in enumerate(per_frame_seq):
-        referenced_uid = frame.DerivationImageSequence[0].SourceImageSequence[0].ReferencedSOPInstanceUID
-        print(f"@@ {i} : {referenced_uid}")
-        if referenced_uid in ref_uids:
-            z_index = ref_uids.index(referenced_uid)
-            print(f"idx: {z_index}")
-            mask_array[z_index, :, :] = seg_array[i]
-            
-    final_mask = sitk.GetImageFromArray(mask_array)
-    final_mask.CopyInformation(reference_img)
-    
-    sitk.WriteImage(final_mask, output_path)
-    print(f"Done! Saved to: {output_path}")
-    print(f"Mask shape: {final_mask.GetSize()}, num of non-all-zero intervals: {np.sum(np.any(mask_array, axis=(1,2)))}")
-
 def find_slice_index(dicom_dir, target_uid):
     files = [os.path.join(dicom_dir, f) for f in os.listdir(dicom_dir) if f.endswith('.dcm')]
     
@@ -386,16 +346,138 @@ def map_pixels_to_physical_coords(dcm_path, value_threshold=10000):
         
     print("-" * 75)
     print(f"Find {point_count} points >= {value_threshold}")
+
+# read the dcm file to get the first pixel's phy coordinates
+def get_dcm_x0y0_info(dcm_file):
+    try:
+        # 读取 DICOM 文件
+        ds = pydicom.dcmread(dcm_file)
+        
+        # 普通单帧 DICOM 的物理坐标通常直接存储在 ImagePositionPatient 标签中
+        if hasattr(ds, 'ImagePositionPatient'):
+            origin_pt = ds.ImagePositionPatient
+            
+            # 转换为 Python 原生 float 类型
+            phys_x = float(origin_pt[0])
+            phys_y = float(origin_pt[1])
+            phys_z = float(origin_pt[2])
+            
+            print(f"---- DICOM 空间信息 ----")
+            print(f"像素坐标 (0, 0) 对应的物理空间坐标 (LPS):")
+            print(f"X (Right->Left) : {phys_x}")
+            print(f"Y (Anterior->Posterior) : {phys_y}")
+            print(f"Z (Inferior->Superior) : {phys_z}  <-- 这就是 Slice Location (SL)")
+            print(f"------------------------")
+            
+            return (phys_x, phys_y, phys_z)
+        else:
+            print(f"警告: 在文件 {dcm_file} 中未找到 ImagePositionPatient 标签。这可能不是一个包含空间信息的图像。")
+            return None
+            
+    except Exception as e:
+        print(f"读取文件出错: {e}")
+        return None
+    
+
+def batch_get_info(folder_path):
+    """
+    遍历文件夹，打印每个 DICOM 文件的文件名及其左上角第一个像素 (0,0) 的物理坐标。
+    """
+    # 1. 获取文件夹下所有文件并排序（确保按 1-186, 1-187 这样的顺序排列）
+    files = [f for f in os.listdir(folder_path) if f.lower().endswith('.dcm')]
+    files.sort() # 默认按字母/数字顺序排序
+    
+    if not files:
+        print(f"在路径 {folder_path} 下未找到任何 .dcm 文件。")
+        return
+
+    print(f"{'文件名':<20} | {'物理坐标 (X, Y, Z)':<40}")
+    print("-" * 70)
+
+    for filename in files:
+        file_path = os.path.join(folder_path, filename)
+        try:
+            ds = pydicom.dcmread(file_path, stop_before_pixels=True) # 仅读取头部，速度极快
+            
+            if hasattr(ds, 'ImagePositionPatient'):
+                pos = ds.ImagePositionPatient
+                # 转换为 Python float 并保留 2 位小数
+                pos_str = f"({float(pos[0]):.2f}, {float(pos[1]):.2f}, {float(pos[2]):.2f})"
+                print(f"{filename:<20} | {pos_str}")
+            else:
+                print(f"{filename:<20} | 未找到 ImagePositionPatient 标签")
+                
+        except Exception as e:
+            print(f"{filename:<20} | 读取失败: {e}")
+
+def analyze_psma_dataset(root_path):
+    project_with_others = []
+    total_pet_folders = 0
+    pure_1_folders = 0
+    other_prefix_folders = 0
+
+    # 遍历 Project ID 层 (PSMA_xxxx)
+    for project_id in os.listdir(root_path):
+        project_path = os.path.join(root_path, project_id)
+        if not os.path.isdir(project_path):
+            continue
+
+        # 遍历 Study 层 (日期-NA-PETCT...)
+        for study_id in os.listdir(project_path):
+            study_path = os.path.join(project_path, study_id)
+            if not os.path.isdir(study_path):
+                continue
+
+            # 遍历 Series 层，寻找包含 "PET" 字样的文件夹
+            for series_id in os.listdir(study_path):
+                if "PET" in series_id.upper():
+                    pet_path = os.path.join(study_path, series_id)
+                    if not os.path.isdir(pet_path):
+                        continue
+
+                    total_pet_folders += 1
+                    
+                    # 获取该 PET 文件夹下所有 dcm 文件
+                    dcm_files = [f for f in os.listdir(pet_path) if f.lower().endswith('.dcm')]
+                    if not dcm_files:
+                        continue
+
+                    # 检查前缀
+                    has_others = False
+                    for f in dcm_files:
+                        if not f.startswith("1-"):
+                            has_others = True
+                            break
+                    
+                    if has_others:
+                        other_prefix_folders += 1
+                        project_with_others.append((project_id, study_id, series_id))
+                    else:
+                        pure_1_folders += 1
+
+    # --- 打印结果 ---
+    print("--- 含有 '1-' 以外前缀的文件夹详情 ---")
+    print(f"{'Project ID':<25} | {'Study ID':<40} | {'Series Folder'}")
+    print("-" * 100)
+    for p_id, s_id, ser_id in project_with_others:
+        print(f"{p_id:<25} | {s_id:<40} | {ser_id}")
+
+    print("\n" + "="*30)
+    print("--- 统计数据汇总 ---")
+    print(f"总 PET 文件夹数量:    {total_pet_folders}")
+    print(f"全部为 '1-' 的文件夹:  {pure_1_folders}")
+    print(f"含有其它前缀的文件夹: {other_prefix_folders}")
+    print("="*30)
     
 
 if __name__=='__main__':
     #file_name_process("raw_datasets/BrainTumorMRI/")
-    #dicom_to_nifti_sitk("PET_raw_files/3.000000-PET-01743", "nii_files/PET_nii_files/PSMA_0a3fdc59c5e700d8PET.nii.gz")
     #get_referenced_imaging_info("./1-1.dcm")
     seg_file = "temp/1-1.dcm"
     ref_dir = "temp/3.000000-PET-01743" 
     output_nii = "./case_0001seg.nii.gz"
-    #convert_seg_to_nifti_sitk(seg_file, ref_dir, output_nii)
+    #dicom_to_nifti_sitk("temp/4.000000-CT-00452", "./01_ct.nii.gz")
+    #get_referenced_imaging_info("temp/1-1.dcm")
     #index, filename, z_pos = find_slice_index(ref_dir, "1.3.6.1.4.1.14519.5.2.1.162115129127399650767843649836237257916")
     #print(f"该 UID 对应物理层序第 {index} 层，文件名是 {filename}")
     #read_segment_sequence("./1-1.dcm")
@@ -403,6 +485,7 @@ if __name__=='__main__':
     #ds = pydicom.dcmread("temp/4.000000-CT-00452/1-001.dcm")
     #print(f"像素矩阵 Shape: {ds.pixel_array.shape}")
     #visualize_pet_slice("temp/3.000000-PET-01743/1-168.dcm")
-    #dump_dicom_metadata("temp/3.000000-PET-01743/1-168.dcm")
+    #dump_dicom_metadata("temp/102.000000-PET-11700/2-001.dcm")
     #print_segment_sequence_details("temp/3.000000-PET-01743/1-168.dcm")
-    map_pixels_to_physical_coords("temp/3.000000-PET-01743/1-168.dcm")
+    #map_pixels_to_physical_coords("temp/3.000000-PET-01743/1-168.dcm")
+    #batch_get_info("temp/102.000000-PET-11700")
