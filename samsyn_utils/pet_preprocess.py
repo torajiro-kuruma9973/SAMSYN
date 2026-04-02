@@ -106,7 +106,6 @@ def preprocess_pet(ct_dicom_dir, pet_dicom_dir, output_nii_path):
     final_pet_img.CopyInformation(ct_image)
     
     sitk.WriteImage(final_pet_img, output_nii_path)
-    print(f"🎉 Done！the outputs are saved in: {output_nii_path}")
 
 # only align size based on CT space. no transformation. Just for test.
 def pet_aligh_ct_test(pet_dir, ct_dir, output_folder):

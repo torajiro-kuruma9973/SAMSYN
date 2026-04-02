@@ -53,106 +53,82 @@ def show_ref_pet(seg_file_path, pet_dir):
 
     print("-" * 60)
 
-import pydicom
-import numpy as np
-import os
 
-def get_frontground_from_seg(seg_file):
-   
-    ds_seg = pydicom.dcmread(seg_file)
-    seg_array = ds_seg.pixel_array # (Frames, Rows, Cols)
+def extract_seg_physical_coords(seg_path):
+    """
+    遍历 SEG 文件，提取不为 0 的前景点，并严格按照 DICOM Header 的变换矩阵计算其物理坐标。
     
-    shared_group = ds_seg.SharedFunctionalGroupsSequence[0]
-    orientation = shared_group.PlaneOrientationSequence[0].ImageOrientationPatient
-
-    row_dir = np.array([float(v) for v in orientation[:3]]) # x axis
-    col_dir = np.array([float(v) for v in orientation[3:]]) # y axis
-    
-    spacing = shared_group.PixelMeasuresSequence[0].PixelSpacing
-    dy, dx = float(spacing[0]), float(spacing[1])
-    
-    space_info = {}
-    
-    for frame_idx in range(seg_array.shape[0]):
-        frame_data = seg_array[frame_idx]
+    参数:
+        seg_path (str): 3D volume 的 DICOM SEG 文件路径。
         
+    返回:
+        dict: { frame_idx (int): [(x, y, z), (x, y, z), ...] } 
+              其中坐标均为 float 类型，保留 4 位小数。
+    """
+    # 1. 读取 DICOM SEG 文件
+    ds = pydicom.dcmread(seg_path)
+    pixel_array = ds.pixel_array  # 形状通常为 (Frames, Rows, Columns)
+    
+    # 2. 获取【全局共享】的空间变换参数
+    # SEG 文件强制使用多帧结构，公共参数存储在 SharedFunctionalGroupsSequence 中
+    shared_group = ds.SharedFunctionalGroupsSequence[0]
+    
+    # 方向余弦向量 (ImageOrientationPatient)
+    # 前 3 个值代表行延伸方向 (Row direction, 对应列索引变化 / X轴)
+    # 后 3 个值代表列延伸方向 (Column direction, 对应行索引变化 / Y轴)
+    orientation = shared_group.PlaneOrientationSequence[0].ImageOrientationPatient
+    row_dir = np.array([float(v) for v in orientation[:3]])
+    col_dir = np.array([float(v) for v in orientation[3:]])
+    
+    # 像素间距 (PixelSpacing): [相邻行的中心距(dy), 相邻列的中心距(dx)]
+    spacing = shared_group.PixelMeasuresSequence[0].PixelSpacing
+    dy = float(spacing[0])
+    dx = float(spacing[1])
+    
+    results = {}
+    
+    # 3. 遍历每一帧
+    for frame_idx in range(pixel_array.shape[0]):
+        frame_data = pixel_array[frame_idx]
+        
+        # 找到所有不为 0 的像素索引 (y对应行/Row, x对应列/Column)
         y_indices, x_indices = np.where(frame_data != 0)
+        
+        # 如果全为0 (无病灶)，直接跳过该帧
         if len(y_indices) == 0:
             continue
             
-        frame_group = ds_seg.PerFrameFunctionalGroupsSequence[frame_idx]
-        origin_pt = np.array([float(v) for v in frame_group.PlanePositionSequence[0].ImagePositionPatient])
+        # 4. 获取【当前帧专属】的物理原点
+        # 即当前帧左上角第一个像素 (0,0) 的 LPS 绝对三维坐标
+        frame_group = ds.PerFrameFunctionalGroupsSequence[frame_idx]
+        origin = np.array([float(v) for v in frame_group.PlanePositionSequence[0].ImagePositionPatient])
         
-        frame_points = []
-        for y, x in zip(y_indices, x_indices):
-         
-            phys_pt = origin_pt + (x * dx * row_dir) + (y * dy * col_dir)
-            
-            frame_points.append((
-                float(round(phys_pt[0], 4)), 
-                float(round(phys_pt[1], 4)), 
-                float(round(phys_pt[2], 4))
-            ))
-            
-        space_info[frame_idx] = frame_points
+        # 5. 核心：计算实际物理空间坐标 (利用 Numpy 向量化加速)
+        # DICOM 坐标公式: P(x,y) = Origin + (x * dx * RowDir) + (y * dy * ColDir)
         
-    return space_info
-
-# mapping the lasions pos to CT pix space.
-# space_dict: return from "get_frontground_from_seg"
-def locate_pos(space_dict, ct_dir):
-  
-    ct_index = {} # { z_coord: {"name": str, "origin": array, "spacing": (dy, dx)} }
-    
-    ct_files = [f for f in os.listdir(ct_dir) if f.lower().endswith('.dcm')]
-    for f in ct_files:
-        path = os.path.join(ct_dir, f)
-        ds = pydicom.dcmread(path, stop_before_pixels=True)
+        # 将 x, y 偏移量转为列向量，形状从 (N,) 变为 (N, 1) 以便与形状为 (3,) 的方向向量广播相乘
+        x_offsets = (x_indices * dx)[:, np.newaxis]
+        y_offsets = (y_indices * dy)[:, np.newaxis]
         
-        if hasattr(ds, 'ImagePositionPatient'):
-            pos = [float(v) for v in ds.ImagePositionPatient]
-            z_val = round(pos[2], 2) # 取两位小数防止浮点误差
-            spacing = [float(v) for v in ds.PixelSpacing] # [dy, dx]
-            
-            ct_index[z_val] = {
-                "name": f,
-                "origin": np.array(pos),
-                "spacing": spacing
-            }
-
-    final_mapping = {}
-
-    for seg_idx, points in space_dict.items():
-        for (wx, wy, wz) in points:
+        # 向量化计算当前帧所有前景点的 3D 坐标
+        # world_coords 的形状将是 (N, 3)
+        world_coords = origin + (x_offsets * row_dir) + (y_offsets * col_dir)
         
-            target_z = round(wz, 2)
-            
-            if target_z in ct_index:
-                ct_info = ct_index[target_z]
-                ct_name = ct_info["name"]
-                origin = ct_info["origin"]
-                dy, dx = ct_info["spacing"]
-                
-                px = int(round((wx - origin[0]) / dx))
-                py = int(round((wy - origin[1]) / dy))
-                
-                if ct_name not in final_mapping:
-                    final_mapping[ct_name] = []
-                
-                if 0 <= px < 512 and 0 <= py < 512:
-                    final_mapping[ct_name].append((px, py))
-
-    for ct_name in final_mapping:
-        final_mapping[ct_name] = list(set(final_mapping[ct_name]))
+        # 6. 将 Numpy 数组转换为 Python 原生 list(tuple) 并保留精度
+        # 这样在后续作为 JSON 导出时不会报错
+        frame_points = [
+            (round(pt[0], 4), round(pt[1], 4), round(pt[2], 4)) 
+            for pt in world_coords.tolist()
+        ]
         
-    return final_mapping
+        results[frame_idx] = frame_points
+        
+    return results
 
 if __name__=='__main__':
-    seg_rst = get_frontground_from_seg("temp/1-1.dcm")
-    rst = locate_pos(seg_rst, "temp/4.000000-CT-00452")
-    for key in rst.keys():
+    seg_rst = extract_seg_physical_coords("raw_datasets/PSMA_2e5119d4ac37d41d/06-29-1999-NA-PETCT whole-body PSMA-90640/300.000000-Segmentation - Tumor lesions detected-49927/1-1.dcm")
+    #rst = locate_pos(seg_rst, "temp/4.000000-CT-00452")
+    for key in seg_rst.keys():
         print(f"@@ {key} @@")
-        print(rst[key])
+        print(seg_rst[key])
         print("----")
-
-    show_ref_pet("temp/1-1.dcm", "temp/3.000000-PET-01743")
