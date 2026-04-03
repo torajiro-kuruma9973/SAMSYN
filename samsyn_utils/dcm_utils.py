@@ -468,6 +468,185 @@ def analyze_psma_dataset(root_path):
     print(f"全部为 '1-' 的文件夹:  {pure_1_folders}")
     print(f"含有其它前缀的文件夹: {other_prefix_folders}")
     print("="*30)
+
+import os
+import pydicom
+
+def get_thickness_info(root_path):
+    """
+    遍历根目录，提取每个 Project 下 PETCT 文件夹中 CT、PET 和 SEG 序列的层厚 (Slice Thickness)。
+    
+    参数:
+        root_path (str): 数据集根目录。
+        
+    返回:
+        dict: 嵌套字典，结构如 {project_id: {petct_folder: {'CT': '3.0mm', ...}}}
+    """
+    result_dict = {}
+
+    # --- 辅助函数：安全提取层厚 ---
+    def extract_slice_thickness(dcm_file_path):
+        try:
+            # stop_before_pixels=True 不读取图像矩阵，只读头部，极大提升速度
+            ds = pydicom.dcmread(dcm_file_path, stop_before_pixels=True)
+            
+            # 1. 尝试直接获取 (适用于普通 CT 和 PET)
+            if hasattr(ds, 'SliceThickness') and ds.SliceThickness is not None:
+                return float(ds.SliceThickness)
+            
+            # 2. 尝试从共享功能组中获取 (适用于 SEG 多帧对象)
+            if hasattr(ds, 'SharedFunctionalGroupsSequence'):
+                pixel_measures = ds.SharedFunctionalGroupsSequence[0].PixelMeasuresSequence[0]
+                if hasattr(pixel_measures, 'SliceThickness'):
+                    return float(pixel_measures.SliceThickness)
+            
+            return None
+        except Exception as e:
+            # print(f"读取文件出错 {dcm_file_path}: {e}")
+            return None
+
+    # --- 主流程：遍历目录树 ---
+    # 1. 遍历 Project ID
+    project_dirs = [d for d in os.listdir(root_path) if os.path.isdir(os.path.join(root_path, d))]
+    
+    for project_id in project_dirs:
+        project_path = os.path.join(root_path, project_id)
+        
+        # 2. 遍历带有 "PETCT" 关键字的子文件夹
+        petct_folders = [d for d in os.listdir(project_path) 
+                         if os.path.isdir(os.path.join(project_path, d)) and "PETCT" in d.upper()]
+        
+        if not petct_folders:
+            continue
+            
+        result_dict[project_id] = {}
+        
+        for petct_folder in petct_folders:
+            petct_path = os.path.join(project_path, petct_folder)
+            result_dict[project_id][petct_folder] = {}
+            
+            # 3. 寻找 CT, PET, SEG 文件夹
+            for leaf_folder in os.listdir(petct_path):
+                leaf_path = os.path.join(petct_path, leaf_folder)
+                if not os.path.isdir(leaf_path):
+                    continue
+                
+                leaf_upper = leaf_folder.upper()
+                modality_key = None
+                
+                # 识别模态
+                if "SEGMENTATION" in leaf_upper or "SEG" in leaf_upper:
+                    modality_key = "Seg"
+                elif "PET" in leaf_upper:
+                    modality_key = "PET"
+                elif "CT" in leaf_upper:
+                    modality_key = "CT"
+                
+                if modality_key:
+                    # 找到该文件夹下的第一个 .dcm 文件
+                    dcm_files = [f for f in os.listdir(leaf_path) if f.lower().endswith('.dcm')]
+                    if dcm_files:
+                        sample_dcm = os.path.join(leaf_path, dcm_files[0])
+                        thickness = extract_slice_thickness(sample_dcm)
+                        
+                        if thickness is not None:
+                            # 格式化为带有 "mm" 的字符串
+                            result_dict[project_id][petct_folder][modality_key] = f"{thickness:.1f}mm"
+                        else:
+                            result_dict[project_id][petct_folder][modality_key] = "Unknown"
+
+    return result_dict
+
+def get_z_axis_ranges(root_path):
+    """
+    遍历数据集，提取每组 CT 和 PET 序列的 Z 轴物理空间范围 [min_z, max_z]。
+    
+    参数:
+        root_path (str): 数据集根目录
+        
+    返回:
+        dict: 结构如 {project_id: {petct_folder: {'CT': [min, max], 'PET': [min, max]}}}
+    """
+    result_dict = {}
+
+    # --- 辅助函数：扫描单模态文件夹，获取 Z 轴范围 ---
+    def get_folder_z_range(folder_path):
+        z_values = []
+        for f in os.listdir(folder_path):
+            if not f.lower().endswith('.dcm'):
+                continue
+                
+            file_path = os.path.join(folder_path, f)
+            try:
+                # stop_before_pixels=True 不加载像素矩阵，极大地提高扫描速度
+                ds = pydicom.dcmread(file_path, stop_before_pixels=True)
+                
+                # 1. 常规单帧 DICOM (绝大多数 CT 和 PET)
+                if hasattr(ds, 'ImagePositionPatient'):
+                    z_values.append(float(ds.ImagePositionPatient[2]))
+                
+                # 2. 兼容多帧 DICOM (极少数高级 PET 可能会打包成单文件多帧)
+                elif hasattr(ds, 'PerFrameFunctionalGroupsSequence'):
+                    for frame in ds.PerFrameFunctionalGroupsSequence:
+                        if hasattr(frame, 'PlanePositionSequence'):
+                            pos = frame.PlanePositionSequence[0].ImagePositionPatient
+                            z_values.append(float(pos[2]))
+                            
+            except Exception:
+                # 忽略损坏的或无法解析的文件
+                continue
+                
+        if z_values:
+            # 返回 [最小值, 最大值]，保留两位小数
+            return [round(min(z_values), 2), round(max(z_values), 2)]
+        return None
+
+    # --- 主流程：遍历目录树 ---
+    # 1. 遍历所有的 Project ID 文件夹
+    project_dirs = [d for d in os.listdir(root_path) if os.path.isdir(os.path.join(root_path, d))]
+    
+    print(f"开始扫描，共发现 {len(project_dirs)} 个 Project 文件夹...")
+    
+    for project_id in project_dirs:
+        project_path = os.path.join(root_path, project_id)
+        
+        # 2. 寻找带有 "PETCT" 关键字的子文件夹 (Study 层级)
+        petct_folders = [d for d in os.listdir(project_path) 
+                         if os.path.isdir(os.path.join(project_path, d)) and "PETCT" in d.upper()]
+        
+        if not petct_folders:
+            continue
+            
+        result_dict[project_id] = {}
+        
+        for petct_folder in petct_folders:
+            petct_path = os.path.join(project_path, petct_folder)
+            result_dict[project_id][petct_folder] = {}
+            
+            # 3. 寻找包含 "CT" 和 "PET" 关键字的叶子文件夹 (Series 层级)
+            for leaf_folder in os.listdir(petct_path):
+                leaf_path = os.path.join(petct_path, leaf_folder)
+                if not os.path.isdir(leaf_path):
+                    continue
+                
+                leaf_upper = leaf_folder.upper()
+                modality = None
+                
+                # 排除 Segmentation，严格匹配 CT 和 PET
+                if "SEGMENTATION" in leaf_upper or "SEG" in leaf_upper:
+                    continue
+                elif "PET" in leaf_upper:
+                    modality = "PET"
+                elif "CT" in leaf_upper:
+                    modality = "CT"
+                
+                if modality:
+                    # 获取该模态的 Z 轴范围
+                    z_range = get_folder_z_range(leaf_path)
+                    if z_range:
+                        result_dict[project_id][petct_folder][modality] = z_range
+
+    return result_dict
     
 
 if __name__=='__main__':

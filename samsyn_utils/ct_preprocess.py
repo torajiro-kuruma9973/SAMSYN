@@ -1,4 +1,5 @@
 import os
+from sys import breakpointhook
 import pydicom
 import numpy as np
 import SimpleITK as sitk
@@ -49,9 +50,10 @@ def map_physical_to_ct_pixels(space_dict, ct_dir, z_tolerance=2.0):
     results = {}
     
     for key, points in space_dict.items():
-        for pt in points:
+        for pt, obj_id in points:
             wx, wy, wz = pt
-            
+            if(obj_id != 1):
+                print("Wow! A different obj ID {obj_id} !!")
             # 1. 寻找 Z 轴高度最匹配的 CT 切片
             closest_ct = None
             min_dist = float('inf')
@@ -85,7 +87,7 @@ def map_physical_to_ct_pixels(space_dict, ct_dir, z_tolerance=2.0):
                 
                 # 3. 边界安全检查：防止投影出的点越界（例如在图像外）
                 if 0 <= px < closest_ct["cols"] and 0 <= py < closest_ct["rows"]:
-                    results[ct_name].add((px, py))
+                    results[ct_name].add(((px, py), obj_id))
 
     # 将所有的 set 转换回 list，确保最后可以被 json.dump 正常序列化
     for ct_name in results:

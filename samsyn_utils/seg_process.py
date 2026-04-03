@@ -113,7 +113,6 @@ def extract_seg_physical_coords(seg_path):
         # 向量化计算当前帧所有前景点的 3D 坐标
         # world_coords 的形状将是 (N, 3)
         world_coords = origin + (x_offsets * row_dir) + (y_offsets * col_dir)
-        
         # 6. 将 Numpy 数组转换为 Python 原生 list(tuple) 并保留精度
         # 这样在后续作为 JSON 导出时不会报错
         frame_points = [
@@ -121,8 +120,11 @@ def extract_seg_physical_coords(seg_path):
             for pt in world_coords.tolist()
         ]
         
-        results[frame_idx] = frame_points
-        
+        assert (frame_data[y_indices, x_indices] != 0).all() # make sure all the lasions coords are unzero.
+        obj_list = frame_data[y_indices, x_indices].tolist()
+        temp = list(zip(frame_points, frame_data[y_indices, x_indices])) # this will auto convert the obj_id into np.uint8.
+        results[frame_idx] = [(coords, val.item()) for coords, val in temp] # make obj_id change back
+
     return results
 
 if __name__=='__main__':

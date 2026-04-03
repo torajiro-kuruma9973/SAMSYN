@@ -110,9 +110,9 @@ def parse_json_to_dict(json_file_path):
 # 1. Pick the folders only contain PET files with prefix "1-". (done in Windows)
 # 2. Abstract the foreground pix coordinates on CT, by uising seg files.
 # save as json file.
-#get_lasions_info_from_ct("raw_datasets", "temp_results/lesion_pixel_coords.json")
-rst = parse_json_to_dict("temp_results/lesion_pixel_coords.json")
-print(rst)
+get_lasions_info_from_ct("raw_datasets", "temp_results/lesion_pixel_coords.json")
+#rst = parse_json_to_dict("temp_results/lesion_pixel_coords.json")
+#print(rst)
 
 
 # pp.preprocess_pet(ct_dicom_dir, pet_dicom_dir, output_nii_path)

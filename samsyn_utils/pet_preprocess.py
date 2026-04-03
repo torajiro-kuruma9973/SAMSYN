@@ -77,7 +77,7 @@ def preprocess_pet(ct_dicom_dir, pet_dicom_dir, output_nii_path):
     
     pet_array = sitk.GetArrayFromImage(aligned_pet)
     
-    #print("\nread Metadata and cal SUV...")
+    print("\nread Metadata and cal SUV...")
     sample_pet_dcm = pet_dicom_names[0] 
     suv_factor = calculate_suv_factor(sample_pet_dcm)
     
