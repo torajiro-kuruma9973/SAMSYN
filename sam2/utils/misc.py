@@ -173,8 +173,8 @@ def load_video_frames(
     video_path,
     image_size,
     offload_video_to_cpu,
-    img_mean=(0.485, 0.456, 0.406),
-    img_std=(0.229, 0.224, 0.225),
+    img_mean=(0.5, 0.5, 0.5), # for medical images
+    img_std=(0.5, 0.5, 0.5), # for medical images
     async_loading_frames=False,
     compute_device=torch.device("cuda"),
 ):

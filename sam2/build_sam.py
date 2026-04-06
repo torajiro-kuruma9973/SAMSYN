@@ -140,6 +140,69 @@ def build_sam2_video_predictor(
         model.eval()
     return model
 
+def build_sam2_video_predictor_for_finetuning(
+    config_file,
+    ckpt_path=None,
+    device="cuda",
+    mode="train",  # 【修改1】微调时，默认模式改为 "train"
+    apply_postprocessing=False, # 【修改2】训练时通常不需要复杂的后处理逻辑
+    vos_optimized=False,
+    freeze_image_encoder=True,  # 【新增】控制是否冻结图像编码器
+    freeze_prompt_encoder=True, # 【新增】控制是否冻结提示词编码器
+    hydra_overrides_extra=[],
+    **kwargs,
+):
+    hydra_overrides = [
+        "++model._target_=sam2.sam2_video_predictor.SAM2VideoPredictor",
+    ]
+    if vos_optimized:
+        hydra_overrides = [
+            "++model._target_=sam2.sam2_video_predictor.SAM2VideoPredictorVOS",
+            "++model.compile_image_encoder=True",  
+        ]
+
+    # 注意：在计算 Loss 的训练阶段，通常建议关闭动态挑选 Mask 等后处理
+    if apply_postprocessing:
+        hydra_overrides_extra = hydra_overrides_extra.copy()
+        hydra_overrides_extra += [
+            "++model.sam_mask_decoder_extra_args.dynamic_multimask_via_stability=true",
+            "++model.sam_mask_decoder_extra_args.dynamic_multimask_stability_delta=0.05",
+            "++model.sam_mask_decoder_extra_args.dynamic_multimask_stability_thresh=0.98",
+            "++model.binarize_mask_from_pts_for_mem_enc=true",
+            "++model.fill_hole_area=8",
+        ]
+    hydra_overrides.extend(hydra_overrides_extra)
+
+    # 1. 读取配置并初始化模型 (保持不变)
+    cfg = compose(config_name=config_file, overrides=hydra_overrides)
+    OmegaConf.resolve(cfg)
+    model = instantiate(cfg.model, _recursive_=True)
+    _load_checkpoint(model, ckpt_path) # 此函数在官方源码库中定义
+    model = model.to(device)
+
+    # 2. 设置整体模式
+    if mode == "eval":
+        model.eval()
+    elif mode == "train":
+        model.train() # 【新增】确保模型主体处于训练模式
+        
+        # 3. 冻结策略注入：冻结图像编码器
+        if freeze_image_encoder:
+            for param in model.image_encoder.parameters():
+                param.requires_grad = False
+            # 【关键防御】强制将冻结的模块切回 eval 模式，防止 Dropout 和 BatchNorm 捣乱
+            model.image_encoder.eval() 
+            print("=> 已冻结 Image Encoder")
+
+        # 4. 冻结策略注入：冻结提示词编码器
+        if freeze_prompt_encoder:
+            for param in model.sam_prompt_encoder.parameters():
+                param.requires_grad = False
+            model.sam_prompt_encoder.eval()
+            print("=> 已冻结 Prompt Encoder")
+
+    return model
+
 
 def _hf_download(model_id):
     from huggingface_hub import hf_hub_download

@@ -5,6 +5,8 @@ import numpy as np
 import SimpleITK as sitk
 from collections import defaultdict
 import seg_process as sp
+import json
+from pathlib import Path
 
 # mapping the lasions pos to CT pix space.
 # space_dict: return from "get_frontground_from_seg"
@@ -285,3 +287,4 @@ if __name__=='__main__':
     #     print("----")
     n = sum(len(lst) for lst in rst.values())
     print(n)
+    #count_dcm_files_and_rename(MY_ROOT_DIR, INPUT_JSON, OUTPUT_JSON)

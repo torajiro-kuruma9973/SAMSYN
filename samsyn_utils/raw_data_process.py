@@ -12,7 +12,6 @@ import os
 import json
 
 def get_lasions_info_from_ct(root_path, output_json_path):
-
     all_results = {}
 
     projects = [d for d in os.listdir(root_path) if os.path.isdir(os.path.join(root_path, d))]
@@ -24,18 +23,20 @@ def get_lasions_info_from_ct(root_path, output_json_path):
         petct_dir = None
         ct_dir = None
         seg_file_path = None
+        study_id = None  # 新增：用于记录当前的 study id
+        
         # there is a "study id" project under "project id" folder.
         # so we need to continue to look for the ct foloer, pet folder and seg folder
         for sub_folder in os.listdir(project_dir):
             if "PETCT" in sub_folder.upper() and os.path.isdir(os.path.join(project_dir, sub_folder)):
                 petct_dir = os.path.join(project_dir, sub_folder)
+                study_id = sub_folder  # 提取并保存 study id
                 break  
         
-        if not petct_dir:
-            print(f"sikp [{project_id}]: cannot find 'PETCT' sub folders。")
+        if not petct_dir or not study_id:
+            print(f"skip [{project_id}]: cannot find 'PETCT' sub folders。")
             continue
 
-    
         for leaf_folder in os.listdir(petct_dir):
             leaf_path = os.path.join(petct_dir, leaf_folder)
             if not os.path.isdir(leaf_path):
@@ -43,9 +44,7 @@ def get_lasions_info_from_ct(root_path, output_json_path):
                 
             leaf_upper = leaf_folder.upper()
             
-    
             if "SEGMENTATION" in leaf_upper:
-               
                 seg_files = [f for f in os.listdir(leaf_path) if f.lower().endswith('.dcm')]
                 if seg_files:
                     seg_file_path = os.path.join(leaf_path, seg_files[0])
@@ -59,13 +58,17 @@ def get_lasions_info_from_ct(root_path, output_json_path):
             continue
 
         try:
-            print(f"processing: {project_id} ...")
+            print(f"processing: {project_id} -> {study_id} ...")
             
-            space_info_dict = sp.extract_seg_physical_coords(seg_file_path)
+            # 严格保留原有的函数调用
+            space_info_dict = extract_seg_physical_coords(seg_file_path)
+            ct_pixel_coords = map_physical_to_ct_pixels(space_info_dict, ct_dir)
             
-            ct_pixel_coords = cp.map_physical_to_ct_pixels(space_info_dict, ct_dir)
-            
-            all_results[project_id] = ct_pixel_coords
+            # 新增：构建嵌套字典结构 {project_id: {study_id: ct_pixel_coords}}
+            if project_id not in all_results:
+                all_results[project_id] = {}
+                
+            all_results[project_id][study_id] = ct_pixel_coords
             
         except Exception as e:
             print(f"failed: [{project_id}]: {e}")
