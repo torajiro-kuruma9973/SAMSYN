@@ -32,8 +32,8 @@ def generate_bounded_offset_json(input_dict, offset, max_slices_json_path, outpu
         # 提取该病人的【总层数】
         total_slices = int(max_slices_data[limit_key])
         
-        # 因为索引从 0 开始，所以最大的合法切片索引是 总层数 - 1
-        max_allowed_index = total_slices - 1
+        # 因为索引从 0 开始，所以最大的合法切片索引是 总层数
+        max_allowed_index = total_slices
 
         slice_pairs = []
         for slice_idx in slices_dict.keys():

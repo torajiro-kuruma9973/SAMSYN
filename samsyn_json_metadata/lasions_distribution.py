@@ -25,7 +25,7 @@ def process_and_map_json_with_coords(info_json_path, map_json_path):
     升级版重组函数：保留所有像素坐标信息
     返回结构形如：
     {
-        0: {                        # 映射后的患者 ID (原 "1" -> 0)
+        0: {                        # 映射后的患者 ID 这里已经是base 0了
             234: [                  # 映射后的切片 ID (原 "1-235.dcm" -> 234)
                 [[311, 261], 1],    # 坐标及正负标签
                 [[311, 265], 1]
@@ -46,7 +46,7 @@ def process_and_map_json_with_coords(info_json_path, map_json_path):
     for map_key, map_val in map_data.items():
         study_id = map_val.get("study_id")
         if study_id:
-            study_to_new_key[study_id] = int(map_key) - 1
+            study_to_new_key[study_id] = int(map_key)
 
     result_dict = {}
 

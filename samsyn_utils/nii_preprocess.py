@@ -16,7 +16,7 @@ def rename_and_map_nifti(pet_dir, ct_dir, json_path="rename_mapping.json"):
     pet_files = sorted([f for f in os.listdir(pet_dir) if f.endswith('.nii.gz')])
     
     mapping_dict = {}
-    counter = 1
+    counter = 0
     
     print(f"🚀 开始重命名操作，扫描到 {len(pet_files)} 个 PET 文件...")
 

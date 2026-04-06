@@ -141,6 +141,7 @@ class dataset_3d(Dataset):
         self.lasions_coords_info_dict = lasions_distribution.process_and_map_json_with_coords(args.lasion_ct_pix_json, args.rename_json)
         self.ct_slices_counts = utils.load_json_to_dict(samsyn_cfg.ct_slice_counts_json)
         self.nii_idx_with_prompts_coords = utils.load_json_to_dict(samsyn_cfg.nii_idx_with_prompts_coords_json)
+        self.interval_info = utils.load_json_to_dict(samsyn_cfg.interval_info)
    
     def __len__(self):
         return len(self.data_paths)
@@ -151,15 +152,19 @@ class dataset_3d(Dataset):
         return label
 
     
-    def _generate_slices(self, num_slice, info_list):
-        if self.slice_length == -1 or num_slice <= self.slice_length:
-            
-            return info_list[0], [num_slice]
-
-        upper_limit = info_list[0] + num_slice - self.slice_length + 1
-        
-        starting_slices = [num for num in info_list if num < upper_limit]
-        end_slices = [start + self.slice_length for start in starting_slices]
+    def _generate_slices(self, case_name):
+        interval_info_dict = utils.load_json_to_dict(samsyn_cfg.interval_info)
+        interval_list = interval_info_dict[case_name]
+        if len(interval_list) > samsyn_cfg.num_intervals:
+            intervals = random.sample(interval_list, samsyn_cfg.num_intervals)
+            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+            print(intervals)
+            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+            starting_slices = [x[0] for x in intervals]
+            end_slices = [x[1] for x in intervals]
+        else:
+            starting_slices = [x[0] for x in interval_list]
+            end_slices = [x[1] for x in interval_list]
         return starting_slices, end_slices
 
 
@@ -187,7 +192,7 @@ class dataset_3d(Dataset):
         # here we should use lesions coords info instead of labels.
         lasions_info = self.lasions_coords_info_dict[case_idx]
         lasions_slice_info = list(lasions_info.keys())
-        print(f"foregrounds in slices: {lasions_slice_info}")
+        #print(f"foregrounds in slices: {lasions_slice_info}")
         first_nonzero_slice = min(lasions_slice_info)
         last_nonzero_slice = max(lasions_slice_info)
         ct_slice_counts = self.ct_slices_counts[case_name] # base 1
@@ -199,20 +204,19 @@ class dataset_3d(Dataset):
         (h,w) = self.label3d.shape[2:]
         print(f"H, W: {h}, {w}")
 
-        starting_slices, end_slices = self._generate_slices(num_slice, lasions_slice_info)
+        starting_slices, end_slices = self._generate_slices(case_name)
         print("AAAAAAAAAAAAAAAAAAAAAAA")
-        print(num_slice)
         print(starting_slices)
         print(end_slices)
         print("AAAAAAAAAAAAAAAAAAAAAAA")
         output_dict = {"obj_to_class": self.class_dict, "batch_input": []}
 
         points_info = self.lasions_coords_info_dict[case_idx]
-        print(points_info)
+        #print(points_info)
         for star_slice, end_slice in zip(starting_slices, end_slices):
             output = self.process_3d_slices_with_prompts(star_slice, end_slice, points_info, h, w)
-            print(output)
-            print("@@@@@@@@@@@@@@@@@@@@@@@@@")
+            #print(output)
+            
             if output is not None:
                 output_dict["batch_input"].append(output)
         
