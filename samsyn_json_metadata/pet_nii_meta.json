@@ -1,0 +1,4167 @@
+{
+    "0.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "1.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "10.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "100.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "101.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "102.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "103.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "104.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "105.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "106.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "107.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "108.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "109.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "11.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "110.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "111.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "112.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "113.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "114.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "115.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "116.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "117.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "118.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "119.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "12.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "120.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "121.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "122.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "123.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "124.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "125.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "126.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "127.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "128.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "129.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "13.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "130.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "131.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "132.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "133.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "134.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "135.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "136.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "137.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "138.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "139.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "14.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "140.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "141.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "142.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "143.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "144.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "145.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "146.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "147.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "148.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "149.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "15.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "150.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "151.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "152.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "153.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "154.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "155.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "156.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "157.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "158.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "159.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "16.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "160.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "161.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "162.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "163.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "164.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "165.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "166.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "167.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "168.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "169.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "17.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "170.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "171.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "172.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "173.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "174.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "175.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "176.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "177.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "178.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "179.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "18.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "180.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "181.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "182.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "183.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "184.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "185.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "186.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "187.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "188.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "189.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "19.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "190.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "191.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "192.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "193.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "194.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "195.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "196.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "197.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "198.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "199.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "2.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "20.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "200.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "201.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "202.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "203.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "204.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "205.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "206.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "207.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "208.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "209.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "21.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "210.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "211.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "212.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "213.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "214.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "215.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "216.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "217.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "218.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "219.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "22.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "220.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "221.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "222.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "223.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "224.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "225.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "226.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "227.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "228.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "229.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "23.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "230.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "231.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "232.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "233.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "234.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "235.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "236.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "237.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "238.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "239.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "24.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "240.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "241.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "242.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "243.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "244.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "245.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "246.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "247.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "248.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "249.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "25.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "250.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "251.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "252.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "253.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "254.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "255.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "256.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "257.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "258.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "259.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "26.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "260.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "261.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "262.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "263.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "264.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "265.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "266.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "267.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "268.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "269.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "27.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "270.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "271.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "272.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "273.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "274.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "275.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "276.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "277.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "278.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "279.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "28.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "280.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "281.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "282.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "283.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "284.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "285.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "286.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "287.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "288.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "289.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "29.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "290.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "291.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "292.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "293.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "294.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "295.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "296.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "297.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "298.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "299.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "3.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "30.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "300.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "301.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "302.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "303.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "304.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "305.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "306.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "307.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "308.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "309.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "31.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "310.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "311.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "312.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "313.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "314.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "315.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "316.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "317.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "318.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "319.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "32.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "320.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "321.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "322.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "323.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "324.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "325.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "326.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "327.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "328.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "329.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "33.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "330.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "331.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "332.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "333.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "334.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "335.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "336.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "337.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "338.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "339.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "34.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "340.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "341.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "342.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "343.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "344.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "345.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "346.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "347.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "348.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "349.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "35.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "350.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "351.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "352.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "353.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "354.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "355.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "356.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "357.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "358.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "359.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "36.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "360.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "361.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "362.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "363.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "364.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "365.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "366.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "367.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "368.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "369.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "37.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "370.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "371.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "372.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "373.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "374.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "375.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "376.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "377.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "378.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "379.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "38.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "380.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "381.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "382.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "383.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "384.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "385.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "386.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "387.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "388.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "389.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "39.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "390.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "391.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "392.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "393.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "394.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "395.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "396.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "397.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "398.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "399.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "4.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "40.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "400.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "401.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "402.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "403.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "404.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "405.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "406.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "407.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "408.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "409.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "41.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "410.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "411.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "412.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "413.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "414.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "415.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "416.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "417.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "418.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "419.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "42.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "420.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "421.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "422.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "423.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "424.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "425.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "426.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "427.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "428.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "429.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "43.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "430.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "431.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "432.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "433.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "434.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "435.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "436.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "437.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "438.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "439.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "44.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "440.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "441.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "442.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "443.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "444.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "445.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "446.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "447.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "448.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "449.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "45.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "450.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "451.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "452.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "453.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "454.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "455.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "456.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "457.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "458.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "459.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "46.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "460.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "461.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "462.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "463.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "464.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "465.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "466.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "467.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "468.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "469.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "47.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "470.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "471.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "472.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "473.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "474.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "475.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "476.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "477.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "478.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "479.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "48.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "480.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "481.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "482.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "483.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "484.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "485.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "486.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "487.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "488.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "489.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "49.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "490.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "491.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "492.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "493.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "494.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "495.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "496.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "497.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "498.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "499.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "5.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "50.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "500.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "501.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "502.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "503.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "504.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "505.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "506.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "507.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "508.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "509.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "51.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "510.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "511.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "512.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "513.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "514.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "515.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "516.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "517.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "518.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "519.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "52.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "520.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "521.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "522.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "523.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "524.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "525.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "526.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "527.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "528.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "529.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "53.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "530.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "531.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "532.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "533.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "534.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "535.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "536.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "537.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "538.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "539.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "54.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "540.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "541.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "542.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "543.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "544.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "545.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "546.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "547.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "548.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "549.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "55.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "550.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "551.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "552.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "553.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "554.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "555.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "556.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "557.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "558.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "559.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "56.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "560.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "561.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "562.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "563.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "564.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "565.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "566.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "567.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "568.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "569.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "57.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "570.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "571.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "572.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "573.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "574.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "575.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "576.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "577.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "578.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "579.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "58.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "580.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "581.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "582.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "583.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "584.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "585.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "586.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "587.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "588.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "589.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "59.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "590.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "591.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "592.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "593.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "594.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "6.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "60.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "61.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "62.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "63.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "64.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "65.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "66.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "67.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "68.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "69.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "7.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "70.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "71.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "72.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "73.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "74.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "75.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "76.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "77.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "78.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "79.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "8.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "80.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "81.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "82.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "83.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "84.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "85.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "86.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "87.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "88.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "89.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "9.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "90.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "91.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "92.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "93.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "94.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "95.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "96.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "97.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "98.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    },
+    "99.nii.gz": {
+        "suv_factor": 1.0,
+        "clip_min": 0.0,
+        "clip_max": 15.0,
+        "log_min": 0.0,
+        "log_max": 2.772588722239781
+    }
+}
