@@ -152,16 +152,16 @@ class dataset_3d(Dataset):
         return label
 
     
-    def _generate_slices(self, case_name):
+    def _generate_slices(self, case_name, ct_slice_counts):
         interval_info_dict = utils.load_json_to_dict(samsyn_cfg.interval_info)
         interval_list = interval_info_dict[case_name]
         if len(interval_list) > samsyn_cfg.num_intervals:
             intervals = random.sample(interval_list, samsyn_cfg.num_intervals)
-            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-            print(intervals)
-            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
             starting_slices = [x[0] for x in intervals]
             end_slices = [x[1] for x in intervals]
+        elif len(interval_list) == 0: # no freground, pick bg points.
+            starting_slices = random.sample(range(ct_slice_counts), samsyn_cfg.num_intervals)
+            end_slices = [x + samsyn_cfg.interval_thickness for x in starting_slices]
         else:
             starting_slices = [x[0] for x in interval_list]
             end_slices = [x[1] for x in interval_list]
@@ -173,7 +173,7 @@ class dataset_3d(Dataset):
         label3d_path = self.data_paths[index]['label']
         case_name = image3d_ct.split('/')[-1].split('\\')[-1]
         case_name = case_name.split('.')[0]
-        case_idx = int(case_name.split('.')[0]) - 1 # base 0
+        case_idx = int(case_name.split('.')[0])
         print("############################")
         print(image3d_ct)
         print(label3d_path)
@@ -192,10 +192,19 @@ class dataset_3d(Dataset):
         # here we should use lesions coords info instead of labels.
         lasions_info = self.lasions_coords_info_dict[case_idx]
         lasions_slice_info = list(lasions_info.keys())
-        #print(f"foregrounds in slices: {lasions_slice_info}")
-        first_nonzero_slice = min(lasions_slice_info)
-        last_nonzero_slice = max(lasions_slice_info)
-        ct_slice_counts = self.ct_slices_counts[case_name] # base 1
+        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        print(f"foregrounds in slices: {lasions_slice_info}")
+        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+
+        ct_slice_counts = self.ct_slices_counts[case_name]
+
+        if len(lasions_slice_info) == 0: # no lasions are detected.
+            first_nonzero_slice = 0
+            last_nonzero_slice = ct_slice_counts
+        else:
+            first_nonzero_slice = min(lasions_slice_info)
+            last_nonzero_slice = max(lasions_slice_info)
+        
         last_nonzero_slice = last_nonzero_slice+self.slice_length if last_nonzero_slice+self.slice_length < ct_slice_counts else ct_slice_counts
         self.image3d_ct = item_load['image_ct'][first_nonzero_slice:last_nonzero_slice]
         self.label3d = item_load['label'][first_nonzero_slice:last_nonzero_slice]
@@ -204,7 +213,7 @@ class dataset_3d(Dataset):
         (h,w) = self.label3d.shape[2:]
         print(f"H, W: {h}, {w}")
 
-        starting_slices, end_slices = self._generate_slices(case_name)
+        starting_slices, end_slices = self._generate_slices(case_name, ct_slice_counts)
         print("AAAAAAAAAAAAAAAAAAAAAAA")
         print(starting_slices)
         print(end_slices)
@@ -212,13 +221,17 @@ class dataset_3d(Dataset):
         output_dict = {"obj_to_class": self.class_dict, "batch_input": []}
 
         points_info = self.lasions_coords_info_dict[case_idx]
+        print("BBBBBBBBBBBBBBBBBBBBBBBB")
+        print(case_idx)
+        print(points_info)
+        print("BBBBBBBBBBBBBBBBBBBBBBBB")
         #print(points_info)
         for star_slice, end_slice in zip(starting_slices, end_slices):
             output = self.process_3d_slices_with_prompts(star_slice, end_slice, points_info, h, w)
             #print(output)
             
-            if output is not None:
-                output_dict["batch_input"].append(output)
+            # if output is not None:
+            #     output_dict["batch_input"].append(output)
         
         if len(output_dict['batch_input']) == 0:
             return self.__getitem__(np.random.randint(self.__len__()))
@@ -232,12 +245,19 @@ class dataset_3d(Dataset):
 
     def process_3d_slices_with_prompts(self, starting_slice, end_slice, points_info, h, w):
         start_slice = starting_slice
-        points = points_info[start_slice]
+        if len(points_info) == 0: # slect bg points
+            y = random.sample(h, samsyn_cfg.points_num)
+            x = random.sample(w, samsyn_cfg.points_num)
+            point_coords = [list(pair) for pair in zip(y, x)]
+            point_labels = [0] * samsyn_cfg.points_num
+        else:
+            points = points_info[start_slice]
 
-        point_coords, point_labels = get_points_from_mask(points, samsyn_cfg.points_num, h, w) 
-        #bboxes = get_bboxes_from_mask(label_2d["label"], offset=5) 
+            point_coords, point_labels = get_points_from_mask(points, samsyn_cfg.points_num, h, w) 
+            #bboxes = get_bboxes_from_mask(label_2d["label"], offset=5) 
 
         start_objs = np.unique(points)
+        
         if len(start_objs) < 2:  # 无足够的对象时直接返回
             return None
         
@@ -248,7 +268,7 @@ class dataset_3d(Dataset):
         image_ct = torch.zeros(end_slice-starting_slice, 3, self.image_size, self.image_size)
         all_label = {obj: [] for obj in select_obj}
         all_prompt = {obj: {'point_coords': {}, 'point_labels': {}, 'bboxes': {}} for obj in select_obj}
-
+        
         for i, slice_index in enumerate(range(starting_slice, end_slice)):
             label2d = self.label3d[slice_index]
             image2d_ct = self.image3d_ct[slice_index]
