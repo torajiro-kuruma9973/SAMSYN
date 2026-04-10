@@ -25,9 +25,8 @@ from monai.transforms import (
 import random
 import cv2
 from torch.utils.data.distributed import DistributedSampler
-from samsyn_json_metadata import lasions_distribution
-#from samsyn_json_metadata import count_ct_slices
 from samsyn_json_metadata import utils
+
 
 def sample_collate_fn(batch):
     assert len(batch) == 1, 'Please set batch size to 1 when testing mode'
@@ -91,12 +90,12 @@ class dataset_3d(Dataset):
         for i in range(len(train_paths)):
             img_name = args.data_root + train_paths[i]
             label_name = img_name.replace("data/", "labels/")
-            tr_data_path_list.append({"image_ct": img_name, "label": label_name})
+            tr_data_path_list.append({"image_data": img_name, "label": label_name})
 
         for i in range(len(val_paths)):
             img_name = args.data_root + val_paths[i]
             label_name = img_name.replace("data/", "labels/")
-            val_data_path_list.append({"image_ct": img_name, "label": label_name})
+            val_data_path_list.append({"image_data": img_name, "label": label_name})
     
         if mode == 'training':
             self.data_paths = tr_data_path_list
@@ -114,19 +113,19 @@ class dataset_3d(Dataset):
         self.image_size = args.image_size
 
         self.data3d_loader = Compose([
-            LoadImaged(keys=['image_ct', 'label']),
-            AddChanneld(keys=['image_ct', 'label']),
-            Orientationd(keys=['image_ct', 'label'], axcodes="RAS"),
-            ForegroundNormalization(keys=['image_ct']),
-            PermuteTransform(keys=['image_ct', 'label'], dims=(3,0,1,2)),
+            LoadImaged(keys=['image_data', 'label']),
+            AddChanneld(keys=['image_data', 'label']),
+            Orientationd(keys=['image_data', 'label'], axcodes="RAS"),
+            ForegroundNormalization(keys=['image_data']),
+            PermuteTransform(keys=['image_data', 'label'], dims=(3,0,1,2)),
             ]
             )
 
         self.transform_2d = transforms.Compose(
                 [
-                    Resize(keys=['image_ct', 'label'], target_size=(self.image_size, self.image_size), num_class=len(self.class_dict)),  #
-                    transforms.ToTensord(keys=['image_ct', 'label']),
-                    Normalization(keys=['image_ct', 'label']),
+                    Resize(keys=['image_data', 'label'], target_size=(self.image_size, self.image_size), num_class=len(self.class_dict)),  #
+                    transforms.ToTensord(keys=['image_data', 'label']),
+                    Normalization(keys=['image_data', 'label']),
                 ])
 
         self.transform_2d_label = transforms.Compose(
@@ -138,10 +137,7 @@ class dataset_3d(Dataset):
         self.num_objs = args.num_objs
 
         # get lasions coords info from json
-        self.lasions_coords_info_dict = lasions_distribution.process_and_map_json_with_coords(args.lasion_ct_pix_json, args.rename_json)
-        self.ct_slices_counts = utils.load_json_to_dict(samsyn_cfg.ct_slice_counts_json)
-        self.nii_idx_with_prompts_coords = utils.load_json_to_dict(samsyn_cfg.nii_idx_with_prompts_coords_json)
-        self.interval_info = utils.load_json_to_dict(samsyn_cfg.interval_info)
+        self.prompts_info = utils.read_json_to_dict("samsyn_json_metadata/seg_points_info_with_idx.json")
    
     def __len__(self):
         return len(self.data_paths)
@@ -152,82 +148,68 @@ class dataset_3d(Dataset):
         return label
 
     
-    def _generate_slices(self, case_name, ct_slice_counts):
-        interval_info_dict = utils.load_json_to_dict(samsyn_cfg.interval_info)
-        interval_list = interval_info_dict[case_name]
-        if len(interval_list) > samsyn_cfg.num_intervals:
-            intervals = random.sample(interval_list, samsyn_cfg.num_intervals)
-            starting_slices = [x[0] for x in intervals]
-            end_slices = [x[1] for x in intervals]
-        elif len(interval_list) == 0: # no freground, pick bg points.
-            starting_slices = random.sample(range(ct_slice_counts), samsyn_cfg.num_intervals)
-            end_slices = [x + samsyn_cfg.interval_thickness for x in starting_slices]
+    def _generate_slices(self, slice_info, total_slices_num):
+        int_slice_info = [int(x) for x in slice_info]
+        if len(int_slice_info) > samsyn_cfg.num_intervals:
+            slices = random.sample(int_slice_info, samsyn_cfg.num_intervals)
+            starting_slices = [x for x in slices]
+            # for in case out of bound:
+            end_slices = [min(x + samsyn_cfg.interval_thickness, total_slices_num) for x in starting_slices]
+
+        elif len(int_slice_info) == 0: # no freground, we still select some intevals which dont contain forefround.
+            starting_slices = random.sample(range(total_slices_num), samsyn_cfg.num_intervals)
+            end_slices = [min(x + samsyn_cfg.interval_thickness, total_slices_num) for x in starting_slices]
         else:
-            starting_slices = [x[0] for x in interval_list]
-            end_slices = [x[1] for x in interval_list]
+            starting_slices = [x for x in int_slice_info]
+            end_slices = [min(x + samsyn_cfg.interval_thickness, total_slices_num) for x in starting_slices]
+        starting_slices.sort()
+        end_slices.sort()
         return starting_slices, end_slices
 
 
     def __getitem__(self, index):
-        image3d_ct = self.data_paths[index]['image_ct']
+        image3d_data_path = self.data_paths[index]['image_data']
         label3d_path = self.data_paths[index]['label']
-        case_name = image3d_ct.split('/')[-1].split('\\')[-1]
+        case_name = image3d_data_path.split('/')[-1].split('\\')[-1]
         case_name = case_name.split('.')[0]
-        case_idx = int(case_name.split('.')[0])
         print("############################")
-        print(image3d_ct)
+        print(image3d_data_path)
         print(label3d_path)
         print(case_name)
         print(index)
         print("############################")
         
-        item_load = self.data3d_loader({'image_ct': image3d_ct, 'label': label3d_path})
+        item_load = self.data3d_loader({'image_data': image3d_data_path, 'label': label3d_path})
         
-        if item_load['image_ct'].shape != item_load['label'].shape:
-            print(f"{image3d_ct} shape mismatch, skipping...")
+        if item_load['image_data'].shape != item_load['label'].shape:
+            print(f"{image3d_data_path} shape mismatch, skipping...")
             return self.__getitem__(np.random.randint(self.__len__()))
 
-        item_load['label'] = self.normalize_label(item_load['label'])
-
+        total_slice_num = item_load['image_data'].shape[0]
         # here we should use lesions coords info instead of labels.
-        lasions_info = self.lasions_coords_info_dict[case_idx]
+        lasions_info = self.prompts_info[case_name]
         lasions_slice_info = list(lasions_info.keys())
+        starting_slices, end_slices = self._generate_slices(lasions_slice_info, total_slice_num)
         print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        print(f"foregrounds in slices: {lasions_slice_info}")
+        print(total_slice_num)
+        print(f"start: {starting_slices}")
+        print(f"end: {end_slices}")
+        #print(f"lasions_info[{case_name}] = {lasions_info}")
         print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
-        ct_slice_counts = self.ct_slices_counts[case_name]
-
-        if len(lasions_slice_info) == 0: # no lasions are detected.
-            first_nonzero_slice = 0
-            last_nonzero_slice = ct_slice_counts
-        else:
-            first_nonzero_slice = min(lasions_slice_info)
-            last_nonzero_slice = max(lasions_slice_info)
+        first_nonzero_slice = starting_slices[0]
+        last_nonzero_slice = end_slices[-1]
         
-        last_nonzero_slice = last_nonzero_slice+self.slice_length if last_nonzero_slice+self.slice_length < ct_slice_counts else ct_slice_counts
-        self.image3d_ct = item_load['image_ct'][first_nonzero_slice:last_nonzero_slice]
+        self.image3d_ct = item_load['image_data'][first_nonzero_slice:last_nonzero_slice]
         self.label3d = item_load['label'][first_nonzero_slice:last_nonzero_slice]
         
-        #num_slice = self.label3d.shape[0]
         (h,w) = self.label3d.shape[2:]
         print(f"H, W: {h}, {w}")
 
-        starting_slices, end_slices = self._generate_slices(case_name, ct_slice_counts)
-        print("AAAAAAAAAAAAAAAAAAAAAAA")
-        print(starting_slices)
-        print(end_slices)
-        print("AAAAAAAAAAAAAAAAAAAAAAA")
         output_dict = {"obj_to_class": self.class_dict, "batch_input": []}
-
-        points_info = self.lasions_coords_info_dict[case_idx]
-        print("BBBBBBBBBBBBBBBBBBBBBBBB")
-        print(case_idx)
-        print(points_info)
-        print("BBBBBBBBBBBBBBBBBBBBBBBB")
-        #print(points_info)
+        
         for star_slice, end_slice in zip(starting_slices, end_slices):
-            output = self.process_3d_slices_with_prompts(star_slice, end_slice, points_info, h, w)
+            output = self.process_3d_slices_with_prompts(star_slice, end_slice, lasions_info, h, w)
             #print(output)
             
             # if output is not None:
@@ -256,16 +238,16 @@ class dataset_3d(Dataset):
             point_coords, point_labels = get_points_from_mask(points, samsyn_cfg.points_num, h, w) 
             #bboxes = get_bboxes_from_mask(label_2d["label"], offset=5) 
 
-        start_objs = np.unique(points)
+        # start_objs = np.unique(points)
         
-        if len(start_objs) < 2:  # 无足够的对象时直接返回
-            return None
+        # if len(start_objs) < 2:  # 无足够的对象时直接返回
+        #     return None
         
         start_objs = (start_objs[start_objs != 0] - 1).astype(np.uint8)  # 移除背景类别并调整索引
         num_obj = min(len(start_objs), self.num_objs) 
         select_obj = random.sample(list(start_objs), num_obj)
  
-        image_ct = torch.zeros(end_slice-starting_slice, 3, self.image_size, self.image_size)
+        image_data = torch.zeros(end_slice-starting_slice, 3, self.image_size, self.image_size)
         all_label = {obj: [] for obj in select_obj}
         all_prompt = {obj: {'point_coords': {}, 'point_labels': {}, 'bboxes': {}} for obj in select_obj}
         
@@ -273,8 +255,8 @@ class dataset_3d(Dataset):
             label2d = self.label3d[slice_index]
             image2d_ct = self.image3d_ct[slice_index]
             
-            item_2d = self.transform_2d({"image_ct":image2d_ct, "label":label2d})
-            image_ct[i,...] = item_2d["image_ct"]
+            item_2d = self.transform_2d({"image_data":image2d_ct, "label":label2d})
+            image_data[i,...] = item_2d["image_data"]
             
             if item_2d["label"].sum() == 0:
                 print("May cause some errors......................")
@@ -289,7 +271,7 @@ class dataset_3d(Dataset):
         for obj in select_obj:
             all_label[obj] = torch.stack(all_label[obj], dim=0)
 
-        return {'image_ct':image_ct, 'label': all_label, 'prompt':all_prompt}
+        return {'image_data':image_data, 'label': all_label, 'prompt':all_prompt}
 
 
 

@@ -1,6 +1,6 @@
 {
-    "total_projects_num": 378,
-    "total_study_num": 597,
+    "total_projects_num": 377,
+    "total_study_num": 595,
     "study_info": {
         "05-03-2002-NA-PETCT whole-body PSMA-40379": {
             "CT_slice_num": 278,
@@ -818,12 +818,6 @@
             "lasions_founded": true,
             "special_prefix": true
         },
-        "10-05-1998-NA-PETCT whole-body PSMA-28057": {
-            "CT_slice_num": 344,
-            "PET_slice_num": 189,
-            "lasions_founded": true,
-            "special_prefix": false
-        },
         "12-07-2000-NA-PETCT whole-body PSMA-20889": {
             "CT_slice_num": 344,
             "PET_slice_num": 263,
@@ -1540,12 +1534,6 @@
         },
         "03-25-2003-NA-PETCT whole-body PSMA-46612": {
             "CT_slice_num": 344,
-            "PET_slice_num": 263,
-            "lasions_founded": true,
-            "special_prefix": false
-        },
-        "09-26-1997-NA-PETCT whole-body PSMA-54011": {
-            "CT_slice_num": 266,
             "PET_slice_num": 263,
             "lasions_founded": true,
             "special_prefix": false

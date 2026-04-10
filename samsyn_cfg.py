@@ -3,8 +3,8 @@ model_cfg_path = "configs/sam2.1/sam2.1_hiera_l.yaml"
 con_frame_idx = 0  # the frame index we interact with
 obj_id = 1  # give a unique id to each object we interact with (it can be any integers)
 
-dataset_path = "samsyn_dataset/data" # nii.gz files.
-labels_path = "samsyn_dataset/labels" # nii.gz files.
+dataset_path = "samsyn_dataset/ct_nii_files/" # nii.gz files.
+labels_path = "samsyn_dataset/pet_nii_files/" # nii.gz files.
 
 lasions_coords_info_json = "samsyn_json_metadata/lesion_ct_pixel_coords.json"
 studyId_to_nii_idx_json = "samsyn_json_metadata/rename_mapping.json"

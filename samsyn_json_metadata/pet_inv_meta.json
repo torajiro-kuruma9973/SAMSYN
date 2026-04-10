@@ -55,20 +55,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "09-11-1998-NA-PETCT whole-body PSMA-19931": {
-        "suv_factor": 0.0009302814659476138,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "09-22-1999-NA-PETCT whole-body PSMA-27045": {
-        "suv_factor": 0.0008060412930971569,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "11-23-2000-NA-PETCT whole-body PSMA-06662": {
         "suv_factor": 0.0005403446991394721,
         "clip_min": 0.0,
@@ -120,13 +106,6 @@
     },
     "08-20-1997-NA-PETCT whole-body PSMA-54633": {
         "suv_factor": 0.000886070069546143,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "11-26-1997-NA-PETCT whole-body PSMA-70279": {
-        "suv_factor": 0.001071531990095649,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -204,13 +183,6 @@
     },
     "01-04-2000-NA-PETCT whole-body PSMA-72070": {
         "suv_factor": 0.0005856730420495829,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "05-05-1999-NA-PETCT whole-body PSMA-08263": {
-        "suv_factor": 0.0008427246493351709,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -447,13 +419,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "04-19-2000-NA-PETCT whole-body PSMA-65511": {
-        "suv_factor": 0.0005171186166171135,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "05-21-2003-NA-PETCT whole-body PSMA-87471": {
         "suv_factor": 0.00043847865683200725,
         "clip_min": 0.0,
@@ -491,13 +456,6 @@
     },
     "03-12-2002-NA-PETCT whole-body PSMA-46403": {
         "suv_factor": 0.0009150759416600263,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "11-17-1998-NA-PETCT whole-body PSMA-96903": {
-        "suv_factor": 0.0006802675553970441,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -587,13 +545,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "07-25-2000-NA-PETCT whole-body PSMA-30927": {
-        "suv_factor": 0.0006669494443294613,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "11-25-1997-NA-PETCT whole-body PSMA-92070": {
         "suv_factor": 0.000908323785425648,
         "clip_min": 0.0,
@@ -643,20 +594,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "05-08-2002-NA-PETCT whole-body PSMA-86981": {
-        "suv_factor": 0.0004783657544514704,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "09-20-2000-NA-PETCT whole-body PSMA-72056": {
-        "suv_factor": 0.0009482398809988632,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "12-12-2000-NA-PETCT whole-body PSMA-87681": {
         "suv_factor": 0.0003983909416687783,
         "clip_min": 0.0,
@@ -673,13 +610,6 @@
     },
     "07-22-2003-NA-PETCT whole-body PSMA-60636": {
         "suv_factor": 0.0006713384108780802,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "09-11-2002-NA-PETCT whole-body PSMA-18958": {
-        "suv_factor": 0.0004936858808762986,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -965,13 +895,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "01-12-2000-NA-PETCT whole-body PSMA-92003": {
-        "suv_factor": 0.0004755138342422917,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "06-04-1999-NA-PETCT whole-body PSMA-93562": {
         "suv_factor": 0.001867342995056063,
         "clip_min": 0.0,
@@ -1014,13 +937,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "04-06-1999-NA-PETCT whole-body PSMA-79386": {
-        "suv_factor": 0.0010019811637744494,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "05-06-2003-NA-PETCT whole-body PSMA-32259": {
         "suv_factor": 0.00038645909743379223,
         "clip_min": 0.0,
@@ -1028,29 +944,8 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "06-10-1998-NA-PETCT whole-body PSMA-80364": {
-        "suv_factor": 0.001312304692952974,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "09-03-2003-NA-PETCT whole-body PSMA-55298": {
         "suv_factor": 0.0004068295200956437,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "09-04-2001-NA-PETCT whole-body PSMA-29654": {
-        "suv_factor": 0.00043197194984559607,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "11-10-1998-NA-PETCT whole-body PSMA-76801": {
-        "suv_factor": 0.0006254213969000529,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -1070,22 +965,8 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "01-07-2003-NA-PETCT whole-body PSMA-76240": {
-        "suv_factor": 0.0005766203231876782,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "07-30-1998-NA-PETCT whole-body PSMA-26704": {
         "suv_factor": 0.002141824833032662,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "09-19-2001-NA-PETCT whole-body PSMA-15634": {
-        "suv_factor": 0.00045315307504057,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -1133,13 +1014,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "12-25-2002-NA-PETCT whole-body PSMA-02637": {
-        "suv_factor": 0.00046783389016027814,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "03-12-2002-NA-PETCT whole-body PSMA-95052": {
         "suv_factor": 0.00105294806508391,
         "clip_min": 0.0,
@@ -1170,13 +1044,6 @@
     },
     "02-17-1998-NA-PETCT whole-body PSMA-50968": {
         "suv_factor": 0.0008355396404887861,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "05-27-1998-NA-PETCT whole-body PSMA-83278": {
-        "suv_factor": 0.0005167395651275856,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -1350,13 +1217,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "09-23-2003-NA-PETCT whole-body PSMA-27864": {
-        "suv_factor": 0.0006165355894939897,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "04-11-2001-NA-PETCT whole-body PSMA-94451": {
         "suv_factor": 0.00036848317366223354,
         "clip_min": 0.0,
@@ -1511,22 +1371,8 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "07-22-2003-NA-PETCT whole-body PSMA-36224": {
-        "suv_factor": 0.00046943988689021273,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "09-16-1999-NA-PETCT whole-body PSMA-78159": {
         "suv_factor": 0.0005790696272953555,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "12-09-2003-NA-PETCT whole-body PSMA-01049": {
-        "suv_factor": 0.000431698982936626,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -1672,20 +1518,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "03-24-1997-NA-PETCT whole-body PSMA-26393": {
-        "suv_factor": 0.0005874647938278753,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "06-22-1999-NA-PETCT whole-body PSMA-13336": {
-        "suv_factor": 0.0005268914946069249,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "08-14-1997-NA-PETCT whole-body PSMA-24934": {
         "suv_factor": 0.00047234469081674477,
         "clip_min": 0.0,
@@ -1695,13 +1527,6 @@
     },
     "09-10-1997-NA-PETCT whole-body PSMA-78615": {
         "suv_factor": 0.0006934393069383866,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "04-04-2003-NA-PETCT whole-body PSMA-09966": {
-        "suv_factor": 0.0004810411689736461,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -1777,13 +1602,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "05-26-1999-NA-PETCT whole-body PSMA-88606": {
-        "suv_factor": 0.000919883543472489,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "03-25-2003-NA-PETCT whole-body PSMA-46612": {
         "suv_factor": 0.0003958517197468581,
         "clip_min": 0.0,
@@ -1826,13 +1644,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "11-19-1998-NA-PETCT whole-body PSMA-82612": {
-        "suv_factor": 0.000604658709419964,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "04-09-1998-NA-PETCT whole-body PSMA-32698": {
         "suv_factor": 0.0007433930446569602,
         "clip_min": 0.0,
@@ -1870,27 +1681,6 @@
     },
     "01-25-2002-NA-PETCT whole-body PSMA-25780": {
         "suv_factor": 0.0003567798777384079,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "04-23-2002-NA-PETCT whole-body PSMA-35568": {
-        "suv_factor": 0.0005139643123264112,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "06-25-2002-NA-PETCT whole-body PSMA-65769": {
-        "suv_factor": 0.000428952390993574,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "09-24-2002-NA-PETCT whole-body PSMA-26112": {
-        "suv_factor": 0.000443547180992667,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -2003,13 +1793,6 @@
     },
     "12-16-1998-NA-PETCT whole-body PSMA-87047": {
         "suv_factor": 0.0008200583806144173,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "02-09-1999-NA-PETCT whole-body PSMA-09529": {
-        "suv_factor": 0.0011077051726738406,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -2141,36 +1924,8 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "01-15-2003-NA-PETCT whole-body PSMA-87914": {
-        "suv_factor": 0.0005395979717300163,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "02-17-1999-NA-PETCT whole-body PSMA-72960": {
-        "suv_factor": 0.0006153533239084627,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "04-16-2003-NA-PETCT whole-body PSMA-36454": {
-        "suv_factor": 0.0005141646993874662,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "04-23-1998-NA-PETCT whole-body PSMA-64317": {
         "suv_factor": 0.0009445951064106867,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "07-24-2002-NA-PETCT whole-body PSMA-76539": {
-        "suv_factor": 0.0004802270504391609,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -2234,13 +1989,6 @@
     },
     "09-26-2003-NA-PETCT whole-body PSMA-86850": {
         "suv_factor": 0.0004481358016161075,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "07-26-2002-NA-PETCT whole-body PSMA-63565": {
-        "suv_factor": 0.0006101278749437599,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -2421,13 +2169,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "01-31-2001-NA-PETCT whole-body PSMA-02817": {
-        "suv_factor": 0.0005158043916956449,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "04-20-1999-NA-PETCT whole-body PSMA-35028": {
         "suv_factor": 0.0007296899734979942,
         "clip_min": 0.0,
@@ -2498,13 +2239,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "10-15-2002-NA-PETCT whole-body PSMA-14926": {
-        "suv_factor": 0.0003690761913467237,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "06-19-2002-NA-PETCT whole-body PSMA-12947": {
         "suv_factor": 0.0005716388149575746,
         "clip_min": 0.0,
@@ -2554,13 +2288,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "09-29-1998-NA-PETCT whole-body PSMA-01332": {
-        "suv_factor": 0.0010620974888803788,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "11-05-1997-NA-PETCT whole-body PSMA-37707": {
         "suv_factor": 0.0011743385704591715,
         "clip_min": 0.0,
@@ -2584,13 +2311,6 @@
     },
     "05-14-2002-NA-PETCT whole-body PSMA-77859": {
         "suv_factor": 0.0006058019975895913,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "06-20-2001-NA-PETCT whole-body PSMA-05542": {
-        "suv_factor": 0.0005714674708657006,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -2661,13 +2381,6 @@
     },
     "03-24-1999-NA-PETCT whole-body PSMA-37928": {
         "suv_factor": 0.0006368848019041141,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "09-17-1999-NA-PETCT whole-body PSMA-25315": {
-        "suv_factor": 0.0006589043663545797,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -2771,13 +2484,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "12-11-2001-NA-PETCT whole-body PSMA-47317": {
-        "suv_factor": 0.0005161833577568664,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "06-12-2001-NA-PETCT whole-body PSMA-11540": {
         "suv_factor": 0.0007856174129898139,
         "clip_min": 0.0,
@@ -2857,27 +2563,6 @@
     },
     "10-12-2001-NA-PETCT whole-body PSMA-94286": {
         "suv_factor": 0.0005144803863562712,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "02-21-2001-NA-PETCT whole-body PSMA-47475": {
-        "suv_factor": 0.0005016076011987112,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "04-12-2002-NA-PETCT whole-body PSMA-19624": {
-        "suv_factor": 0.0006409837405264049,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "09-05-2001-NA-PETCT whole-body PSMA-68846": {
-        "suv_factor": 0.0004795276845620014,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -3030,13 +2715,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "10-22-2003-NA-PETCT whole-body PSMA-53601": {
-        "suv_factor": 0.0004194043218813146,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "08-19-2003-NA-PETCT whole-body PSMA-36836": {
         "suv_factor": 0.00042574111886794927,
         "clip_min": 0.0,
@@ -3114,13 +2792,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "02-13-2001-NA-PETCT whole-body PSMA-68344": {
-        "suv_factor": 0.0008191578000049947,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "11-19-2002-NA-PETCT whole-body PSMA-99738": {
         "suv_factor": 0.0006592540753152491,
         "clip_min": 0.0,
@@ -3186,20 +2857,6 @@
     },
     "01-05-1998-NA-PETCT whole-body PSMA-34789": {
         "suv_factor": 0.0013480381373346007,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "02-18-2003-NA-PETCT whole-body PSMA-35529": {
-        "suv_factor": 0.0006186144162668218,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "06-06-2001-NA-PETCT whole-body PSMA-22329": {
-        "suv_factor": 0.0008405081375109416,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -3303,13 +2960,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "11-12-1997-NA-PETCT whole-body PSMA-46614": {
-        "suv_factor": 0.0009776226414325892,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "08-17-2001-NA-PETCT whole-body PSMA-45508": {
         "suv_factor": 0.00037420250329267334,
         "clip_min": 0.0,
@@ -3366,20 +3016,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "04-11-2003-NA-PETCT whole-body PSMA-86020": {
-        "suv_factor": 0.00047096517260347643,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "08-20-2002-NA-PETCT whole-body PSMA-24127": {
-        "suv_factor": 0.0004951399969128815,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "03-12-2002-NA-PETCT whole-body PSMA-23931": {
         "suv_factor": 0.0005221743953371708,
         "clip_min": 0.0,
@@ -3424,13 +3060,6 @@
     },
     "04-02-2002-NA-PETCT whole-body PSMA-49107": {
         "suv_factor": 0.00047858508482648743,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "07-31-2001-NA-PETCT whole-body PSMA-51261": {
-        "suv_factor": 0.0004894681196159915,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
@@ -3821,20 +3450,6 @@
         "log_min": 0.0,
         "log_max": 2.772588722239781
     },
-    "04-13-2005-NA-PETCT whole-body PSMA-07766": {
-        "suv_factor": 0.0005497177221216241,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "12-15-2004-NA-PETCT whole-body PSMA-49041": {
-        "suv_factor": 0.0005141442634000295,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
     "07-07-2004-NA-PETCT whole-body PSMA-21994": {
         "suv_factor": 0.0009165417495125814,
         "clip_min": 0.0,
@@ -3963,27 +3578,6 @@
     },
     "03-14-2000-NA-PETCT whole-body PSMA-71502": {
         "suv_factor": 0.0006259759783554793,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "03-24-1999-NA-PETCT whole-body PSMA-93146": {
-        "suv_factor": 0.0005648367066301926,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "01-21-2004-NA-PETCT whole-body PSMA-55234": {
-        "suv_factor": 0.0005719692090289263,
-        "clip_min": 0.0,
-        "clip_max": 15.0,
-        "log_min": 0.0,
-        "log_max": 2.772588722239781
-    },
-    "05-19-2004-NA-PETCT whole-body PSMA-90348": {
-        "suv_factor": 0.00032809498157408543,
         "clip_min": 0.0,
         "clip_max": 15.0,
         "log_min": 0.0,
