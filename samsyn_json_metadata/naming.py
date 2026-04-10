@@ -146,10 +146,10 @@ def convert_studyid_to_index(json_A_path, json_B_path, json_C_path):
 
 if __name__ == "__main__":
     
-    # dir_ct = "ct_nii_files"
-    # dir_pet = "pet_nii_files"
-    # output_json = "name_mapping.json"
-    #rename_and_map_nifti_pairs(dir_ct, dir_pet, output_json)
+    dir_ct = "ct_nii_files"
+    dir_pet = "pet_nii_files"
+    output_json = "name_mapping.json"
+    rename_and_map_nifti_pairs(dir_ct, dir_pet, output_json)
 
     json_A = "seg_points_info_with_studyID.json"
     json_B = "name_mapping.json"

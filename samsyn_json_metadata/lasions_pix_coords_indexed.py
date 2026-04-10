@@ -147,6 +147,6 @@ def extract_segmentation_points(root_dir, input_json_path, output_json_path):
 # --- 运行示例 ---
 if __name__ == "__main__":
     my_root_dir = "PSMA-PET-CT-Lesions"
-    my_input_json = "pet_ct_mapping_info.json"
+    my_input_json = "register_info.json"
     my_output_json = "seg_points_info_with_studyID.json"
     extract_segmentation_points(my_root_dir, my_input_json, my_output_json)

@@ -53,6 +53,58 @@ def clean_nifti_files(root_dir, dry_run=True):
         print(f"🏁 清除完毕！成功删除 {deleted_count} 个文件，失败 {error_count} 个。")
     print("="*50)
 
+def clean_json_files(root_dir, dry_run=True):
+    """
+    递归遍历目录并删除所有的 .nii.gz (和 .nii) 文件。
+    
+    参数:
+        root_dir (str): 目标根目录。
+        dry_run (bool): 默认开启安全演习模式。只打印将要删除的文件路径，不会真删。
+                        确认无误后，将其设为 False 才会执行毁灭打击。
+    """
+    if not os.path.exists(root_dir):
+        print(f"❌ 目录不存在: {root_dir}")
+        return
+
+    deleted_count = 0
+    error_count = 0
+    
+    print(f"🔍 开始深度扫描目录: {root_dir}")
+    if dry_run:
+        print("🛡️ [安全保护开启] 当前为 Dry-run (演习) 模式，以下文件仅作展示，不会被真正删除：\n")
+    else:
+        print("⚠️ [警告] 真实删除模式已开启，正在清理...\n")
+
+    # 1. 递归遍历所有目录和子文件夹
+    for dirpath, _, filenames in os.walk(root_dir):
+        for filename in filenames:
+            # 同时匹配 .nii.gz 和解压后的 .nii
+            if filename.lower().endswith('.json') or filename.lower().endswith('pet_inv_meta'):
+                filepath = os.path.join(dirpath, filename)
+                
+                if dry_run:
+                    print(f"  🔎 发现目标: {filepath}")
+                    deleted_count += 1
+                else:
+                    try:
+                        # 2. 执行真正的文件系统删除
+                        os.remove(filepath)
+                        print(f"  🗑️ 已粉碎: {filepath}")
+                        deleted_count += 1
+                    except Exception as e:
+                        print(f"  ❌ 删除失败 [{filepath}]: {e}")
+                        error_count += 1
+
+    # 3. 统计报告
+    print("\n" + "="*50)
+    if dry_run:
+        print(f"📊 演习报告: 共扫描到 {deleted_count} 个 json 文件。")
+        print("💡 如果以上路径确认无误（没有误伤原数据），请修改参数运行: ")
+        print(f"   clean_json_files(root_dir, dry_run=False)")
+    else:
+        print(f"🏁 清除完毕！成功删除 {deleted_count} 个文件，失败 {error_count} 个。")
+    print("="*50)
+
 # rename nii files and move them to specified folders.
 def extract_and_rename_nifti(root_dir, ct_output_dir, pet_output_dir, copy_mode=True):
     """
@@ -155,19 +207,21 @@ def read_json_to_dict(json_path):
 
 # --- 运行示例 ---
 if __name__ == "__main__":
-    #my_dataset_root = "PSMA-PET-CT-Lesions"
-    #clean_nifti_files(my_dataset_root)
-    #clean_nifti_files(my_dataset_root, dry_run=False)
+    my_dataset_root = "PSMA-PET-CT-Lesions"
+    # clean_json_files(my_dataset_root)
+    # clean_json_files(my_dataset_root, dry_run=False)
+    # clean_nifti_files(my_dataset_root)
+    # clean_nifti_files(my_dataset_root, dry_run=False)
 
-    # my_root = "PSMA-PET-CT-Lesions"
-    # my_ct_out = "ct_nii_files"
-    # my_pet_out = "pet_nii_files"
+    my_root = "PSMA-PET-CT-Lesions"
+    my_ct_out = "ct_nii_files"
+    my_pet_out = "pet_nii_files"
     
-    # # 默认使用安全复制模式，防止原文件丢失
-    # #extract_and_rename_nifti(my_root, my_ct_out, my_pet_out, copy_mode=True)
+    # 默认使用安全复制模式，防止原文件丢失
+    #extract_and_rename_nifti(my_root, my_ct_out, my_pet_out, copy_mode=True)
     
-    # # 如果你的硬盘空间吃紧，想直接把文件剪切出来，改成 False 即可：
-    # extract_and_rename_nifti(my_root, my_ct_out, my_pet_out, copy_mode=False)
+    # 如果你的硬盘空间吃紧，想直接把文件剪切出来，改成 False 即可：
+    extract_and_rename_nifti(my_root, my_ct_out, my_pet_out, copy_mode=False)
 
-    my_dict = read_json_to_dict("seg_points_info_with_studyID.json")
-    print(my_dict.keys())
+    # my_dict = read_json_to_dict("seg_points_info_with_studyID.json")
+    # print(my_dict.keys())
