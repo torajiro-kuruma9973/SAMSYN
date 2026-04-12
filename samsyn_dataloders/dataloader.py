@@ -90,12 +90,14 @@ class dataset_3d(Dataset):
         for i in range(len(train_paths)):
             img_name = args.data_root + train_paths[i]
             label_name = img_name.replace("data/", "labels/")
-            tr_data_path_list.append({"image_data": img_name, "label": label_name})
+            seg_name = img_name.replace("data/", "segs/")
+            tr_data_path_list.append({"image_data": img_name, "label": label_name, "seg": seg_name})
 
         for i in range(len(val_paths)):
             img_name = args.data_root + val_paths[i]
             label_name = img_name.replace("data/", "labels/")
-            val_data_path_list.append({"image_data": img_name, "label": label_name})
+            seg_name = img_name.replace("data/", "segs/")
+            val_data_path_list.append({"image_data": img_name, "label": label_name, "seg": seg_name})
     
         if mode == 'training':
             self.data_paths = tr_data_path_list
@@ -113,11 +115,11 @@ class dataset_3d(Dataset):
         self.image_size = args.image_size
 
         self.data3d_loader = Compose([
-            LoadImaged(keys=['image_data', 'label']),
-            AddChanneld(keys=['image_data', 'label']),
-            Orientationd(keys=['image_data', 'label'], axcodes="RAS"),
-            ForegroundNormalization(keys=['image_data']),
-            PermuteTransform(keys=['image_data', 'label'], dims=(3,0,1,2)),
+            LoadImaged(keys=['image_data', 'label', 'seg']),
+            AddChanneld(keys=['image_data', 'label', 'seg']),
+            Orientationd(keys=['image_data', 'label', 'seg'], axcodes="RAS"),
+            #ForegroundNormalization(keys=['seg']),
+            PermuteTransform(keys=['image_data', 'label', 'seg'], dims=(3,0,1,2)),
             ]
             )
 
@@ -125,13 +127,13 @@ class dataset_3d(Dataset):
                 [
                     Resize(keys=['image_data', 'label'], target_size=(self.image_size, self.image_size), num_class=len(self.class_dict)),  #
                     transforms.ToTensord(keys=['image_data', 'label']),
-                    Normalization(keys=['image_data', 'label']),
+                    # Normalization(keys=['image_data', 'label', 'seg']),
                 ])
 
-        self.transform_2d_label = transforms.Compose(
+        self.transform_2d_seg = transforms.Compose(
                 [
-                    Resize(keys=["label"], target_size=(self.image_size, self.image_size), num_class=len(self.class_dict)),  #
-                    transforms.ToTensord(keys=["label"]),
+                    Resize(keys=["seg"], target_size=(self.image_size, self.image_size), num_class=len(self.class_dict)),  #
+                    transforms.ToTensord(keys=["seg"]),
                 ])
         
         self.num_objs = args.num_objs
@@ -150,12 +152,14 @@ class dataset_3d(Dataset):
     
     def _generate_slices(self, slice_info, total_slices_num):
         int_slice_info = [int(x) for x in slice_info]
+        assert len(int_slice_info) > 0
+
         if len(int_slice_info) > samsyn_cfg.num_intervals:
             slices = random.sample(int_slice_info, samsyn_cfg.num_intervals)
             starting_slices = [x for x in slices]
             # for in case out of bound:
             end_slices = [min(x + samsyn_cfg.interval_thickness, total_slices_num) for x in starting_slices]
-
+        # must not run
         elif len(int_slice_info) == 0: # no freground, we still select some intevals which dont contain forefround.
             starting_slices = random.sample(range(total_slices_num), samsyn_cfg.num_intervals)
             end_slices = [min(x + samsyn_cfg.interval_thickness, total_slices_num) for x in starting_slices]
@@ -172,18 +176,20 @@ class dataset_3d(Dataset):
         label3d_path = self.data_paths[index]['label']
         case_name = image3d_data_path.split('/')[-1].split('\\')[-1]
         case_name = case_name.split('.')[0]
+        seg_path = self.data_paths[index]['seg']
         print("############################")
         print(image3d_data_path)
         print(label3d_path)
-        print(case_name)
-        print(index)
+        print(seg_path)
+        #print(index)
         print("############################")
         
-        item_load = self.data3d_loader({'image_data': image3d_data_path, 'label': label3d_path})
-        
+        item_load = self.data3d_loader({'image_data': image3d_data_path, 'label': label3d_path, 'seg': seg_path})
         if item_load['image_data'].shape != item_load['label'].shape:
             print(f"{image3d_data_path} shape mismatch, skipping...")
             return self.__getitem__(np.random.randint(self.__len__()))
+        
+        item_load['seg'] = self.normalize_label(item_load['seg'])
 
         total_slice_num = item_load['image_data'].shape[0]
         # here we should use lesions coords info instead of labels.
@@ -191,25 +197,29 @@ class dataset_3d(Dataset):
         lasions_slice_info = list(lasions_info.keys())
         starting_slices, end_slices = self._generate_slices(lasions_slice_info, total_slice_num)
         print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        print(case_name)
         print(total_slice_num)
         print(f"start: {starting_slices}")
         print(f"end: {end_slices}")
         #print(f"lasions_info[{case_name}] = {lasions_info}")
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
-        first_nonzero_slice = starting_slices[0]
+        #first_nonzero_slice = starting_slices[0]
+        first_nonzero_slice = 0 # load all pics
         last_nonzero_slice = end_slices[-1]
+        print(f"first_nonzero_slice: {first_nonzero_slice}")
+        print(f"last_nonzero_slice: {last_nonzero_slice}")
+        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         
-        self.image3d_ct = item_load['image_data'][first_nonzero_slice:last_nonzero_slice]
+        self.image3d_data = item_load['image_data'][first_nonzero_slice:last_nonzero_slice]
         self.label3d = item_load['label'][first_nonzero_slice:last_nonzero_slice]
-        
+        self.seg3d = item_load['seg']
         (h,w) = self.label3d.shape[2:]
         print(f"H, W: {h}, {w}")
 
         output_dict = {"obj_to_class": self.class_dict, "batch_input": []}
         
         for star_slice, end_slice in zip(starting_slices, end_slices):
-            output = self.process_3d_slices_with_prompts(star_slice, end_slice, lasions_info, h, w)
+            output = self.process_3d_slices_with_prompts(case_name, star_slice, end_slice, lasions_info, h, w)
             #print(output)
             
             # if output is not None:
@@ -225,23 +235,28 @@ class dataset_3d(Dataset):
         
         return output_dict
 
-    def process_3d_slices_with_prompts(self, starting_slice, end_slice, points_info, h, w):
+    def process_3d_slices_with_prompts(self, case_name, starting_slice, end_slice, lasions_info, h, w):
         start_slice = starting_slice
-        if len(points_info) == 0: # slect bg points
-            y = random.sample(h, samsyn_cfg.points_num)
-            x = random.sample(w, samsyn_cfg.points_num)
-            point_coords = [list(pair) for pair in zip(y, x)]
-            point_labels = [0] * samsyn_cfg.points_num
-        else:
-            points = points_info[start_slice]
-
-            point_coords, point_labels = get_points_from_mask(points, samsyn_cfg.points_num, h, w) 
-            #bboxes = get_bboxes_from_mask(label_2d["label"], offset=5) 
-
-        # start_objs = np.unique(points)
+        #print(lasions_info)
+        start_slice_str = str(start_slice)
+        seg_idx = lasions_info[start_slice_str] # seg frame idx
+        seg_frame = self.seg3d[seg_idx]
         
-        # if len(start_objs) < 2:  # 无足够的对象时直接返回
-        #     return None
+        assert len(list(lasions_info.keys())) > 0 # the folders which dont have foreground have been deleted.
+        
+        seg_2d = self.transform_2d_seg({"seg":seg_frame}) #[1, 1024, 1024] already.
+        seg_2d_tensor = seg_2d['seg'][0]
+        points = torch.nonzero(seg_2d_tensor).tolist()
+        objs = seg_2d_tensor[seg_2d_tensor != 0].tolist()
+        coords = [sublist[::-1] for sublist in points]  # [x,y] --> [y,x]
+        prompts = list(zip(coords, objs))
+        point_coords, point_labels = get_points_from_mask(prompts, samsyn_cfg.points_num, h, w) 
+    
+
+        start_objs = np.unique(seg_frame)
+        
+        if len(start_objs) < 2:  # 无足够的对象时直接返回
+            return None
         
         start_objs = (start_objs[start_objs != 0] - 1).astype(np.uint8)  # 移除背景类别并调整索引
         num_obj = min(len(start_objs), self.num_objs) 
@@ -249,18 +264,23 @@ class dataset_3d(Dataset):
  
         image_data = torch.zeros(end_slice-starting_slice, 3, self.image_size, self.image_size)
         all_label = {obj: [] for obj in select_obj}
-        all_prompt = {obj: {'point_coords': {}, 'point_labels': {}, 'bboxes': {}} for obj in select_obj}
+        all_prompt = {obj: {'point_coords': {}, 'point_labels': {}} for obj in select_obj}
         
         for i, slice_index in enumerate(range(starting_slice, end_slice)):
-            label2d = self.label3d[slice_index]
-            image2d_ct = self.image3d_ct[slice_index]
             
-            item_2d = self.transform_2d({"image_data":image2d_ct, "label":label2d})
+            label2d = self.label3d[slice_index]
+            image2d_data = self.image3d_data[slice_index]
+
+            if image2d_data.shape[0] != 3: # gray --> jpg by simply copying
+                image2d_data = np.tile(image2d_data, (3, 1, 1)) 
+                label2d = np.tile(label2d, (3, 1, 1))
+            
+            item_2d = self.transform_2d({"image_data":image2d_data, "label":label2d})
             image_data[i,...] = item_2d["image_data"]
             
-            if item_2d["label"].sum() == 0:
-                print("May cause some errors......................")
-                return None
+            # if item_2d["label"].sum() == 0:
+            #     print("May cause some errors......................")
+            #     return None
 
             for idx, obj in enumerate(select_obj):
                 all_label[obj].append(item_2d["label"][obj])

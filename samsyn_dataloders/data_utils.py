@@ -17,14 +17,14 @@ class Resize(transforms.Transform):
     def __call__(self, data):
         d = dict(data)
         for key in self.keys:
-            if 'image' in key:
+            if 'image' in key or 'label' in key:
                 image = d[key]
                 image = np.transpose(image, (1,2,0))
                 image = to_pil_image(image)
                 image = resize(image, self.target_size, interpolation=InterpolationMode.NEAREST)
                 image_np = np.array(image)
                 d[key] =  np.transpose(image_np, (2,0,1))
-            elif key == 'label':
+            elif key == 'seg':
                 label = d[key]
                 resized_labels = np.zeros((self.num_class, self.target_size[0], self.target_size[1]))
                 uni_label = np.sort(np.unique(label))
@@ -117,6 +117,12 @@ class ForegroundNormalization(transforms.Transform):
         return d
     
     def normalize(self, ct_narray):
+        print("##########################XXXXXXXXXXXXXXXXXXX")
+        print(ct_narray.shape)
+        a_transposed = np.transpose(ct_narray, (3, 0, 1, 2))
+        coords_2d = np.argwhere(a_transposed[0][0]).tolist()
+        print(len(coords_2d))
+        print("##########################XXXXXXXXXXXXXXXXXXX")
         ct_voxel_ndarray = ct_narray.copy()
         ct_voxel_ndarray = ct_voxel_ndarray.flatten()
         thred = np.mean(ct_voxel_ndarray)
@@ -132,6 +138,12 @@ class ForegroundNormalization(transforms.Transform):
         # ct_narray = (ct_narray - mean) / max(std, 1e-8)
 
         # ct_narray = (ct_narray * 255).astype(np.uint8) #不加对比度高点
+        print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
+        print(ct_narray.shape)
+        a_transposed = np.transpose(ct_narray, (3, 0, 1, 2))
+        coords_2d = np.argwhere(a_transposed[0][0]).tolist()
+        print(len(coords_2d))
+        print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
         return ct_narray 
 
 
@@ -186,19 +198,21 @@ def get_random_points_safe(h, w, n, exclude_list):
     return result
 
 
-def get_points_from_mask(points, points_num, h, w):
+def get_points_from_mask(prompts, points_num, h, w):
     
-    if len(points) < points_num:
-        return points
+    if len(prompts) < points_num:
+        fg = len(prompts)
+    else:
+        fg = points_num // 2
     
-    fg = points_num // 2
     bg = points_num - fg
 
-    fg_list = random.sample(points, fg)
+    fg_list = random.sample(prompts, fg)
     fg_coords = [x[0] for x in fg_list]
     fg_obj_ids = [x[1] for x in fg_list]
 
-    all_fg_coords = [x[0] for x in points]
+    all_fg_coords = [x[0] for x in fg_list]
+    
     bg_coords = get_random_points_safe(h, w, bg, all_fg_coords)
     bg_obj_ids = [0] * bg
     selected_coordinates = all_fg_coords + bg_coords
@@ -209,6 +223,6 @@ def get_points_from_mask(points, points_num, h, w):
     print(selected_coordlabels)
     print("@@@@@@@@@@@@@@@@@@@@@@@@")
 
-    return selected_coordinates, selected_coordlabels
+    return torch.tensor(selected_coordinates), torch.tensor(selected_coordlabels)
 
 

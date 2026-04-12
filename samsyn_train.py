@@ -32,7 +32,7 @@ parser.add_argument('--task_name', type=str, default='sam2_Synthesizing')
 #load data
 #parser.add_argument("--data_root", type = str, default='datasets/BraTS2020/FLAIR')
 parser.add_argument("--data_root", type = str, default=samsyn_cfg.dataset_path)
-parser.add_argument('--image_size', type=int, default=1024)
+parser.add_argument('--image_size', type=int, default=samsyn_cfg.image_size)
 parser.add_argument('--slice_length', type=int, default=samsyn_cfg.interval_thickness)
 parser.add_argument('--mode', type = str, default='training')
 parser.add_argument('--batch_size', type=int, default=1)
