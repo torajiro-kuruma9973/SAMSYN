@@ -303,6 +303,14 @@ class SAM2Base(torch.nn.Module):
         """
         B = backbone_features.size(0)
         device = backbone_features.device
+        print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
+        print(backbone_features.size(1))
+        print(backbone_features.size(2))
+        print(backbone_features.size(3))
+        print(self.sam_prompt_embed_dim)
+        print(self.sam_image_embedding_size)
+        print(self.sam_image_embedding_size)
+        print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
         assert backbone_features.size(1) == self.sam_prompt_embed_dim
         assert backbone_features.size(2) == self.sam_image_embedding_size
         assert backbone_features.size(3) == self.sam_image_embedding_size
@@ -680,7 +688,6 @@ class SAM2Base(torch.nn.Module):
         current_vision_feats,
         feat_sizes,
         pred_masks_high_res,
-        object_score_logits,
         is_mask_from_pts,
     ):
         """Encode the current image and its prediction into a memory feature."""
@@ -713,15 +720,6 @@ class SAM2Base(torch.nn.Module):
         )
         maskmem_features = maskmem_out["vision_features"]
         maskmem_pos_enc = maskmem_out["vision_pos_enc"]
-        # add a no-object embedding to the spatial memory to indicate that the frame
-        # is predicted to be occluded (i.e. no object is appearing in the frame)
-        if self.no_obj_embed_spatial is not None:
-            is_obj_appearing = (object_score_logits > 0).float()
-            maskmem_features += (
-                1 - is_obj_appearing[..., None, None]
-            ) * self.no_obj_embed_spatial[..., None, None].expand(
-                *maskmem_features.shape
-            )
 
         return maskmem_features, maskmem_pos_enc
 
@@ -802,7 +800,7 @@ class SAM2Base(torch.nn.Module):
                 current_vision_feats=current_vision_feats,
                 feat_sizes=feat_sizes,
                 pred_masks_high_res=high_res_masks_for_mem_enc,
-                object_score_logits=object_score_logits,
+                #object_score_logits=object_score_logits,
                 is_mask_from_pts=(point_inputs is not None),
             )
             current_out["maskmem_features"] = maskmem_features

@@ -20,7 +20,7 @@ def build_model(args):
     for name, param in sam_med2.named_parameters():  
         if 'image_encoder.' in name:
             param.requires_grad = False
-        if 'Cross_Agent_Att' in name:
+        else:
             param.requires_grad = True
 
     if args.multi_gpu:

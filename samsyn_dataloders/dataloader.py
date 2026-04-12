@@ -31,22 +31,24 @@ from samsyn_json_metadata import utils
 def sample_collate_fn(batch):
     assert len(batch) == 1, 'Please set batch size to 1 when testing mode'
     
-    batch_image_flair = []
-    batch_image_t1 = []
+    batch_image_data = []
     pre_interval_obj_label = {}
     pre_interval_obj_prompt = {}
     
     for interval, samples in enumerate(batch[0]["batch_input"]):
-        batch_image_flair.append(samples["image_flair"])
-        batch_image_t1.append(samples["image_t1"])
+        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        print(interval)
+        print(samples.keys())
+        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        
+        batch_image_data.append(samples["image_data"])
         pre_interval_obj_label[interval] = samples["label"]
         pre_interval_obj_prompt[interval] = samples["prompt"]
-    image_flair = torch.stack(batch_image_flair, dim=0)
-    image_t1 = torch.stack(batch_image_t1, dim=0)
+    
+    image_data = torch.stack(batch_image_data, dim=0)
 
     return {
-        "pre_interval_image_flair":image_flair,
-        "pre_interval_image_t1":image_t1,
+        "pre_interval_image_data":image_data,
         "pre_interval_obj_label":pre_interval_obj_label,
         "pre_interval_obj_prompt":pre_interval_obj_prompt,
         'obj_to_class': batch[0]["obj_to_class"],
@@ -92,13 +94,13 @@ class dataset_3d(Dataset):
             label_name = img_name.replace("data/", "labels/")
             seg_name = img_name.replace("data/", "segs/")
             tr_data_path_list.append({"image_data": img_name, "label": label_name, "seg": seg_name})
-
+        
         for i in range(len(val_paths)):
             img_name = args.data_root + val_paths[i]
             label_name = img_name.replace("data/", "labels/")
             seg_name = img_name.replace("data/", "segs/")
             val_data_path_list.append({"image_data": img_name, "label": label_name, "seg": seg_name})
-    
+        
         if mode == 'training':
             self.data_paths = tr_data_path_list
             self.slice_length = args.slice_length
@@ -142,6 +144,7 @@ class dataset_3d(Dataset):
         self.prompts_info = utils.read_json_to_dict("samsyn_json_metadata/seg_points_info_with_idx.json")
    
     def __len__(self):
+        
         return len(self.data_paths)
 
 
@@ -178,10 +181,11 @@ class dataset_3d(Dataset):
         case_name = case_name.split('.')[0]
         seg_path = self.data_paths[index]['seg']
         print("############################")
-        print(image3d_data_path)
-        print(label3d_path)
-        print(seg_path)
-        #print(index)
+        # print(image3d_data_path)
+        # print(label3d_path)
+        # print(seg_path)
+        print(f"case_name = {case_name}")
+        print(f"index = {index}")
         print("############################")
         
         item_load = self.data3d_loader({'image_data': image3d_data_path, 'label': label3d_path, 'seg': seg_path})
@@ -196,25 +200,25 @@ class dataset_3d(Dataset):
         lasions_info = self.prompts_info[case_name]
         lasions_slice_info = list(lasions_info.keys())
         starting_slices, end_slices = self._generate_slices(lasions_slice_info, total_slice_num)
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        print(case_name)
-        print(total_slice_num)
-        print(f"start: {starting_slices}")
-        print(f"end: {end_slices}")
+        # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        # print(case_name)
+        # print(total_slice_num)
+        # print(f"start: {starting_slices}")
+        # print(f"end: {end_slices}")
         #print(f"lasions_info[{case_name}] = {lasions_info}")
 
         #first_nonzero_slice = starting_slices[0]
         first_nonzero_slice = 0 # load all pics
         last_nonzero_slice = end_slices[-1]
-        print(f"first_nonzero_slice: {first_nonzero_slice}")
-        print(f"last_nonzero_slice: {last_nonzero_slice}")
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        # print(f"first_nonzero_slice: {first_nonzero_slice}")
+        # print(f"last_nonzero_slice: {last_nonzero_slice}")
+        # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         
         self.image3d_data = item_load['image_data'][first_nonzero_slice:last_nonzero_slice]
         self.label3d = item_load['label'][first_nonzero_slice:last_nonzero_slice]
         self.seg3d = item_load['seg']
         (h,w) = self.label3d.shape[2:]
-        print(f"H, W: {h}, {w}")
+        #print(f"H, W: {h}, {w}")
 
         output_dict = {"obj_to_class": self.class_dict, "batch_input": []}
         
@@ -222,10 +226,11 @@ class dataset_3d(Dataset):
             output = self.process_3d_slices_with_prompts(case_name, star_slice, end_slice, lasions_info, h, w)
             #print(output)
             
-            # if output is not None:
-            #     output_dict["batch_input"].append(output)
+            if output is not None:
+                output_dict["batch_input"].append(output)
         
         if len(output_dict['batch_input']) == 0:
+            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             return self.__getitem__(np.random.randint(self.__len__()))
 
 
@@ -251,7 +256,6 @@ class dataset_3d(Dataset):
         coords = [sublist[::-1] for sublist in points]  # [x,y] --> [y,x]
         prompts = list(zip(coords, objs))
         point_coords, point_labels = get_points_from_mask(prompts, samsyn_cfg.points_num, h, w) 
-    
 
         start_objs = np.unique(seg_frame)
         

@@ -1,5 +1,7 @@
-sam2_checkpoint_path = "checkpoints/sam2.1_hiera_large.pt"
-model_cfg_path = "configs/sam2.1/sam2.1_hiera_l.yaml"
+#sam2_checkpoint_path = "checkpoints/sam2.1_hiera_large.pt"
+sam2_checkpoint_path = "checkpoints/sam2.1_hiera_tiny.pt"
+#model_cfg_path = "configs/sam2.1/sam2.1_hiera_l.yaml"
+model_cfg_path = "configs/sam2.1/sam2.1_hiera_t.yaml"
 con_frame_idx = 0  # the frame index we interact with
 obj_id = 1  # give a unique id to each object we interact with (it can be any integers)
 

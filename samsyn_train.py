@@ -276,21 +276,23 @@ class BaseTrainer:
         
         tbar = tqdm(self.dataloaders, desc=f'Epoch {epoch+1} / {self.args.num_epochs}')
         epoch_loss, epoch_iou, epoch_dice = 0, 0, 0
-        
+        print("---------------------------")
         for step, batch_input in enumerate(tbar): 
             
             batch_loss, batch_iou, batch_dice = [], [], []
             obj_to_class = batch_input["obj_to_class"]
             interval_prompts = batch_input["pre_interval_obj_prompt"]
             interval_labels = batch_input["pre_interval_obj_label"]
-            interval_images_flair, interval_images_t1 = batch_input["pre_interval_image_flair"], batch_input["pre_interval_image_t1"]
+            interval_images_data = batch_input["pre_interval_image_data"]
             
-            for interval in range(interval_images_flair.shape[0]):
-                print(f"interval = {interval}")
+            for interval in range(interval_images_data.shape[0]):
+                #print(f"interval = {interval}")
                 current_step = epoch * l + step * self.args.num_intervals + interval
-                images_f = interval_images_flair[interval]
-                images_t = interval_images_t1[interval]
-                images = torch.cat([images_f, images_t], dim=1).to(device) 
+                images_data = interval_images_data[interval]
+                print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
+                print(f"images_data type:{type(images_data)}")
+                print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
+                images = images_data.to(device) 
                 labels = interval_labels[interval]
                 prompts = interval_prompts[interval]
                 train_state = self.model.train_init_state(images)
@@ -303,7 +305,8 @@ class BaseTrainer:
                 for obj_id, obj_data in prompts.items():
                     print(f"~~~ {obj_id}:{list(obj_data.keys())} ~~~")
                     obj_label = labels[obj_id].to(device).type(torch.long) 
-                    if random.random() > 0.5:  
+                    #if random.random() > 0.5:  
+                    if True: # always use points prompts
                         for slice_idx, points in obj_data["point_coords"].items():
                             print(f"@slice_idx={slice_idx}")  
                             point_labels = prompts[obj_id]["point_labels"][slice_idx]
@@ -325,7 +328,7 @@ class BaseTrainer:
                 prompt_label = torch.stack(prompt_labels, dim=0)  
                 prompt_loss = self.seg_loss(out_mask_logits, prompt_label.unsqueeze(1))  
                 prompt_iou, prompt_dice = self.get_iou_and_dice(out_mask_logits, prompt_label.unsqueeze(1))  
-                # print(f'Prompt metrics, IoU: {prompt_iou:.4f}, Dice: {prompt_dice:.4f}')
+                print(f'Prompt metrics, IoU: {prompt_iou:.4f}, Dice: {prompt_dice:.4f}')
                 
                 if prompt_dice < 0.45:  #0.6
                     print("yes, <")

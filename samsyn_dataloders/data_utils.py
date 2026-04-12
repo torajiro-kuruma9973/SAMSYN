@@ -218,11 +218,6 @@ def get_points_from_mask(prompts, points_num, h, w):
     selected_coordinates = all_fg_coords + bg_coords
     selected_coordlabels = fg_obj_ids + bg_obj_ids
 
-    print("@@@@@@@@@@@@@@@@@@@@@@@@")
-    print(selected_coordinates)
-    print(selected_coordlabels)
-    print("@@@@@@@@@@@@@@@@@@@@@@@@")
-
-    return torch.tensor(selected_coordinates), torch.tensor(selected_coordlabels)
+    return [torch.tensor(selected_coordinates)], [torch.tensor(selected_coordlabels).to(torch.int32)]
 
 
