@@ -22,3 +22,5 @@ points_num = 4 # number of prompts of points
 num_intervals = 10
 
 image_size = 1024
+
+num_epochs = 200

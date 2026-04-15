@@ -303,14 +303,7 @@ class SAM2Base(torch.nn.Module):
         """
         B = backbone_features.size(0)
         device = backbone_features.device
-        print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
-        print(backbone_features.size(1))
-        print(backbone_features.size(2))
-        print(backbone_features.size(3))
-        print(self.sam_prompt_embed_dim)
-        print(self.sam_image_embedding_size)
-        print(self.sam_image_embedding_size)
-        print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
+        
         assert backbone_features.size(1) == self.sam_prompt_embed_dim
         assert backbone_features.size(2) == self.sam_image_embedding_size
         assert backbone_features.size(3) == self.sam_image_embedding_size

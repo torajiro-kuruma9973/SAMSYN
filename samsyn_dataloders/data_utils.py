@@ -193,7 +193,7 @@ def get_random_points_safe(h, w, n, exclude_list):
     sampled_indices = random.sample(available_indices, n)
     
     # 4. 将抽中的 1D 索引还原为 2D 坐标 (y, x)
-    result = [(idx // w, idx % w) for idx in sampled_indices]
+    result = [[idx // w, idx % w] for idx in sampled_indices]
     
     return result
 
@@ -217,7 +217,8 @@ def get_points_from_mask(prompts, points_num, h, w):
     bg_obj_ids = [0] * bg
     selected_coordinates = all_fg_coords + bg_coords
     selected_coordlabels = fg_obj_ids + bg_obj_ids
-
-    return [torch.tensor(selected_coordinates)], [torch.tensor(selected_coordlabels).to(torch.int32)]
+    
+    # sam2 train_add_new_points_or_box only accepts np.array.
+    return np.array(selected_coordinates, dtype=np.float32), np.array(selected_coordlabels, dtype=np.int32)
 
 

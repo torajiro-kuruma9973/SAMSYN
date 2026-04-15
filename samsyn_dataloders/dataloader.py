@@ -31,30 +31,24 @@ from samsyn_json_metadata import utils
 def sample_collate_fn(batch):
     assert len(batch) == 1, 'Please set batch size to 1 when testing mode'
     
-    batch_image_data = []
-    pre_interval_obj_label = {}
-    pre_interval_obj_prompt = {}
+    data_intervals_list = []
+    prompts_coords_list = []
+    prompts_objs_list = []
+    ground_truth_list = []
+    conditioned_frame_idx_list = []
     
     for interval, samples in enumerate(batch[0]["batch_input"]):
-        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        print(interval)
-        print(samples.keys())
-        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        
-        batch_image_data.append(samples["image_data"])
-        pre_interval_obj_label[interval] = samples["label"]
-        pre_interval_obj_prompt[interval] = samples["prompt"]
-    
-    image_data = torch.stack(batch_image_data, dim=0)
+        data_intervals_list.append(samples["data_interval"])
+        prompts_coords_list.append(samples["prompt_coords"])
+        prompts_objs_list.append(samples["prompt_objs"])
+        ground_truth_list.append(samples["ground_truth"])
+        conditioned_frame_idx_list.append(samples["conditioned_frame_idx"])
 
-    return {
-        "pre_interval_image_data":image_data,
-        "pre_interval_obj_label":pre_interval_obj_label,
-        "pre_interval_obj_prompt":pre_interval_obj_prompt,
-        'obj_to_class': batch[0]["obj_to_class"],
-        'ori_label': batch[0].get('ori_label', None),
-        'start_end': batch[0].get('start_end', None),
-        'case_name': batch[0].get('case_name', None)
+    return { "data_intervals_list": data_intervals_list,
+            "prompts_coords_list": prompts_coords_list,
+            "prompts_objs_list": prompts_objs_list,
+            "ground_truth_list": ground_truth_list,
+            "conditioned_frame_idx_list": conditioned_frame_idx_list
     }
 
 
@@ -200,19 +194,9 @@ class dataset_3d(Dataset):
         lasions_info = self.prompts_info[case_name]
         lasions_slice_info = list(lasions_info.keys())
         starting_slices, end_slices = self._generate_slices(lasions_slice_info, total_slice_num)
-        # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        # print(case_name)
-        # print(total_slice_num)
-        # print(f"start: {starting_slices}")
-        # print(f"end: {end_slices}")
-        #print(f"lasions_info[{case_name}] = {lasions_info}")
-
-        #first_nonzero_slice = starting_slices[0]
+    
         first_nonzero_slice = 0 # load all pics
         last_nonzero_slice = end_slices[-1]
-        # print(f"first_nonzero_slice: {first_nonzero_slice}")
-        # print(f"last_nonzero_slice: {last_nonzero_slice}")
-        # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         
         self.image3d_data = item_load['image_data'][first_nonzero_slice:last_nonzero_slice]
         self.label3d = item_load['label'][first_nonzero_slice:last_nonzero_slice]
@@ -224,36 +208,28 @@ class dataset_3d(Dataset):
         
         for star_slice, end_slice in zip(starting_slices, end_slices):
             output = self.process_3d_slices_with_prompts(case_name, star_slice, end_slice, lasions_info, h, w)
-            #print(output)
-            
+        
             if output is not None:
                 output_dict["batch_input"].append(output)
         
         if len(output_dict['batch_input']) == 0:
-            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             return self.__getitem__(np.random.randint(self.__len__()))
-
-
-        output_dict['start_end'] = (first_nonzero_slice, last_nonzero_slice)
-        output_dict['ori_label'] = item_load['label']
-        output_dict['case_name'] = case_name
         
         return output_dict
 
     def process_3d_slices_with_prompts(self, case_name, starting_slice, end_slice, lasions_info, h, w):
         start_slice = starting_slice
-        #print(lasions_info)
         start_slice_str = str(start_slice)
-        seg_idx = lasions_info[start_slice_str] # seg frame idx
-        seg_frame = self.seg3d[seg_idx]
+        seg_idx = lasions_info[start_slice_str] # pet idx --> seg frame idx
+        seg_frame = self.seg3d[seg_idx] # get a frame of seg
         
         assert len(list(lasions_info.keys())) > 0 # the folders which dont have foreground have been deleted.
         
-        seg_2d = self.transform_2d_seg({"seg":seg_frame}) #[1, 1024, 1024] already.
+        seg_2d = self.transform_2d_seg({"seg":seg_frame}) #[1, 1024, 1024] tesnsor already.
         seg_2d_tensor = seg_2d['seg'][0]
-        points = torch.nonzero(seg_2d_tensor).tolist()
-        objs = seg_2d_tensor[seg_2d_tensor != 0].tolist()
-        coords = [sublist[::-1] for sublist in points]  # [x,y] --> [y,x]
+        points = torch.nonzero(seg_2d_tensor).tolist() # get foregrounds' coords
+        objs = seg_2d_tensor[seg_2d_tensor != 0].tolist() # get foregrounds' obj ids.
+        coords = [x[::-1] for x in points]  # [x,y] --> [y,x]
         prompts = list(zip(coords, objs))
         point_coords, point_labels = get_points_from_mask(prompts, samsyn_cfg.points_num, h, w) 
 
@@ -261,41 +237,28 @@ class dataset_3d(Dataset):
         
         if len(start_objs) < 2:  # 无足够的对象时直接返回
             return None
-        
-        start_objs = (start_objs[start_objs != 0] - 1).astype(np.uint8)  # 移除背景类别并调整索引
-        num_obj = min(len(start_objs), self.num_objs) 
-        select_obj = random.sample(list(start_objs), num_obj)
  
         image_data = torch.zeros(end_slice-starting_slice, 3, self.image_size, self.image_size)
-        all_label = {obj: [] for obj in select_obj}
-        all_prompt = {obj: {'point_coords': {}, 'point_labels': {}} for obj in select_obj}
+        all_label = torch.zeros(end_slice-starting_slice, 3, self.image_size, self.image_size)
         
         for i, slice_index in enumerate(range(starting_slice, end_slice)):
             
             label2d = self.label3d[slice_index]
             image2d_data = self.image3d_data[slice_index]
-
+            
             if image2d_data.shape[0] != 3: # gray --> jpg by simply copying
                 image2d_data = np.tile(image2d_data, (3, 1, 1)) 
                 label2d = np.tile(label2d, (3, 1, 1))
             
             item_2d = self.transform_2d({"image_data":image2d_data, "label":label2d})
             image_data[i,...] = item_2d["image_data"]
-            
-            # if item_2d["label"].sum() == 0:
-            #     print("May cause some errors......................")
-            #     return None
+            all_label[i,...] = item_2d["label"]
 
-            for idx, obj in enumerate(select_obj):
-                all_label[obj].append(item_2d["label"][obj])
-                if slice_index == start_slice:
-                    all_prompt[obj]['point_coords'][i] = point_coords[obj].numpy()
-                    all_prompt[obj]['point_labels'][i] = point_labels[obj].numpy()
-
-        for obj in select_obj:
-            all_label[obj] = torch.stack(all_label[obj], dim=0)
-
-        return {'image_data':image_data, 'label': all_label, 'prompt':all_prompt}
+        return {'data_interval':image_data, 
+                'ground_truth': all_label, 
+                'prompt_coords':point_coords, 
+                'prompt_objs':point_labels, 
+                'conditioned_frame_idx': start_slice}
 
 
 

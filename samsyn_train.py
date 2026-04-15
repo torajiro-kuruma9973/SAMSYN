@@ -4,6 +4,7 @@ import random
 import matplotlib.pyplot as plt
 import os
 join = os.path.join
+import samsyn_cfg
 from tqdm import tqdm
 from torch.backends import cudnn
 import torch
@@ -19,7 +20,7 @@ from samsyn_train_utils import DiceLoss, build_model, get_logger
 import nibabel as nib  
 import cv2
 from torch.nn import CrossEntropyLoss
-import samsyn_cfg
+from samsyn_losses import PETSynthesisLoss
 
 import warnings
 warnings.filterwarnings("ignore") 
@@ -28,7 +29,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--work_dir', type=str, default='work_dir')
-parser.add_argument('--task_name', type=str, default='sam2_Synthesizing')
+parser.add_argument('--task_name', type=str, default='sam2_enhance_cosinelr1')
 #load data
 #parser.add_argument("--data_root", type = str, default='datasets/BraTS2020/FLAIR')
 parser.add_argument("--data_root", type = str, default=samsyn_cfg.dataset_path)
@@ -40,19 +41,16 @@ parser.add_argument('--num_intervals', type=int, default=samsyn_cfg.num_interval
 parser.add_argument('--num_objs', type=int, default=1)
 #parser.add_argument('--num_workers', type=int, default=2)
 parser.add_argument('--num_workers', type=int, default=1)
-parser.add_argument('--lasion_ct_pix_json', type=str, default=samsyn_cfg.lasions_coords_info_json) # this file specifies the lasions coords in traning data.
-parser.add_argument('--rename_json', type=str, default=samsyn_cfg.studyId_to_nii_idx_json) # this file specifies the mapping between study id and nii idx.
 #load model
 parser.add_argument("--model_type", type = str, default='sam2')
 parser.add_argument("--model_cfg", type = str, default=samsyn_cfg.model_cfg_path)
 parser.add_argument("--sam_med2_ckpt", type = str, default=samsyn_cfg.sam2_checkpoint_path)
-#parser.add_argument("--sam_med2_ckpt", type = str, default='checkpoints/sam-med2d_b.pth')
 # train
 parser.add_argument('--pretrain_path', type=str, default=None)
 parser.add_argument('--resume', action='store_true', default=False)
 parser.add_argument('--device', type=str, default='cuda')
 parser.add_argument('--seed', default=0, type=int)
-parser.add_argument('--num_epochs', type=int, default=100)
+parser.add_argument('--num_epochs', type=int, default=samsyn_cfg.num_epochs)
 parser.add_argument('--gpu_ids', type=int, nargs='+', default=[0,1,2,3])
 #parser.add_argument('--multi_gpu', action='store_true', default=True)
 parser.add_argument('--multi_gpu', action='store_true', default=False)
@@ -110,8 +108,17 @@ class BaseTrainer:
             self.start_epoch = 0
 
     def set_loss_fn(self):
-        self.seg_loss = DiceLoss()
-        self.ce_loss = CrossEntropyLoss()
+        l_l1 = getattr(self.args, 'lambda_l1', 10.0)
+        l_ssim = getattr(self.args, 'lambda_ssim', 5.0)
+        l_lesion = getattr(self.args, 'lambda_lesion', 20.0)
+        print(f"🔧 初始化 Loss: L1({l_l1}), SSIM({l_ssim}), Lesion({l_lesion})")
+        
+        self.criterion = PETSynthesisLoss(
+            lambda_l1=l_l1,
+            lambda_ssim=l_ssim,
+            lambda_lesion=l_lesion,
+            data_range=1.0 
+        ).to(device)
 
     def set_optimizer(self):
         self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay) # 
@@ -275,139 +282,118 @@ class BaseTrainer:
         l = len(self.dataloaders)
         
         tbar = tqdm(self.dataloaders, desc=f'Epoch {epoch+1} / {self.args.num_epochs}')
-        epoch_loss, epoch_iou, epoch_dice = 0, 0, 0
-        print("---------------------------")
+        epoch_loss, epoch_L1, epoch_ssim = 0, 0, 0
+        
         for step, batch_input in enumerate(tbar): 
             
-            batch_loss, batch_iou, batch_dice = [], [], []
-            obj_to_class = batch_input["obj_to_class"]
-            interval_prompts = batch_input["pre_interval_obj_prompt"]
-            interval_labels = batch_input["pre_interval_obj_label"]
-            interval_images_data = batch_input["pre_interval_image_data"]
+            batch_loss, batch_L1, batch_ssim = [], [], []
             
-            for interval in range(interval_images_data.shape[0]):
-                #print(f"interval = {interval}")
-                current_step = epoch * l + step * self.args.num_intervals + interval
-                images_data = interval_images_data[interval]
-                print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
-                print(f"images_data type:{type(images_data)}")
-                print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
-                images = images_data.to(device) 
-                labels = interval_labels[interval]
-                prompts = interval_prompts[interval]
-                train_state = self.model.train_init_state(images)
+            data_intervals_list = batch_input["data_intervals_list"]
+            prompts_coords_list = batch_input["prompts_coords_list"]
+            prompts_objs_list = batch_input["prompts_objs_list"]
+            ground_truth_list = batch_input["ground_truth_list"]
+            conditioned_frame_idx_list = batch_input["conditioned_frame_idx_list"]
+
+            for interval_idx in range(len(data_intervals_list)):
+                print(f"interval_idx = {interval_idx}")
+                current_step = epoch * l + step * self.args.num_intervals + interval_idx
+
+                curent_data_interval = data_intervals_list[interval_idx].to(device)
+                current_prompts_coords = prompts_coords_list[interval_idx]
+                current_prompts_obj_classes = prompts_objs_list[interval_idx]
+                current_gt = ground_truth_list[interval_idx].to(device)
+                #current_conditioned_frame_idx = conditioned_frame_idx_list[interval_idx]
+                current_conditioned_frame_idx = 0 # this is reletive idx in a small interval. The above one is absolute idx in an NII file
+                obj_id = 1 # hardcode here!!!!!!!!!! Will be modified
+                curent_interval_thinckness = curent_data_interval.shape[0]
+                 
+                predict_labels = {}
+
+                train_state = self.model.train_init_state(curent_data_interval)
+                print(f"@@@@ labels={current_prompts_obj_classes} @@@")  
+                print(f"@@@@ type: {type(current_prompts_obj_classes)} @@@")
+                _, _, conditioned_out_mask_logits = self.model.train_add_new_points_or_box(  
+                                inference_state=train_state, frame_idx=current_conditioned_frame_idx, obj_id=obj_id,  
+                                points=current_prompts_coords, labels=current_prompts_obj_classes, clear_old_points=False  
+                )   
                 
-                obj_list = list(labels.keys())
-                obj_segments = {}
-                prompt_labels = []
-                output_dict = {obj_id: [] for obj_id in obj_list} 
+                pred=conditioned_out_mask_logits
+                gt=current_gt[current_conditioned_frame_idx][0]
+                gt = gt.unsqueeze(0).unsqueeze(0)
+                # print("XXXXXXXXXXXXXXXXXXXXXXXXX")
+                # print(pred.shape)
+                # print(gt.shape)
+                # print("XXXXXXXXXXXXXXXXXXXXXXXXX")
+                total_loss, l1_val, ssim_val, lesion_val = self.criterion(pred, gt)
+                                                                            
+                print(f'metrics, l1_val: {l1_val:.4f}, ssim_val: {ssim_val:.4f}')
                 
-                for obj_id, obj_data in prompts.items():
-                    print(f"~~~ {obj_id}:{list(obj_data.keys())} ~~~")
-                    obj_label = labels[obj_id].to(device).type(torch.long) 
-                    #if random.random() > 0.5:  
-                    if True: # always use points prompts
-                        for slice_idx, points in obj_data["point_coords"].items():
-                            print(f"@slice_idx={slice_idx}")  
-                            point_labels = prompts[obj_id]["point_labels"][slice_idx]
-                            _, _, out_mask_logits = self.model.train_add_new_points_or_box(  
-                                inference_state=train_state, frame_idx=slice_idx, obj_id=obj_id,  
-                                points=points, labels=point_labels, clear_old_points=False  
-                            )  
-                            prompt_labels.append(obj_label[slice_idx])
-                    else:  
-                        for slice_idx, bbox in obj_data["bboxes"].items():  
-                            print(f"#slice_idx={slice_idx}")
-                            _, _, out_mask_logits = self.model.train_add_new_points_or_box(  
-                                inference_state=train_state, frame_idx=slice_idx, obj_id=obj_id,  
-                                points=None, labels=None, box=bbox, clear_old_points=True  
-                            )  
-                            prompt_labels.append(obj_label[slice_idx]) 
-                
-                
-                prompt_label = torch.stack(prompt_labels, dim=0)  
-                prompt_loss = self.seg_loss(out_mask_logits, prompt_label.unsqueeze(1))  
-                prompt_iou, prompt_dice = self.get_iou_and_dice(out_mask_logits, prompt_label.unsqueeze(1))  
-                print(f'Prompt metrics, IoU: {prompt_iou:.4f}, Dice: {prompt_dice:.4f}')
-                
-                if prompt_dice < 0.45:  #0.6
-                    print("yes, <")
+                if 1- ssim_val < 0.5: 
                     self.optimizer.zero_grad()  
-                    self.scaler.scale(prompt_loss).backward()  
+                    self.scaler.scale(total_loss).backward()  
                     self.scaler.step(self.optimizer)  
                     self.scaler.update()  
                     self.model.reset_state(train_state) 
 
-                    batch_loss.append(prompt_loss.item())  
-                    batch_iou.append(prompt_iou)  
-                    batch_dice.append(prompt_dice)  
+                    batch_loss.append(total_loss.item())  
+                    batch_L1.append(l1_val.item())  
+                    batch_ssim.append(ssim_val.item())  
                     self.update_learning_rate(current_step)
+                    print("conditioned frame SYN qulity is too low...")
                     continue
                 else:
-                    print("No, >")
+                    print("SSIM is too low, go to next...")
 
-                start_slice = min(slice_idx for slice_idx in prompts[next(iter(prompts))]["point_coords"].keys())
+                start_slice = current_conditioned_frame_idx
                 
-                for direction in [False, True]:  # 正向和反向  
-                    for out_frame_idx, out_obj_ids, out_mask_logits in self.model.train_propagate_in_video(  
-                        train_state, start_frame_idx=start_slice, reverse=direction):  
-                        obj_segments[out_frame_idx] = {out_obj_id: out_mask_logits[i] for i, out_obj_id in enumerate(out_obj_ids)}  
+                for out_frame_idx, out_obj_ids, out_mask_logits in self.model.train_propagate_in_video(  
+                    train_state, start_frame_idx=start_slice, reverse=False):  
+                    # out_mask_logits type is tensor, and the shape is [1,1,1024,1024]
+                    predict_labels[out_frame_idx] = out_mask_logits.squeeze()  
                 
-                for out_frame_idx in range(images.shape[0]):  
-                    for out_obj_id, out_mask in obj_segments[out_frame_idx].items():  
-                        output_dict[out_obj_id].append(out_mask)  
                 
-                enhance_mask = self.model.head_3d(self.extract_features(train_state), mode='training')
                 
-                outputs_ = [torch.cat(masks, dim=0) for masks in output_dict.values()]  
-                mask = torch.stack(outputs_, dim=0)  
-
-                labels_ = [labels[obj_id].to(device).type(torch.long) for obj_id in output_dict.keys()]  
-                label = torch.stack(labels_, dim=0)  
-                total_loss = self.seg_loss(enhance_mask, label) + prompt_loss  
+                outputs_ = [torch.cat(label, dim=0) for label in predict_labels.values()]  
+                predict_label_3d = torch.stack(outputs_, dim=0)   
+                
+                total_loss, l1_val, ssim_val, lesion_val = self.seg_loss(outputs_, current_gt)  
                 self.optimizer.zero_grad()  
                 self.scaler.scale(total_loss).backward()  
                 self.scaler.step(self.optimizer)  
                 self.scaler.update()  
                 
-                self.model.reset_state(train_state)  
-                iou, dice = self.get_iou_and_dice(enhance_mask, label) 
+                self.model.reset_state(train_state)   
                 batch_loss.append(total_loss.item())  
-                batch_iou.append(iou)  
-                batch_dice.append(dice)  
+                batch_L1.append(l1_val.item())  
+                batch_ssim.append(ssim_val.item())  
 
                 self.update_learning_rate(current_step)
                 
             if not self.args.multi_gpu or (self.args.multi_gpu and self.args.rank == 0):
                 if (step+1) % 50 == 0:
-                    self.args.logger.info(f'Epoch: {epoch+1}, Step: {step+1}, lr: {self.current_lr:.8f}, loss: {np.mean(batch_loss):.4f}, iou: {np.mean(batch_iou):.4f}, dice: {np.mean(batch_dice):.4f}')
+                    self.args.logger.info(f'Epoch: {epoch+1}, Step: {step+1}, lr: {self.current_lr:.8f}, loss: {np.mean(batch_loss):.4f}, L1: {np.mean(batch_L1):.4f}, dice: {np.mean(batch_ssim):.4f}')
                     state_dict = self.model.state_dict()
                     self.save_checkpoint(epoch, state_dict, describe='setp')
-
+            
+            print("111PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
+            print(batch_L1)
             epoch_loss += np.mean(batch_loss)
-            epoch_iou += np.mean(batch_iou)
-            epoch_dice += np.mean(batch_dice)
+            epoch_L1 += np.mean(batch_L1)
+            epoch_ssim += np.mean(batch_ssim)
 
         if self.args.multi_gpu:
-            dist.barrier()
-            local_loss = torch.tensor([epoch_loss / l]).to(self.args.device)
-            dist.all_reduce(local_loss, op=dist.ReduceOp.SUM) 
-            avg_loss = local_loss.item() / dist.get_world_size()
-
-            local_iou = torch.tensor([epoch_iou / l]).to(self.args.device)
-            dist.all_reduce(local_iou, op=dist.ReduceOp.SUM) 
-            avg_iou = local_iou.item() / dist.get_world_size()
-
-            local_dice = torch.tensor([epoch_dice / l]).to(self.args.device)
-            dist.all_reduce(local_dice, op=dist.ReduceOp.SUM) 
-            avg_dice = local_dice.item() / dist.get_world_size()
-
+            print("Setting is error! Multy-GPU is not allowed...")
         # if self.args.multi_gpu and self.args.rank == 0:
         #     avg_loss, avg_iou, avg_dice = epoch_loss / l, epoch_iou / l, epoch_dice / l
         else:
-            avg_loss, avg_iou, avg_dice = epoch_loss / l, epoch_iou / l, epoch_dice / l
+            avg_loss, avg_L1, avg_ssim = epoch_loss / l, epoch_L1 / l, epoch_ssim / l
         
-        return avg_loss, avg_iou, avg_dice
+        print("222PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
+        print(avg_loss.device)
+        print(avg_L1.device)
+        print(avg_ssim.device)
+        print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
+        return avg_loss, avg_L1, avg_ssim
 
 
     def test_epoch(self, epoch):
@@ -429,7 +415,7 @@ class BaseTrainer:
             output_dict = {obj_id: [] for obj_id in obj_list} 
 
             train_state = self.model.train_init_state(images)
-           
+            
             with torch.no_grad():
                 for obj_id, obj_data in prompts.items():
                     obj_label = labels[obj_id].to(device).type(torch.long)  
@@ -514,7 +500,7 @@ class BaseTrainer:
                 # dist.barrier()
                 self.dataloaders.sampler.set_epoch(epoch)
             print("TRAIN START...")
-            avg_loss, avg_iou, avg_dice = self.train_epoch(epoch)
+            avg_loss, avg_L1, avg_ssim = self.train_epoch(epoch)
             print("TRAIN END...")
             test_loss, test_iou, test_dice = self.test_epoch(epoch)
             print("VAL END...")
