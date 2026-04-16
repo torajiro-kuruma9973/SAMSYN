@@ -174,13 +174,6 @@ class dataset_3d(Dataset):
         case_name = image3d_data_path.split('/')[-1].split('\\')[-1]
         case_name = case_name.split('.')[0]
         seg_path = self.data_paths[index]['seg']
-        print("############################")
-        # print(image3d_data_path)
-        # print(label3d_path)
-        # print(seg_path)
-        print(f"case_name = {case_name}")
-        print(f"index = {index}")
-        print("############################")
         
         item_load = self.data3d_loader({'image_data': image3d_data_path, 'label': label3d_path, 'seg': seg_path})
         if item_load['image_data'].shape != item_load['label'].shape:

@@ -19,8 +19,12 @@ interval_thickness = 8 # there are 8 frames in a "short video"
 
 points_num = 4 # number of prompts of points
 
-num_intervals = 10
+num_intervals = 20
 
 image_size = 1024
 
 num_epochs = 200
+
+lr = 2e-5
+
+summary_writer_log_path = "summary_writer_logs"

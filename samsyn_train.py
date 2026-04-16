@@ -22,6 +22,8 @@ import cv2
 from torch.nn import CrossEntropyLoss
 from samsyn_losses import PETSynthesisLoss
 
+from torch.utils.tensorboard import SummaryWriter
+
 import warnings
 warnings.filterwarnings("ignore") 
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -57,7 +59,7 @@ parser.add_argument('--multi_gpu', action='store_true', default=False)
 parser.add_argument('--lr_scheduler', type=str, default='cosinelr', help='multisteplr, cosinelr')
 parser.add_argument('--step_size', type=list, default=[20, 35, 60]) 
 parser.add_argument('--gamma', type=float, default=0.5)
-parser.add_argument('--lr', type=float, default=1e-5)
+parser.add_argument('--lr', type=float, default=samsyn_cfg.lr)
 parser.add_argument('--weight_decay', type=float, default=1e-5)
 parser.add_argument('--port', type=int, default=11365)
 #parser.add_argument('--dist', dest='dist', type=bool, default=True, help='distributed training or not')
@@ -282,7 +284,7 @@ class BaseTrainer:
         
         tbar = tqdm(self.dataloaders, desc=f'Epoch {epoch+1} / {self.args.num_epochs}')
         epoch_loss, epoch_L1, epoch_ssim = 0, 0, 0
-        
+        writer = SummaryWriter(log_dir=samsyn_cfg.summary_writer_log_path)
         for step, batch_input in enumerate(tbar): 
             
             batch_loss, batch_L1, batch_ssim = [], [], []
@@ -294,7 +296,7 @@ class BaseTrainer:
             conditioned_frame_idx_list = batch_input["conditioned_frame_idx_list"]
 
             for interval_idx in range(len(data_intervals_list)):
-                print(f"interval_idx = {interval_idx}")
+                #print(f"interval idx = {interval_idx}")
                 current_step = epoch * l + step * self.args.num_intervals + interval_idx
 
                 curent_data_interval = data_intervals_list[interval_idx].to(device)
@@ -319,11 +321,11 @@ class BaseTrainer:
                 gt = current_gt[current_conditioned_frame_idx][0]
                 gt = gt.unsqueeze(0).unsqueeze(0)
             
-                total_loss, l1_val, ssim_val, lesion_val = self.criterion(pred, gt)
+                total_loss, l1_val, ssim_val, lesion_val = self.criterion(pred, gt) # here the ssim_val is actually 1-real_ssim.
                                                                             
-                print(f'metrics, l1_val: {l1_val:.4f}, ssim_val: {ssim_val:.4f}')
+                #print(f'metrics, l1_val: {l1_val:.4f}, ssim_val: {ssim_val:.4f}')
                 
-                if 1- ssim_val < 0.5: 
+                if ssim_val > 0.5: 
                     self.optimizer.zero_grad()  
                     self.scaler.scale(total_loss).backward()  
                     self.scaler.step(self.optimizer)  
@@ -334,7 +336,7 @@ class BaseTrainer:
                     batch_L1.append(l1_val.item())  
                     batch_ssim.append(ssim_val.item())  
                     self.update_learning_rate(current_step)
-                    print("conditioned frame SYN qulity is too low...")
+                    #print("conditioned frame SYN qulity is too low...")
                     continue
                 else:
                     print("The quality of condition frame passes!")
@@ -344,11 +346,11 @@ class BaseTrainer:
                 for out_frame_idx, out_obj_ids, out_mask_logits in self.model.train_propagate_in_video(  
                     train_state, start_frame_idx=start_slice, reverse=False):  
                     # out_mask_logits type is tensor, and the shape is [1,1,1024,1024]
-                    predict_labels[out_frame_idx] = out_mask_logits.squeeze()  
+                    predict_labels[out_frame_idx] = out_mask_logits 
                 
                 gt3d = current_gt[:, 0:1, :, :] # original gt is [8, 3, 1024, 1024] 
                 predict_labels = list(predict_labels.values())
-                predict3d = torch.cat(predict_labels, dim=0).unsqueeze(1)
+                predict3d = torch.cat(predict_labels, dim=0)
                 
                 total_loss, l1_val, ssim_val, lesion_val = self.criterion(predict3d, gt3d)  
                 self.optimizer.zero_grad()  
@@ -365,7 +367,7 @@ class BaseTrainer:
                 
             if not self.args.multi_gpu or (self.args.multi_gpu and self.args.rank == 0):
                 if (step+1) % 50 == 0:
-                    self.args.logger.info(f'Epoch: {epoch+1}, Step: {step+1}, lr: {self.current_lr:.8f}, loss: {np.mean(batch_loss):.4f}, L1: {np.mean(batch_L1):.4f}, dice: {np.mean(batch_ssim):.4f}')
+                    self.args.logger.info(f'Epoch: {epoch+1}, Step: {step+1}, lr: {self.current_lr:.8f}, loss: {np.mean(batch_loss):.4f}, L1: {np.mean(batch_L1):.4f}, ssim: {np.mean(batch_ssim):.4f}')
                     state_dict = self.model.state_dict()
                     self.save_checkpoint(epoch, state_dict, describe='setp')
             
@@ -375,11 +377,9 @@ class BaseTrainer:
 
         if self.args.multi_gpu:
             print("Setting is error! Multy-GPU is not allowed...")
-        # if self.args.multi_gpu and self.args.rank == 0:
-        #     avg_loss, avg_iou, avg_dice = epoch_loss / l, epoch_iou / l, epoch_dice / l
         else:
             avg_loss, avg_L1, avg_ssim = epoch_loss / l, epoch_L1 / l, epoch_ssim / l
-        
+            writer.add_scalar('ssim/time', avg_ssim, epoch)
         return avg_loss, avg_L1, avg_ssim
 
 
@@ -420,11 +420,11 @@ class BaseTrainer:
                 for out_frame_idx, out_obj_ids, out_mask_logits in self.model.train_propagate_in_video(  
                 train_state, start_frame_idx=start_slice, reverse=False):  
                     # out_mask_logits type is tensor, and the shape is [1,1,1024,1024]
-                    predict_labels[out_frame_idx] = out_mask_logits.squeeze(0) 
+                    predict_labels[out_frame_idx] = out_mask_logits 
                 
                 gt3d = current_gt[:, 0:1, :, :] # original gt is [8, 3, 1024, 1024] 
                 predict_labels = list(predict_labels.values())
-                predict3d = torch.cat(predict_labels, dim=0).unsqueeze(1)
+                predict3d = torch.cat(predict_labels, dim=0)
                   
                 # print("3333XXXXXXXXXXXXXXXXXXXXXXXXXXXX")
                 # print(type(predict3d))
