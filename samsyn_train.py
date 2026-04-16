@@ -90,12 +90,11 @@ class BaseTrainer:
         self.test_dataloaders = test_dataloaders
         self.args = args
         self.best_loss = np.inf
-        self.best_dice = 0.0
-        self.best_iou = 0.0
-        self.step_best_dice = 0.0
-        self.losses = []
-        self.dices = []
-        self.ious = []
+        self.best_L1 = 0.0
+        self.best_ssim = 0.0
+        self.loss = []
+        self.L1 = []
+        self.ssim = []
         self.set_loss_fn()
         self.set_optimizer()
         self.set_lr_scheduler()
@@ -191,11 +190,11 @@ class BaseTrainer:
                 self.optimizer.load_state_dict(last_ckpt['optimizer_state_dict'])
                 if self.lr_scheduler and 'lr_scheduler_state_dict' in last_ckpt:
                     self.lr_scheduler.load_state_dict(last_ckpt['lr_scheduler_state_dict'])
-                self.losses = last_ckpt['losses']
-                self.dices = last_ckpt['dices']
-                self.ious = last_ckpt['ious']
+                self.loss = last_ckpt['loss']
+                self.L1 = last_ckpt['L1']
+                self.ssim = last_ckpt['ssim']
                 self.best_loss = last_ckpt['best_loss']
-                self.best_dice = last_ckpt['best_dice']
+                #self.best_dice = last_ckpt['best_dice']
             else:
                 self.start_epoch = 0
             print(f"Loaded checkpoint from {ckp_path} (epoch {self.start_epoch}, step: {self.start_step})")
@@ -210,12 +209,12 @@ class BaseTrainer:
             "model_state_dict": state_dict,
             "optimizer_state_dict": self.optimizer.state_dict(),
             "lr_scheduler_state_dict": self.lr_scheduler.state_dict() if self.lr_scheduler else None,
-            "losses": self.losses,
-            "ious": self.ious,
-            "dices": self.dices,
+            "loss": self.loss,
+            "L1": self.L1,
+            "ssim": self.ssim,
             "best_loss": self.best_loss,
-            "best_iou": self.best_iou,
-            "best_dice": self.best_dice,
+            "best_L1": self.best_L1,
+            "best_ssim": self.best_ssim,
             "args": self.args,
         }, join(MODEL_SAVE_PATH, f"sam_model_{describe}.pth"))
 
@@ -310,20 +309,16 @@ class BaseTrainer:
                 predict_labels = {}
 
                 train_state = self.model.train_init_state(curent_data_interval)
-                print(f"@@@@ labels={current_prompts_obj_classes} @@@")  
-                print(f"@@@@ type: {type(current_prompts_obj_classes)} @@@")
+                
                 _, _, conditioned_out_mask_logits = self.model.train_add_new_points_or_box(  
                                 inference_state=train_state, frame_idx=current_conditioned_frame_idx, obj_id=obj_id,  
                                 points=current_prompts_coords, labels=current_prompts_obj_classes, clear_old_points=False  
                 )   
                 
-                pred=conditioned_out_mask_logits
-                gt=current_gt[current_conditioned_frame_idx][0]
+                pred = conditioned_out_mask_logits
+                gt = current_gt[current_conditioned_frame_idx][0]
                 gt = gt.unsqueeze(0).unsqueeze(0)
-                # print("XXXXXXXXXXXXXXXXXXXXXXXXX")
-                # print(pred.shape)
-                # print(gt.shape)
-                # print("XXXXXXXXXXXXXXXXXXXXXXXXX")
+            
                 total_loss, l1_val, ssim_val, lesion_val = self.criterion(pred, gt)
                                                                             
                 print(f'metrics, l1_val: {l1_val:.4f}, ssim_val: {ssim_val:.4f}')
@@ -342,7 +337,7 @@ class BaseTrainer:
                     print("conditioned frame SYN qulity is too low...")
                     continue
                 else:
-                    print("SSIM is too low, go to next...")
+                    print("The quality of condition frame passes!")
 
                 start_slice = current_conditioned_frame_idx
                 
@@ -351,12 +346,11 @@ class BaseTrainer:
                     # out_mask_logits type is tensor, and the shape is [1,1,1024,1024]
                     predict_labels[out_frame_idx] = out_mask_logits.squeeze()  
                 
+                gt3d = current_gt[:, 0:1, :, :] # original gt is [8, 3, 1024, 1024] 
+                predict_labels = list(predict_labels.values())
+                predict3d = torch.cat(predict_labels, dim=0).unsqueeze(1)
                 
-                
-                outputs_ = [torch.cat(label, dim=0) for label in predict_labels.values()]  
-                predict_label_3d = torch.stack(outputs_, dim=0)   
-                
-                total_loss, l1_val, ssim_val, lesion_val = self.seg_loss(outputs_, current_gt)  
+                total_loss, l1_val, ssim_val, lesion_val = self.criterion(predict3d, gt3d)  
                 self.optimizer.zero_grad()  
                 self.scaler.scale(total_loss).backward()  
                 self.scaler.step(self.optimizer)  
@@ -375,8 +369,6 @@ class BaseTrainer:
                     state_dict = self.model.state_dict()
                     self.save_checkpoint(epoch, state_dict, describe='setp')
             
-            print("111PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
-            print(batch_L1)
             epoch_loss += np.mean(batch_loss)
             epoch_L1 += np.mean(batch_L1)
             epoch_ssim += np.mean(batch_ssim)
@@ -388,11 +380,6 @@ class BaseTrainer:
         else:
             avg_loss, avg_L1, avg_ssim = epoch_loss / l, epoch_L1 / l, epoch_ssim / l
         
-        print("222PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
-        print(avg_loss.device)
-        print(avg_L1.device)
-        print(avg_ssim.device)
-        print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
         return avg_loss, avg_L1, avg_ssim
 
 
@@ -400,96 +387,71 @@ class BaseTrainer:
         self.model.eval()
         l = len(self.test_dataloaders)
         tbar = tqdm(self.test_dataloaders, desc=f'Epoch {epoch+1} / {self.args.num_epochs}')
-        epoch_loss, epoch_iou, epoch_dice = 0, 0, 0
+        epoch_loss, epoch_L1, epoch_ssim = 0, 0, 0
         for step, batch_input in enumerate(tbar): 
-            #print(f"@@@@@  step {step} @@@@@")
-            batch_loss, batch_iou, batch_dice = [], [], []
-            prompts = batch_input["pre_interval_obj_prompt"][0]
-            labels = batch_input["pre_interval_obj_label"][0]
-            interval_images_flair, interval_images_t1 = batch_input["pre_interval_image_flair"][0], batch_input["pre_interval_image_t1"][0]
-            images = torch.cat([interval_images_flair, interval_images_t1], dim=1).to(device) 
+            print(f"@@@@@  test step {step} @@@@@")
+            batch_loss, batch_L1, batch_ssim = [], [], []
+            data_intervals_list = batch_input["data_intervals_list"]
+            prompts_coords_list = batch_input["prompts_coords_list"]
+            prompts_objs_list = batch_input["prompts_objs_list"]
+            ground_truth_list = batch_input["ground_truth_list"]
+            conditioned_frame_idx_list = batch_input["conditioned_frame_idx_list"]
 
-            obj_list = list(labels.keys())
-            obj_segments = {}
-            prompt_labels = []
-            output_dict = {obj_id: [] for obj_id in obj_list} 
+            interval_idx = random.randrange(len(data_intervals_list)) # randmly pick up an interval idx
 
-            train_state = self.model.train_init_state(images)
+            curent_data_interval = data_intervals_list[interval_idx].to(device)
+            current_prompts_coords = prompts_coords_list[interval_idx]
+            current_prompts_obj_classes = prompts_objs_list[interval_idx]
+            current_gt = ground_truth_list[interval_idx].to(device)
+            #current_conditioned_frame_idx = conditioned_frame_idx_list[interval_idx]
+            current_conditioned_frame_idx = 0 # this is reletive idx in a small interval. The above one is absolute idx in an NII file
+            obj_id = 1 # hardcode here!!!!!!!!!! Will be modified
+            predict_labels = {}
+            train_state = self.model.train_init_state(curent_data_interval)
             
             with torch.no_grad():
-                for obj_id, obj_data in prompts.items():
-                    obj_label = labels[obj_id].to(device).type(torch.long)  
-                    if random.random() > 0.5:  
-                        for slice_idx, points in obj_data["point_coords"].items():  
-                            point_labels = prompts[obj_id]["point_labels"][slice_idx]
-                            _, _, out_mask_logits = self.model.train_add_new_points_or_box(  
-                                inference_state=train_state, frame_idx=slice_idx, obj_id=obj_id,  
-                                points=points, labels=point_labels, clear_old_points=False  
-                            )  
-                            prompt_labels.append(obj_label[slice_idx])
-                    else:  
-                        for slice_idx, bbox in obj_data["bboxes"].items():  
-                            _, _, out_mask_logits = self.model.train_add_new_points_or_box(  
-                                inference_state=train_state, frame_idx=slice_idx, obj_id=obj_id,  
-                                points=None, labels=None, box=bbox, clear_old_points=True  
-                            )  
-                            prompt_labels.append(obj_label[slice_idx]) 
-
-                    prompt_label = torch.stack(prompt_labels, dim=0)  
-                    prompt_loss = self.seg_loss(out_mask_logits, prompt_label.unsqueeze(1))  
-
-                    start_slice = min(slice_idx for slice_idx in prompts[next(iter(prompts))]["point_coords"].keys())
-                    for direction in [False, True]:  # 正向和反向  
-                        for out_frame_idx, out_obj_ids, out_mask_logits in self.model.train_propagate_in_video(  
-                            train_state, start_frame_idx=start_slice, reverse=direction):  
-                            obj_segments[out_frame_idx] = {out_obj_id: out_mask_logits[i] for i, out_obj_id in enumerate(out_obj_ids)}  
-
-                    for out_frame_idx in range(images.shape[0]):  
-                        for out_obj_id, out_mask in obj_segments[out_frame_idx].items():  
-                            output_dict[out_obj_id].append(out_mask)  
-
                 
-                enhance_mask = self.model.head_3d(self.extract_features(train_state), mode='test')
-                outputs_ = [torch.cat(masks, dim=0) for masks in output_dict.values()]  
-                labels_ = [labels[obj_id].to(device).type(torch.long) for obj_id in output_dict.keys()]  
-                mask = torch.stack(outputs_, dim=0)  
-                label = torch.stack(labels_, dim=0)  
-                total_loss = self.seg_loss(enhance_mask, label) + prompt_loss  
+                _, _, conditioned_out_mask_logits = self.model.train_add_new_points_or_box(  
+                                inference_state=train_state, frame_idx=current_conditioned_frame_idx, obj_id=obj_id,  
+                                points=current_prompts_coords, labels=current_prompts_obj_classes, clear_old_points=False  
+                )   
+                start_slice = current_conditioned_frame_idx
+                    
+                for out_frame_idx, out_obj_ids, out_mask_logits in self.model.train_propagate_in_video(  
+                train_state, start_frame_idx=start_slice, reverse=False):  
+                    # out_mask_logits type is tensor, and the shape is [1,1,1024,1024]
+                    predict_labels[out_frame_idx] = out_mask_logits.squeeze(0) 
+                
+                gt3d = current_gt[:, 0:1, :, :] # original gt is [8, 3, 1024, 1024] 
+                predict_labels = list(predict_labels.values())
+                predict3d = torch.cat(predict_labels, dim=0).unsqueeze(1)
+                  
+                # print("3333XXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+                # print(type(predict3d))
+                # print(predict3d.shape)
+                # print(gt3d.shape)
+                # print("3333XXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+                  
+                total_loss, L1, ssim, _ = self.criterion(predict3d, gt3d)  
      
                 self.model.reset_state(train_state)  
 
-                iou, dice = self.get_iou_and_dice(enhance_mask, label) 
                 batch_loss.append(total_loss.item())  
-                batch_iou.append(iou)  
-                batch_dice.append(dice)  
+                batch_L1.append(L1.item())  
+                batch_ssim.append(ssim.item())  
                 
             epoch_loss += np.mean(batch_loss)
-            epoch_iou += np.mean(batch_iou)
-            epoch_dice += np.mean(batch_dice)
+            epoch_L1 += np.mean(batch_L1)
+            epoch_ssim += np.mean(batch_ssim)
 
-        if self.args.multi_gpu:
-            dist.barrier()
-            local_loss = torch.tensor([epoch_loss / l]).to(self.args.device)
-            dist.all_reduce(local_loss, op=dist.ReduceOp.SUM) 
-            avg_loss = local_loss.item() / dist.get_world_size()
-
-            local_iou = torch.tensor([epoch_iou / l]).to(self.args.device)
-            dist.all_reduce(local_iou, op=dist.ReduceOp.SUM) 
-            avg_iou = local_iou.item() / dist.get_world_size()
-
-            local_dice = torch.tensor([epoch_dice / l]).to(self.args.device)
-            dist.all_reduce(local_dice, op=dist.ReduceOp.SUM) 
-            avg_dice = local_dice.item() / dist.get_world_size()
-
-        else:
-            avg_loss, avg_iou, avg_dice = epoch_loss / l, epoch_iou / l, epoch_dice / l
+        avg_loss, avg_L1, avg_ssim = epoch_loss / l, epoch_L1 / l, epoch_ssim / l
         
-        return avg_loss, avg_iou, avg_dice
+        return avg_loss, avg_L1, avg_ssim
 
 
     def train(self):
         self.scaler = amp.GradScaler()
-        best_dice_epoch = 1
+        best_loss_epoch = 1
         for epoch in range(self.start_epoch, self.args.num_epochs):
             
             torch.cuda.empty_cache()
@@ -502,15 +464,15 @@ class BaseTrainer:
             print("TRAIN START...")
             avg_loss, avg_L1, avg_ssim = self.train_epoch(epoch)
             print("TRAIN END...")
-            test_loss, test_iou, test_dice = self.test_epoch(epoch)
+            test_loss, test_L1, test_ssim = self.test_epoch(epoch)
             print("VAL END...")
             
             if not self.args.multi_gpu or (self.args.multi_gpu and self.args.rank == 0):
-                self.losses.append({'train':avg_loss, 'val': test_loss})
-                self.ious.append({'train':avg_iou, 'val': test_iou})
-                self.dices.append({'train':avg_dice, 'val': test_dice})
+                self.loss.append({'train':avg_loss, 'val': test_loss})
+                self.L1.append({'train':avg_L1, 'val': test_L1})
+                self.ssim.append({'train':avg_ssim, 'val': test_ssim})
 
-                self.args.logger.info(f'Epoch: {epoch+1} LR: {self.current_lr:.8f}: Train loss: {avg_loss:.5f}, IoU: {avg_iou:.5f}, Dice: {avg_dice:.5f} | Test loss: {test_loss:.5f}, IoU: {test_iou:.5f}, Dice: {test_dice:.5f}')
+                self.args.logger.info(f'Epoch: {epoch+1} LR: {self.current_lr:.8f}: Train loss: {avg_loss:.5f}, L1: {avg_L1:.5f}, SSIM: {avg_ssim:.5f} | Test loss: {test_loss:.5f}, L1: {test_L1:.5f}, SSIM: {test_ssim:.5f}')
                 state_dict = self.model.state_dict()
                  #save latest checkpoint
                 self.save_checkpoint(epoch, state_dict, describe='latest')
@@ -518,27 +480,28 @@ class BaseTrainer:
                 #save train loss best checkpoint
                 if test_loss < self.best_loss: 
                     self.best_loss = test_loss
-                    # self.save_checkpoint(epoch, state_dict, describe='loss_best')
+                    best_loss_epoch = epoch
+                    self.save_checkpoint(epoch, state_dict, describe='loss_best')
                 
-                if test_iou > self.best_iou: 
-                    self.best_iou = test_iou
+                if test_L1 > self.best_L1: 
+                    self.best_L1 = test_L1
                     # self.save_checkpoint(epoch, state_dict, describe='iou_best')
 
                 # save train dice best checkpoint
-                if test_dice > self.best_dice: 
-                    best_dice_epoch = epoch
-                    self.best_dice = test_dice
-                    self.save_checkpoint(epoch, state_dict, describe='dice_best')
+                if test_ssim > self.best_ssim: 
+                    #best_dice_epoch = epoch
+                    self.best_ssim = test_ssim
+                    #self.save_checkpoint(epoch, state_dict, describe='dice_best')
 
-                self.plot_result(self.losses, 'Loss', 'Loss')
-                self.plot_result(self.dices, 'Dice', 'Dice')
-                self.plot_result(self.ious, 'IoU', 'IoU')
+                self.plot_result(self.loss, 'Loss', 'Loss')
+                self.plot_result(self.L1, 'L1', 'L1')
+                self.plot_result(self.ssim, 'SSIM', 'SSIM')
       
         if not self.args.multi_gpu or (self.args.multi_gpu and self.args.rank == 0):
             self.args.logger.info('=====================================================================')
             for key, value in vars(self.args).items():
                 self.args.logger.info(key + ': ' + str(value))
-            self.args.logger.info(f'Best loss: {self.best_loss}, Best iou: {self.best_iou}, Best dice: {self.best_dice}, Best dice epoch: {best_dice_epoch}')
+            self.args.logger.info(f'Best loss: {self.best_loss}, Best L1: {self.best_L1}, Best dice: {self.best_ssim}, Best loss epoch: {best_loss_epoch}')
             self.args.logger.info('=====================================================================')
 
 
