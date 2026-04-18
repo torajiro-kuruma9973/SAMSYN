@@ -317,9 +317,18 @@ class BaseTrainer:
                                 points=current_prompts_coords, labels=current_prompts_obj_classes, clear_old_points=False  
                 )   
                 
-                pred = conditioned_out_mask_logits
+                pred = torch.sigmoid(conditioned_out_mask_logits)
                 gt = current_gt[current_conditioned_frame_idx][0]
                 gt = gt.unsqueeze(0).unsqueeze(0)
+
+                # 1. 检查维度是否完全一致 (排查嫌疑人1)
+                print(f"1 维度对齐检查 -> Pred: {pred.shape} | Target: {gt.shape}")
+
+                # 2. 检查网络输出的绝对值域 (排查嫌疑人2 以及网络自身崩溃)
+                print(f"1预测值极值 -> Min: {pred.min().item():.4f} | Max: {pred.max().item():.4f}")
+
+                # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
+                print(f"1 标签极值 -> Min: {gt.min().item():.4f} | Max: {gt.max().item():.4f}")
             
                 total_loss, l1_val, ssim_val, lesion_val = self.criterion(pred, gt) # here the ssim_val is actually 1-real_ssim.
                                                                             
@@ -338,8 +347,8 @@ class BaseTrainer:
                     self.update_learning_rate(current_step)
                     #print("conditioned frame SYN qulity is too low...")
                     continue
-                else:
-                    print("The quality of condition frame passes!")
+                #else:
+                    #print("The quality of condition frame passes!")
 
                 start_slice = current_conditioned_frame_idx
                 
@@ -351,6 +360,16 @@ class BaseTrainer:
                 gt3d = current_gt[:, 0:1, :, :] # original gt is [8, 3, 1024, 1024] 
                 predict_labels = list(predict_labels.values())
                 predict3d = torch.cat(predict_labels, dim=0)
+                predict3d = torch.sigmoid(predict3d)
+
+                # # 1. 检查维度是否完全一致 (排查嫌疑人1)
+                # print(f"2 维度对齐检查 -> Pred: {predict3d.shape} | Target: {gt3d.shape}")
+
+                # # 2. 检查网络输出的绝对值域 (排查嫌疑人2 以及网络自身崩溃)
+                # print(f"2 预测值极值 -> Min: {predict3d.min().item():.4f} | Max: {predict3d.max().item():.4f}")
+
+                # # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
+                # print(f"2 标签极值 -> Min: {gt3d.min().item():.4f} | Max: {gt3d.max().item():.4f}")
                 
                 total_loss, l1_val, ssim_val, lesion_val = self.criterion(predict3d, gt3d)  
                 self.optimizer.zero_grad()  

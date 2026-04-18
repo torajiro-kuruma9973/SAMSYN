@@ -123,7 +123,7 @@ class dataset_3d(Dataset):
                 [
                     Resize(keys=['image_data', 'label'], target_size=(self.image_size, self.image_size), num_class=len(self.class_dict)),  #
                     transforms.ToTensord(keys=['image_data', 'label']),
-                    # Normalization(keys=['image_data', 'label', 'seg']),
+                    Normalization(keys=['image_data', 'label']),
                 ])
 
         self.transform_2d_seg = transforms.Compose(
@@ -242,10 +242,22 @@ class dataset_3d(Dataset):
             if image2d_data.shape[0] != 3: # gray --> jpg by simply copying
                 image2d_data = np.tile(image2d_data, (3, 1, 1)) 
                 label2d = np.tile(label2d, (3, 1, 1))
+
+            # # 2. 检查网络输出的绝对值域 (排查嫌疑人2 以及网络自身崩溃)
+            # print(f"2 ct值极值 -> Min: {image2d_data.min().item():.4f} | Max: {image2d_data.max().item():.4f}")
+
+            # # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
+            # print(f"2 标签极值 -> Min: {label2d.min().item():.4f} | Max: {label2d.max().item():.4f}")
             
             item_2d = self.transform_2d({"image_data":image2d_data, "label":label2d})
             image_data[i,...] = item_2d["image_data"]
             all_label[i,...] = item_2d["label"]
+
+            # # 2. 检查网络输出的绝对值域 (排查嫌疑人2 以及网络自身崩溃)
+            # print(f"3 ct值极值 -> Min: {item_2d['image_data'].min().item():.4f} | Max: {item_2d['image_data'].max().item():.4f}")
+
+            # # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
+            # print(f"3 标签极值 -> Min: {item_2d['label'].min().item():.4f} | Max: {item_2d['label'].max().item():.4f}")
 
         return {'data_interval':image_data, 
                 'ground_truth': all_label, 

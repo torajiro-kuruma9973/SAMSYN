@@ -102,7 +102,8 @@ class Normalization(transforms.Transform):
         d = dict(data)
         for key in self.keys:
             d[key] = d[key] / 255.0
-            d[key] = (d[key] - self.pixel_mean) / self.pixel_std
+            if(key == 'image_data'):
+                d[key] = (d[key] - self.pixel_mean) / self.pixel_std
         return d
     
 class ForegroundNormalization(transforms.Transform):
@@ -117,12 +118,12 @@ class ForegroundNormalization(transforms.Transform):
         return d
     
     def normalize(self, ct_narray):
-        print("##########################XXXXXXXXXXXXXXXXXXX")
-        print(ct_narray.shape)
+        #print("##########################XXXXXXXXXXXXXXXXXXX")
+        #print(ct_narray.shape)
         a_transposed = np.transpose(ct_narray, (3, 0, 1, 2))
         coords_2d = np.argwhere(a_transposed[0][0]).tolist()
-        print(len(coords_2d))
-        print("##########################XXXXXXXXXXXXXXXXXXX")
+        #print(len(coords_2d))
+        #print("##########################XXXXXXXXXXXXXXXXXXX")
         ct_voxel_ndarray = ct_narray.copy()
         ct_voxel_ndarray = ct_voxel_ndarray.flatten()
         thred = np.mean(ct_voxel_ndarray)
