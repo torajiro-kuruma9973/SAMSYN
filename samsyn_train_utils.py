@@ -117,6 +117,27 @@ class MaskMSE(nn.Module):
         mse = torch.mean((iou - pred_iou) ** 2)
         return mse
 
+class Focal_and_Dice_MSELoss(nn.Module):
+    def __init__(self, weight=20.0, iou_scale=1.0):
+        super(FocalDice_MSELoss, self).__init__()
+        self.weight = weight
+        self.iou_scale = iou_scale
+        self.focal_loss = FocalLoss()
+        self.dice_loss = DiceLoss()
+        self.maskiou_mse = MaskMSE()
+    def forward(self, pred, mask, pred_iou):
+        """
+        pred: [B, 1, H, W]
+        mask: [B, 1, H, W]
+        """
+        assert pred.shape == mask.shape, "pred and mask should have the same shape."
+
+        focal_loss = self.focal_loss(pred, mask)
+        dice_loss =self.dice_loss(pred, mask)
+        loss1 = self.weight * focal_loss + dice_loss
+        loss2 = self.maskiou_mse(pred, mask, pred_iou)
+        loss = loss1 + loss2 * self.iou_scale
+        return loss
 
 class FocalDice_MSELoss(nn.Module):
     def __init__(self, weight=20.0, iou_scale=1.0):

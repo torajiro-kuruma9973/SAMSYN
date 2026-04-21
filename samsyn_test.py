@@ -304,10 +304,10 @@ class BaseTester:
         self.model.eval()
         l = len(self.test_dataloaders)
         tbar = tqdm(self.test_dataloaders, desc=f'Epoch {epoch+1} / {self.args.num_epochs}')
-        epoch_loss, epoch_L1, epoch_ssim = 0, 0, 0
+        epoch_loss, epoch_L1, epoch_ssim, epoch_focal, epoch_dice = 0, 0, 0, 0, 0
         for step, batch_input in enumerate(tbar): 
             print(f"@@@@@  test step {step} @@@@@")
-            batch_loss, batch_L1, batch_ssim = [], [], []
+            batch_loss, batch_L1, batch_ssim, batch_focal, batch_dice = [], [], [], [], []
             data_intervals_list = batch_input["data_intervals_list"]
             prompts_coords_list = batch_input["prompts_coords_list"]
             prompts_objs_list = batch_input["prompts_objs_list"]
@@ -353,21 +353,25 @@ class BaseTester:
                      "tensor": predict3d}
                 save_dict_to_disk(d, fname)
                   
-                total_loss, L1, ssim, _ = self.criterion(predict3d, gt3d)  
+                total_loss, L1, ssim, _, focal, dice  = self.criterion(predict3d, gt3d)
      
                 self.model.reset_state(train_state)  
 
                 batch_loss.append(total_loss.item())  
                 batch_L1.append(L1.item())  
-                batch_ssim.append(ssim.item())  
-                
+                batch_ssim.append(ssim.item())   
+                batch_focal.append(focal.item()) 
+                batch_dice.append(dice.item()) 
+
             epoch_loss += np.mean(batch_loss)
             epoch_L1 += np.mean(batch_L1)
             epoch_ssim += np.mean(batch_ssim)
+            epoch_focal += np.mean(batch_focal)
+            epoch_dice += np.mean(batch_dice)
 
-        avg_loss, avg_L1, avg_ssim = epoch_loss / l, epoch_L1 / l, epoch_ssim / l
+        avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_focal / l, epoch_dice / l
         
-        return avg_loss, avg_L1, avg_ssim, current_case_name
+        return avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, current_case_name
 
 
     def test(self):
@@ -375,10 +379,10 @@ class BaseTester:
         
         torch.cuda.empty_cache()
 
-        test_loss, test_L1, test_ssim, current_case_name = self.test_epoch(1)
+        test_loss, test_L1, test_ssim, test_focal, test_dice, current_case_name = self.test_epoch(1)
         print("VAL END...")
         print("===== Test result: =====")
-        print(f"case name: {current_case_name}, L1: {test_L1}, SIMM: {test_ssim}, Loss: {test_loss}")
+        print(f"case name: {current_case_name}, Loss: {test_loss}, L1: {test_L1}, SIMM: {test_ssim}, focal: {test_focal}, dice: {test_dice}")
 
             
       

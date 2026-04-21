@@ -2,9 +2,10 @@ import torch.nn as nn
 import torch
 import torch.nn.functional as F
 from pytorch_msssim import ssim
+from samsyn_train_utils import FocalLoss, DiceLoss
 
 class PETSynthesisLoss(nn.Module):
-    def __init__(self, lambda_l1=1.0, lambda_ssim=5.0, lambda_lesion=10.0, data_range=1.0):
+    def __init__(self, lambda_l1=10.0, lambda_ssim=5.0, lambda_lesion=0.0, lambda_focal=5.0, lambda_dice=5.0, data_range=1.0):
         """
         初始化加权损失函数
         :param lambda_l1: L1 损失的权重 (基础权重)
@@ -16,6 +17,11 @@ class PETSynthesisLoss(nn.Module):
         self.lambda_ssim = lambda_ssim
         self.lambda_lesion = lambda_lesion
         self.data_range = data_range
+        self.lambda_focal = lambda_focal
+        self.lambda_dice = lambda_dice
+
+        self.focal_loss = FocalLoss(gamma=2.0, alpha=0.25)
+        self.dice_loss = DiceLoss(smooth=1.0)
 
     def calc_l1_loss(self, pred, gt):
         """
@@ -66,7 +72,7 @@ class PETSynthesisLoss(nn.Module):
         :param gt: 真实的 PET [8, 1024, 1024]
         :param lesion_mask: 病灶掩码 [8, 1024, 1024]
         """
-        # 1. 计算三项基础 Loss
+        
         loss_l1 = self.calc_l1_loss(pred, gt)
         loss_ssim = self.calc_ssim_loss(pred, gt, data_range=self.data_range)
         
@@ -76,10 +82,15 @@ class PETSynthesisLoss(nn.Module):
             # 如果某个样本没有提供 mask，此项 Loss 为 0
             loss_lesion = torch.tensor(0.0, device=pred.device)
 
+        loss_focal = self.focal_loss(pred, gt)
+        loss_dice = self.dice_loss(pred, gt)
+
         # 2. 按照 lambda 权重进行加权求和
         total_loss = (self.lambda_l1 * loss_l1) + \
                      (self.lambda_ssim * loss_ssim) + \
-                     (self.lambda_lesion * loss_lesion)
+                     (self.lambda_lesion * loss_lesion) + \
+                     (self.lambda_dice * loss_dice) + \
+                     (self.lambda_focal * loss_focal)
                      
-        # 💡 返回总 loss 的同时，返回这三个子 loss，方便你用 print 或 TensorBoard 监控它们的下降趋势！
-        return total_loss, loss_l1, loss_ssim, loss_lesion
+        
+        return total_loss, loss_l1, loss_ssim, loss_lesion, loss_focal, loss_dice
