@@ -15,7 +15,7 @@ from torch.utils.data import Dataset, DataLoader
 import argparse
 from torch.cuda import amp
 import torch.multiprocessing as mp
-from samsyn_dataloders.dataloader import get_dataset_3d
+from samsyn_dataloaders.dataloader import get_dataset_3d
 from samsyn_train_utils import DiceLoss, build_model, get_logger
 import nibabel as nib  
 import cv2

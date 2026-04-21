@@ -7,7 +7,7 @@ from torch.utils.data import Dataset
 import json 
 from monai import data, transforms
 from sklearn.model_selection import train_test_split
-from samsyn_dataloders.data_utils import (  # 
+from samsyn_dataloaders.data_utils import (  # 
     Resize, 
     PermuteTransform, 
     ForegroundNormalization,

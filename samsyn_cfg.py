@@ -28,3 +28,12 @@ num_epochs = 200
 lr = 2e-5
 
 summary_writer_log_path = "summary_writer_logs"
+
+#================ Test ================
+test_dataset_path = "samsyn_dataset/test_data/" # nii.gz files.
+test_labels_path = "samsyn_dataset/test_labels/" # nii.gz files.
+test_prompts_path = "samsyn_dataset/test_segs/" # nii.gz files.
+
+test_checkpoint_path = "checkpoints/sam_model_loss_best.pth"
+
+test_results_path = "test_results/"
