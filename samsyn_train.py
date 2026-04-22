@@ -22,8 +22,6 @@ import cv2
 from torch.nn import CrossEntropyLoss
 from samsyn_losses import PETSynthesisLoss
 
-from torch.utils.tensorboard import SummaryWriter
-
 import warnings
 warnings.filterwarnings("ignore") 
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -291,7 +289,7 @@ class BaseTrainer:
         
         tbar = tqdm(self.dataloaders, desc=f'Epoch {epoch+1} / {self.args.num_epochs}')
         epoch_loss, epoch_L1, epoch_ssim, epoch_focal, epoch_dice = 0, 0, 0, 0, 0
-        writer = SummaryWriter(log_dir=samsyn_cfg.summary_writer_log_path)
+        
         for step, batch_input in enumerate(tbar): 
             
             batch_loss, batch_L1, batch_ssim, batch_focal, batch_dice = [], [], [], [], []
@@ -410,7 +408,7 @@ class BaseTrainer:
             print("Setting is error! Multy-GPU is not allowed...")
         else:
             avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_focal / l, epoch_dice / l
-            writer.add_scalar('ssim/time', avg_ssim, epoch)
+            
         return avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice
 
 
