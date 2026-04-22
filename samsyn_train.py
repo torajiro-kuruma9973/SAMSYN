@@ -350,7 +350,7 @@ class BaseTrainer:
                     batch_L1.append(l1_val.item())  
                     batch_ssim.append(ssim_val.item())  
                     self.update_learning_rate(current_step)
-                    print("conditioned frame SYN qulity is too low...")
+                    #print("conditioned frame SYN qulity is too low...")
                     continue
                 #else:
                     #print("The quality of condition frame passes!")
