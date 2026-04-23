@@ -36,19 +36,30 @@ def sample_collate_fn(batch):
     prompts_objs_list = []
     ground_truth_list = []
     conditioned_frame_idx_list = []
-    case_name_list = []
+    condition_seg_list = []
+    interval_seg_list = []
+    case_name_list =[]
+    segs_are_full_list =[]
+    
     for interval, samples in enumerate(batch[0]["batch_input"]):
         data_intervals_list.append(samples["data_interval"])
         prompts_coords_list.append(samples["prompt_coords"])
         prompts_objs_list.append(samples["prompt_objs"])
         ground_truth_list.append(samples["ground_truth"])
         conditioned_frame_idx_list.append(samples["conditioned_frame_idx"])
+        condition_seg_list.append(samples["condition_seg"])
+        interval_seg_list.append(samples["interval_seg"])
         case_name_list.append(samples["case_name"])
+        segs_are_full_list.append(samples["segs_are_full"])
+
     return { "data_intervals_list": data_intervals_list,
             "prompts_coords_list": prompts_coords_list,
             "prompts_objs_list": prompts_objs_list,
             "ground_truth_list": ground_truth_list,
             "conditioned_frame_idx_list": conditioned_frame_idx_list,
+            "condition_seg_list": condition_seg_list,
+            "interval_seg_list": interval_seg_list,
+            "segs_are_full_list": segs_are_full_list,
             "case_name_list": case_name_list
     }
 
@@ -196,14 +207,15 @@ class dataset_3d(Dataset):
 
     def process_3d_slices_with_prompts(self, case_name, starting_slice, end_slice, lasions_info, h, w):
         start_slice = starting_slice
-        start_slice_str = str(start_slice)
-        seg_idx = lasions_info[start_slice_str] # pet idx --> seg frame idx
+        seg_idx = lasions_info[str(start_slice)] # pet idx --> seg frame idx
+        seg_end = seg_idx + (end_slice - starting_slice)
         seg_frame = self.seg3d[seg_idx] # get a frame of seg
         
         assert len(list(lasions_info.keys())) > 0 # the folders which dont have foreground have been deleted.
         
         seg_2d = self.transform_2d_seg({"seg":seg_frame}) #[1, 1024, 1024] tesnsor already.
         seg_2d_tensor = seg_2d['seg'][0]
+        
         points = torch.nonzero(seg_2d_tensor).tolist() # get foregrounds' coords
         objs = seg_2d_tensor[seg_2d_tensor != 0].tolist() # get foregrounds' obj ids.
         coords = [x[::-1] for x in points]  # [x,y] --> [y,x]
@@ -242,13 +254,26 @@ class dataset_3d(Dataset):
 
             # # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
             # print(f"3 标签极值 -> Min: {item_2d['label'].min().item():.4f} | Max: {item_2d['label'].max().item():.4f}")
-
+        # if this interval has a full segmentations (number of segs =  number of interval slices), we can wholly use it as loss function
+        segs_are_full = self.check_slices_exist(lasions_info, start_slice, end_slice,)
+        if segs_are_full:
+            interval_seg = torch.zeros(end_slice-starting_slice, 1, self.image_size, self.image_size) # [slice_num, 1, 1024, 1024]
+            segs = self.seg3d[seg_idx:seg_end]
+        
+            for i in range(segs.shape[0]):
+                seg = self.transform_2d_seg({"seg":segs[i]})
+                interval_seg[i] = seg["seg"]
+        else:
+            interval_seg = None
         return {'data_interval':image_data, 
                 'ground_truth': all_label, 
                 'prompt_coords':point_coords, 
                 'prompt_objs':point_labels, 
                 'conditioned_frame_idx': start_slice,
-                'case_name': case_name}
+                'condition_seg': seg_2d['seg'],
+                'case_name': case_name,
+                'segs_are_full': segs_are_full,
+                'interval_seg': interval_seg}
 
 
 

@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # ================= 配置区 =================
-N=12                                  # 设定的阈值 N
-SRC_DIR="samsyn_dataset/labels"      # 源文件夹绝对路径 (替换为实际路径)
-DEST_DIR="samsyn_datasets_backup/labels_backup"     # 目标文件夹绝对路径 (替换为实际路径)
+N=500                                  # 设定的阈值 N
+SRC_DIR="samsyn_dataset/segs"      # 源文件夹绝对路径 (替换为实际路径)
+DEST_DIR="samsyn_datasets_backup/segs_backup"     # 目标文件夹绝对路径 (替换为实际路径)
 # ==========================================
 
 # 确保目标文件夹存在，不存在则自动创建

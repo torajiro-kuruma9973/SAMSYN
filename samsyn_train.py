@@ -111,7 +111,7 @@ class BaseTrainer:
     def set_loss_fn(self):
         l_l1 = getattr(self.args, 'lambda_l1', 10.0)
         l_ssim = getattr(self.args, 'lambda_ssim', 5.0)
-        l_lesion = getattr(self.args, 'lambda_lesion', 0.0)
+        l_lesion = getattr(self.args, 'lambda_lesion', 10.0)
         l_focal = getattr(self.args, 'lambda_focal', 5.0)
         l_dice = getattr(self.args, 'lambda_dice', 5.0)
         print(f"🔧 初始化 Loss: L1({l_l1}), SSIM({l_ssim}), Lesion({l_lesion}), focal({l_focal}), dice({l_dice})")
@@ -299,6 +299,10 @@ class BaseTrainer:
             prompts_objs_list = batch_input["prompts_objs_list"]
             ground_truth_list = batch_input["ground_truth_list"]
             conditioned_frame_idx_list = batch_input["conditioned_frame_idx_list"]
+            conditon_seg_list = batch_input["condition_seg_list"]
+            case_name_list = batch_input["case_name_list"]
+            interval_seg_list = batch_input["interval_seg_list"]
+            segs_are_full_list = batch_input["segs_are_full_list"]
 
             for interval_idx in range(len(data_intervals_list)):
                 #print(f"interval idx = {interval_idx}")
@@ -312,7 +316,13 @@ class BaseTrainer:
                 current_conditioned_frame_idx = 0 # this is reletive idx in a small interval. The above one is absolute idx in an NII file
                 obj_id = 1 # hardcode here!!!!!!!!!! Will be modified
                 curent_interval_thinckness = curent_data_interval.shape[0]
-                 
+                current_condition_seg = conditon_seg_list[interval_idx].to(device)
+                current_segs_are_full = segs_are_full_list[interval_idx]
+                
+                if current_segs_are_full:
+                    current_interval_seg = interval_seg_list[interval_idx].to(device)
+                else:
+                    current_interval_seg = None
                 predict_labels = {}
 
                 train_state = self.model.train_init_state(curent_data_interval)
@@ -335,11 +345,11 @@ class BaseTrainer:
                 # # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
                 # print(f"1 标签极值 -> Min: {gt.min().item():.4f} | Max: {gt.max().item():.4f}")
             
-                total_loss, l1_val, ssim_val, _, focal, dice = self.criterion(pred, gt) # here the ssim_val is actually 1-real_ssim.
+                total_loss, l1_val, ssim_val, lasion_val, focal, dice = self.criterion(pred, gt, lesion_mask=current_condition_seg) # here the ssim_val is actually 1-real_ssim.
                                                                             
                 #print(f'metrics, l1_val: {l1_val:.4f}, ssim_val: {ssim_val:.4f}')
                 
-                if ssim_val > 0.5: 
+                if ssim_val > 0.2: 
                     self.optimizer.zero_grad()  
                     self.scaler.scale(total_loss).backward()  
                     self.scaler.step(self.optimizer)  
@@ -367,16 +377,10 @@ class BaseTrainer:
                 predict3d = torch.cat(predict_labels, dim=0)
                 predict3d = torch.sigmoid(predict3d)
 
-                # # 1. 检查维度是否完全一致 (排查嫌疑人1)
-                # print(f"2 维度对齐检查 -> Pred: {predict3d.shape} | Target: {gt3d.shape}")
-
-                # # 2. 检查网络输出的绝对值域 (排查嫌疑人2 以及网络自身崩溃)
-                # print(f"2 预测值极值 -> Min: {predict3d.min().item():.4f} | Max: {predict3d.max().item():.4f}")
-
-                # # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
-                # print(f"2 标签极值 -> Min: {gt3d.min().item():.4f} | Max: {gt3d.max().item():.4f}")
+                # if current_segs_are_full:
+                #     print(f"2 维度对齐检查 -> Pred: {predict3d.shape} | segs: {current_interval_seg.shape}")
                 
-                total_loss, l1_val, ssim_val, _, focal, dice = self.criterion(predict3d, gt3d)  
+                total_loss, l1_val, ssim_val, _, focal, dice = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg)  
 
                 self.optimizer.zero_grad()  
                 self.scaler.scale(total_loss).backward()  
@@ -456,14 +460,14 @@ class BaseTrainer:
                 predict3d = torch.cat(predict_labels, dim=0)
                 predict3d = torch.sigmoid(predict3d)
                   
-                # 1. 检查维度是否完全一致 (排查嫌疑人1)
-                print(f"2 维度对齐检查 -> Pred: {predict3d.shape} | Target: {gt3d.shape}")
+                # # 1. 检查维度是否完全一致 (排查嫌疑人1)
+                # print(f"2 维度对齐检查 -> Pred: {predict3d.shape} | Target: {gt3d.shape}")
 
-                # 2. 检查网络输出的绝对值域 (排查嫌疑人2 以及网络自身崩溃)
-                print(f"2 预测值极值 -> Min: {predict3d.min().item():.4f} | Max: {predict3d.max().item():.4f}")
+                # # 2. 检查网络输出的绝对值域 (排查嫌疑人2 以及网络自身崩溃)
+                # print(f"2 预测值极值 -> Min: {predict3d.min().item():.4f} | Max: {predict3d.max().item():.4f}")
 
-                # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
-                print(f"2 标签极值 -> Min: {gt3d.min().item():.4f} | Max: {gt3d.max().item():.4f}")
+                # # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
+                # print(f"2 标签极值 -> Min: {gt3d.min().item():.4f} | Max: {gt3d.max().item():.4f}")
                   
                 total_loss, L1, ssim, _, focal, dice  = self.criterion(predict3d, gt3d)  
      
