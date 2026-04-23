@@ -447,7 +447,6 @@ class BaseTrainer:
             current_gt = ground_truth_list[interval_idx].to(device)
             #current_conditioned_frame_idx = conditioned_frame_idx_list[interval_idx]
             #current_condition_seg = conditon_seg_list[interval_idx].to(device)
-            current_interval_seg = interval_seg_list[interval_idx].to(device)
             current_segs_are_full = segs_are_full_list[interval_idx]
             if current_segs_are_full:
                 current_interval_seg = interval_seg_list[interval_idx].to(device)

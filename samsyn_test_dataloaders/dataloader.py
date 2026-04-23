@@ -204,6 +204,26 @@ class dataset_3d(Dataset):
             return self.__getitem__(np.random.randint(self.__len__()))
         
         return output_dict
+    
+    def check_slices_exist(self, input_dict, start_slice, end_slice):
+        """
+        检查字典中是否包含从 start_slice 到 end_slice (不含) 的所有连续切片。
+        
+        参数:
+            input_dict (dict): 输入的字典，key 预期为字符串形式的数字。
+            start_slice (int or str): 起始切片序号（包含）。
+            end_slice (int or str): 结束切片序号（不包含）。
+            
+        返回:
+            bool: 如果全部存在且有值返回 True，否则返回 False。
+        """
+        # 将输入转为整数，确保 range() 可以正常工作
+        start = int(start_slice)
+        end = int(end_slice)
+    
+        # 检查 range(start, end) 中的每一个数字是否都在字典的 keys 中
+        # 而且它的值不能是 None
+        return all(str(i) in input_dict and input_dict[str(i)] is not None for i in range(start, end))
 
     def process_3d_slices_with_prompts(self, case_name, starting_slice, end_slice, lasions_info, h, w):
         start_slice = starting_slice

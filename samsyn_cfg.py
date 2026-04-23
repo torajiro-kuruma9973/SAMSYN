@@ -19,7 +19,7 @@ interval_thickness = 8 # there are 8 frames in a "short video"
 
 points_num = 4 # number of prompts of points
 
-num_intervals = 10
+num_intervals = 1
 
 image_size = 1024
 
