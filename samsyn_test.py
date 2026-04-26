@@ -225,6 +225,8 @@ class BaseTester:
         self.L1 = []
         self.ssim = []
         self.set_loss_fn()
+        self.name_mapping_dict = utils.read_json_to_dict(samsyn_cfg.studyId_to_nii_idx_json)
+        self.pipepine_info_dict = utils.read_json_to_dict(samsyn_cfg.pet_pipline_info)
 
         self.model = self.model.module if self.args.multi_gpu else self.model
 
@@ -328,7 +330,6 @@ class BaseTester:
             #env_info = utils.read_json_to_dict("samsyn_json_metadata/pet_inv_meta.json")
             current_conditioned_frame_idx = 0 # this is reletive idx in a small interval. The above one is absolute idx in an NII file
             current_case_name = case_name_list[interval_idx]
-            current_interval_seg = interval_seg_list[interval_idx].to(device)
             current_segs_are_full = segs_are_full_list[interval_idx]
             if current_segs_are_full:
                 current_interval_seg = interval_seg_list[interval_idx].to(device)
@@ -356,10 +357,20 @@ class BaseTester:
                 predict3d = torch.cat(predict_labels, dim=0)
                 predict3d = torch.sigmoid(predict3d)
                 fname = samsyn_cfg.test_results_path + str(current_case_name) + "_tensor.pth"
+                key = str(current_case_name) + ".nii.gz"
+                studyID = self.name_mapping_dict[key]
+                suv = self.pipepine_info_dict[studyID]["suv_factor"]
+                log_min = self.pipepine_info_dict[studyID]["log_min"]
+                log_max = self.pipepine_info_dict[studyID]["log_max"]
                 d = {"case_name": current_case_name,
                      "slice_offset": conditioned_frame_offset_in_nii,
                      "thickness": curent_interval_thinckness,
-                     "tensor": predict3d}
+                     "tensor": predict3d,
+                     "studyID": studyID,
+                     "suv": suv,
+                     "min": log_min,
+                     "max": log_max
+                     }
                 save_dict_to_disk(d, fname)
                   
                 total_loss, L1, ssim, lesion, focal, dice  = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg)

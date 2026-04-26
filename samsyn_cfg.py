@@ -10,10 +10,11 @@ labels_path = "samsyn_dataset/labels/" # nii.gz files.
 prompts_path = "samsyn_dataset/segs/" # nii.gz files.
 
 lasions_coords_info_json = "samsyn_json_metadata/lesion_ct_pixel_coords.json"
-studyId_to_nii_idx_json = "samsyn_json_metadata/rename_mapping.json"
+studyId_to_nii_idx_json = "samsyn_json_metadata/name_mapping.json"
 ct_slice_counts_json = "samsyn_json_metadata/dcm_counts.json" # how many slices in a ct nii
 nii_idx_with_prompts_coords_json = "samsyn_json_metadata/nii_idx_with_prompts_coords.json"
 interval_info = "samsyn_json_metadata/nii_idx_intervals.json"
+pet_pipline_info = "samsyn_json_metadata/pet_inv_meta.json"
 
 interval_thickness = 8 # there are 8 frames in a "short video"
 
