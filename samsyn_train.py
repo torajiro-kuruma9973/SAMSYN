@@ -48,7 +48,7 @@ parser.add_argument("--model_type", type = str, default='sam2')
 parser.add_argument("--model_cfg", type = str, default=samsyn_cfg.model_cfg_path)
 parser.add_argument("--sam_med2_ckpt", type = str, default=samsyn_cfg.sam2_checkpoint_path)
 # train
-parser.add_argument('--pretrain_path', type=str, default=None)
+parser.add_argument('--pretrain_path', type=str, default="checkpoints/sam_model_setp.pth")
 parser.add_argument('--resume', action='store_true', default=False)
 parser.add_argument('--device', type=str, default='cuda')
 parser.add_argument('--seed', default=0, type=int)
@@ -91,14 +91,19 @@ class BaseTrainer:
         self.dataloaders = dataloaders
         self.test_dataloaders = test_dataloaders
         self.args = args
-        self.best_loss = np.inf
+        self.best_loss_epoch = 0
+        self.best_loss = np.inf,
+        self.L1_in_best_epoch = 0.0,
+        self.ssim_in_best_epoch = 0.0,
+        self.lesion_in_best_epoch = 0.0,
         self.best_L1 = 0.0
         self.best_ssim = 0.0
+        self.best_lesion = 0.0
         self.loss = []
         self.L1 = []
         self.ssim = []
-        self.focal = []
-        self.dice = []
+        # self.focal = []
+        # self.dice = []
         self.lesion = []
         self.set_loss_fn()
         self.set_optimizer()
@@ -113,17 +118,18 @@ class BaseTrainer:
 
     def set_loss_fn(self):
         l_l1 = getattr(self.args, 'lambda_l1', 10.0)
-        l_ssim = getattr(self.args, 'lambda_ssim', 5.0)
+        l_ssim = getattr(self.args, 'lambda_ssim', 10.0)
         l_lesion = getattr(self.args, 'lambda_lesion', 10.0)
-        l_focal = getattr(self.args, 'lambda_focal', 5.0)
-        l_dice = getattr(self.args, 'lambda_dice', 5.0)
-        print(f"🔧 初始化 Loss: L1({l_l1}), SSIM({l_ssim}), Lesion({l_lesion}), focal({l_focal}), dice({l_dice})")
+        # l_focal = getattr(self.args, 'lambda_focal', 5.0)
+        # l_dice = getattr(self.args, 'lambda_dice', 5.0)
+        # print(f"🔧 初始化 Loss: L1({l_l1}), SSIM({l_ssim}), Lesion({l_lesion}), focal({l_focal}), dice({l_dice})")
+        print(f"🔧 初始化 Loss: L1({l_l1}), SSIM({l_ssim}), Lesion({l_lesion})")
         self.criterion = PETSynthesisLoss(
             lambda_l1=l_l1,
             lambda_ssim=l_ssim,
             lambda_lesion=l_lesion,
-            lambda_focal=l_focal, 
-            lambda_dice=l_dice,
+            # lambda_focal=l_focal, 
+            # lambda_dice=l_dice,
             data_range=1.0 
         ).to(device)
 
@@ -180,11 +186,12 @@ class BaseTrainer:
             if self.args.multi_gpu:
                 dist.barrier()
             if 'step_' in ckp_path:
+                print("!!!!!!!!!! STEP PT is Loaded !!!!!!!!!!!!!!")
                 self.start_step = int(ckp_path.split('step_')[-1].split('.pth')[0])
             else:
                 self.start_step = 0
 
-            last_ckpt = torch.load(ckp_path, map_location=self.args.device)
+            last_ckpt = torch.load(ckp_path, map_location=self.args.device, weights_only=False)
 
         if last_ckpt:
             try:
@@ -201,9 +208,17 @@ class BaseTrainer:
                 self.loss = last_ckpt['loss']
                 self.L1 = last_ckpt['L1']
                 self.ssim = last_ckpt['ssim']
-                self.focal = last_ckpt['focal']
-                self.dice = last_ckpt['dice']
+                self.lesion = last_ckpt['lesion']
+                # self.focal = last_ckpt['focal']
+                # self.dice = last_ckpt['dice']
                 self.best_loss = last_ckpt['best_loss']
+                self.best_loss_epoch = last_ckpt['best_loss_epoch']
+                self.L1_in_best_epoch = last_ckpt['L1_in_best_epoch']
+                self.ssim_in_best_epoch = last_ckpt['ssim_in_best_epoch']
+                self.lesion_in_best_epoch = last_ckpt['lesion_in_best_epoch']
+                self.best_L1 = last_ckpt['best_L1']
+                self.best_ssim = last_ckpt['best_ssim']
+                self.best_lesion = last_ckpt['best_lesion']
                 
             else:
                 self.start_epoch = 0
@@ -222,9 +237,15 @@ class BaseTrainer:
             "loss": self.loss,
             "L1": self.L1,
             "ssim": self.ssim,
+            "lesion": self.lesion,
             "best_loss": self.best_loss,
+            "best_loss_epoch": self.best_loss_epoch,
+            "L1_in_best_epoch": self.L1_in_best_epoch,
+            "ssim_in_best_epoch": self.ssim_in_best_epoch,
+            "lesion_in_best_epoch": self.lesion_in_best_epoch,
             "best_L1": self.best_L1,
             "best_ssim": self.best_ssim,
+            "best_lesion": self.best_lesion,
             "args": self.args,
         }, join(MODEL_SAVE_PATH, f"sam_model_{describe}.pth"))
 
@@ -291,11 +312,13 @@ class BaseTrainer:
         l = len(self.dataloaders)
         
         tbar = tqdm(self.dataloaders, desc=f'Epoch {epoch+1} / {self.args.num_epochs}')
-        epoch_loss, epoch_L1, epoch_ssim, epoch_focal, epoch_dice, epoch_lesion = 0, 0, 0, 0, 0, 0
+        #epoch_loss, epoch_L1, epoch_ssim, epoch_focal, epoch_dice, epoch_lesion = 0, 0, 0, 0, 0, 0
+        epoch_loss, epoch_L1, epoch_ssim, epoch_lesion = 0, 0, 0, 0
         
         for step, batch_input in enumerate(tbar): 
             
-            batch_loss, batch_L1, batch_ssim, batch_focal, batch_dice, batch_lesion = [], [], [], [], [], []
+            #batch_loss, batch_L1, batch_ssim, batch_focal, batch_dice, batch_lesion = [], [], [], [], [], []
+            batch_loss, batch_L1, batch_ssim, batch_lesion = [], [], [], []
             
             data_intervals_list = batch_input["data_intervals_list"]
             prompts_coords_list = batch_input["prompts_coords_list"]
@@ -349,7 +372,8 @@ class BaseTrainer:
                 # # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
                 # print(f"1 标签极值 -> Min: {gt.min().item():.4f} | Max: {gt.max().item():.4f}")
             
-                total_loss, l1_val, ssim_val, lasion_val, focal, dice = self.criterion(pred, gt, lesion_mask=current_condition_seg) # here the ssim_val is actually 1-real_ssim.
+                #total_loss, l1_val, ssim_val, lasion_val, focal, dice = self.criterion(pred, gt, lesion_mask=current_condition_seg) # here the ssim_val is actually 1-real_ssim.
+                total_loss, l1_val, ssim_val, lasion_val = self.criterion(pred, gt, lesion_mask=current_condition_seg) # here the ssim_val is actually 1-real_ssim.
                                                                             
                 #print(f'metrics, l1_val: {l1_val:.4f}, ssim_val: {ssim_val:.4f}')
                 
@@ -363,6 +387,7 @@ class BaseTrainer:
                     batch_loss.append(total_loss.item())  
                     batch_L1.append(l1_val.item())  
                     batch_ssim.append(ssim_val.item())  
+                    batch_lesion.append(lasion_val.item()) 
                     self.update_learning_rate(current_step)
                     #print("conditioned frame SYN qulity is too low...")
                     continue
@@ -384,7 +409,8 @@ class BaseTrainer:
                 # if current_segs_are_full:
                 #     print(f"2 维度对齐检查 -> Pred: {predict3d.shape} | segs: {current_interval_seg.shape}")
                 
-                total_loss, l1_val, ssim_val, lesion_val, focal, dice = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg)  
+                #total_loss, l1_val, ssim_val, lesion_val, focal, dice = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg)  
+                total_loss, l1_val, ssim_val, lesion_val = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg) 
 
                 self.optimizer.zero_grad()  
                 self.scaler.scale(total_loss).backward()  
@@ -395,41 +421,46 @@ class BaseTrainer:
                 batch_loss.append(total_loss.item())  
                 batch_L1.append(l1_val.item())  
                 batch_ssim.append(ssim_val.item()) 
-                batch_focal.append(focal.item())
-                batch_dice.append(dice.item())
+                # batch_focal.append(focal.item())
+                # batch_dice.append(dice.item())
                 batch_lesion.append(lesion_val.item())
 
                 self.update_learning_rate(current_step)
                 
             if not self.args.multi_gpu or (self.args.multi_gpu and self.args.rank == 0):
                 if (step+1) % 50 == 0:
-                    self.args.logger.info(f'Epoch: {epoch+1}, Step: {step+1}, lr: {self.current_lr:.8f}, loss: {np.mean(batch_loss):.4f}, L1: {np.mean(batch_L1):.4f}, ssim: {np.mean(batch_ssim):.4f}, focal: {np.mean(batch_focal):.4f}, dice: {np.mean(batch_dice):.4f}')
+                    #self.args.logger.info(f'Epoch: {epoch+1}, Step: {step+1}, lr: {self.current_lr:.8f}, loss: {np.mean(batch_loss):.4f}, L1: {np.mean(batch_L1):.4f}, ssim: {np.mean(batch_ssim):.4f}, focal: {np.mean(batch_focal):.4f}, dice: {np.mean(batch_dice):.4f}, lesion: {np.mean(batch_lesion):.4f}')
+                    self.args.logger.info(f'Epoch: {epoch+1}, Step: {step+1}, lr: {self.current_lr:.8f}, loss: {np.mean(batch_loss):.4f}, L1: {np.mean(batch_L1):.4f}, ssim: {np.mean(batch_ssim):.4f}, lesion: {np.mean(batch_lesion):.4f}')
                     state_dict = self.model.state_dict()
-                    self.save_checkpoint(epoch, state_dict, describe='setp')
+                    self.save_checkpoint(epoch, state_dict, describe='step')
             
             epoch_loss += np.mean(batch_loss)
             epoch_L1 += np.mean(batch_L1)
             epoch_ssim += np.mean(batch_ssim)
-            epoch_focal += np.mean(batch_focal)
-            epoch_dice += np.mean(batch_dice)
+            # epoch_focal += np.mean(batch_focal)
+            # epoch_dice += np.mean(batch_dice)
             epoch_lesion += np.mean(batch_lesion)
 
         if self.args.multi_gpu:
             print("Setting is error! Multy-GPU is not allowed...")
         else:
-            avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_focal / l, epoch_dice / l, epoch_lesion / l
+            #avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_focal / l, epoch_dice / l, epoch_lesion / l
+            avg_loss, avg_L1, avg_ssim, avg_lesion = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_lesion / l
             
-        return avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion
+        #return avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion
+        return avg_loss, avg_L1, avg_ssim, avg_lesion
 
 
     def test_epoch(self, epoch):
         self.model.eval()
         l = len(self.test_dataloaders)
         tbar = tqdm(self.test_dataloaders, desc=f'Epoch {epoch+1} / {self.args.num_epochs}')
-        epoch_loss, epoch_L1, epoch_ssim, epoch_focal, epoch_dice, epoch_lesion = 0, 0, 0, 0, 0, 0
+        #epoch_loss, epoch_L1, epoch_ssim, epoch_focal, epoch_dice, epoch_lesion = 0, 0, 0, 0, 0, 0
+        epoch_loss, epoch_L1, epoch_ssim, epoch_lesion = 0, 0, 0, 0
         for step, batch_input in enumerate(tbar): 
             print(f"@@@@@  test step {step} @@@@@")
-            batch_loss, batch_L1, batch_ssim, batch_focal, batch_dice, batch_lesion = [], [], [], [], [], []
+            #batch_loss, batch_L1, batch_ssim, batch_focal, batch_dice, batch_lesion = [], [], [], [], [], []
+            batch_loss, batch_L1, batch_ssim, batch_lesion = [], [], [], []
             data_intervals_list = batch_input["data_intervals_list"]
             prompts_coords_list = batch_input["prompts_coords_list"]
             prompts_objs_list = batch_input["prompts_objs_list"]
@@ -484,27 +515,30 @@ class BaseTrainer:
                 # # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
                 # print(f"2 标签极值 -> Min: {gt3d.min().item():.4f} | Max: {gt3d.max().item():.4f}")
                   
-                total_loss, L1, ssim, lesion, focal, dice  = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg) 
+                #total_loss, L1, ssim, lesion, focal, dice  = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg) 
+                total_loss, L1, ssim, lesion  = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg) 
      
                 self.model.reset_state(train_state)  
 
                 batch_loss.append(total_loss.item())  
                 batch_L1.append(L1.item())  
                 batch_ssim.append(ssim.item())  
-                batch_focal.append(focal.item()) 
-                batch_dice.append(dice.item()) 
+                # batch_focal.append(focal.item()) 
+                # batch_dice.append(dice.item()) 
                 batch_lesion.append(lesion.item()) 
 
             epoch_loss += np.mean(batch_loss)
             epoch_L1 += np.mean(batch_L1)
             epoch_ssim += np.mean(batch_ssim)
-            epoch_focal += np.mean(batch_focal)
-            epoch_dice += np.mean(batch_dice)
+            # epoch_focal += np.mean(batch_focal)
+            # epoch_dice += np.mean(batch_dice)
             epoch_lesion += np.mean(batch_lesion)
 
-        avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_focal / l, epoch_dice / l, epoch_lesion / l
+        #avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_focal / l, epoch_dice / l, epoch_lesion / l
+        avg_loss, avg_L1, avg_ssim, avg_lesion = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_lesion / l
         
-        return avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion
+        #return avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion
+        return avg_loss, avg_L1, avg_ssim, avg_lesion
 
 
     def train(self):
@@ -520,20 +554,23 @@ class BaseTrainer:
                 # dist.barrier()
                 self.dataloaders.sampler.set_epoch(epoch)
             print("TRAIN START...")
-            avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion = self.train_epoch(epoch)
+            #avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion = self.train_epoch(epoch)
+            avg_loss, avg_L1, avg_ssim, avg_lesion = self.train_epoch(epoch)
             print("TRAIN END...")
-            test_loss, test_L1, test_ssim, test_focal, test_dice, test_lesion = self.test_epoch(epoch)
+            #test_loss, test_L1, test_ssim, test_focal, test_dice, test_lesion = self.test_epoch(epoch)
+            test_loss, test_L1, test_ssim, test_lesion = self.test_epoch(epoch)
             print("VAL END...")
             
             if not self.args.multi_gpu or (self.args.multi_gpu and self.args.rank == 0):
                 self.loss.append({'train':avg_loss, 'val': test_loss})
                 self.L1.append({'train':avg_L1, 'val': test_L1})
                 self.ssim.append({'train':avg_ssim, 'val': test_ssim})
-                self.focal.append({'train':avg_focal, 'val': test_focal})
-                self.dice.append({'train':avg_dice, 'val': test_dice})
+                # self.focal.append({'train':avg_focal, 'val': test_focal})
+                # self.dice.append({'train':avg_dice, 'val': test_dice})
                 self.lesion.append({'train':avg_lesion, 'val': test_lesion})
 
-                self.args.logger.info(f'Epoch: {epoch+1} LR: {self.current_lr:.8f}: Train loss: {avg_loss:.5f}, L1: {avg_L1:.5f}, SSIM: {avg_ssim:.5f}, focal: {avg_focal:.5f}, dice: {avg_dice:.5f}, lesion: {avg_lesion:.5f}| Test loss: {test_loss:.5f}, L1: {test_L1:.5f}, SSIM: {test_ssim:.5f}, focal: {test_focal:.5f}, dice: {test_dice:.5f}, lesion: {test_lesion:.5f}')
+                #self.args.logger.info(f'Epoch: {epoch+1} LR: {self.current_lr:.8f}: Train loss: {avg_loss:.5f}, L1: {avg_L1:.5f}, SSIM: {avg_ssim:.5f}, focal: {avg_focal:.5f}, dice: {avg_dice:.5f}, lesion: {avg_lesion:.5f}| Test loss: {test_loss:.5f}, L1: {test_L1:.5f}, SSIM: {test_ssim:.5f}, focal: {test_focal:.5f}, dice: {test_dice:.5f}, lesion: {test_lesion:.5f}')
+                self.args.logger.info(f'Epoch: {epoch+1} LR: {self.current_lr:.8f}: Train loss: {avg_loss:.5f}, L1: {avg_L1:.5f}, SSIM: {avg_ssim:.5f}, lesion: {avg_lesion:.5f}| Test loss: {test_loss:.5f}, L1: {test_L1:.5f}, SSIM: {test_ssim:.5f}, focal: {test_focal:.5f}, dice: {test_dice:.5f}, lesion: {test_lesion:.5f}')
                 state_dict = self.model.state_dict()
                  #save latest checkpoint
                 self.save_checkpoint(epoch, state_dict, describe='latest')
@@ -541,7 +578,10 @@ class BaseTrainer:
                 #save train loss best checkpoint
                 if test_loss < self.best_loss: 
                     self.best_loss = test_loss
-                    best_loss_epoch = epoch
+                    self.L1_in_best_epoch = test_L1
+                    self.ssim_in_best_epoch = test_ssim
+                    self.lesion_in_best_epoch = test_lesion
+                    self.best_loss_epoch = epoch
                     self.save_checkpoint(epoch, state_dict, describe='loss_best')
                 
                 if test_L1 > self.best_L1: 
@@ -550,24 +590,32 @@ class BaseTrainer:
 
                 # save train dice best checkpoint
                 if test_ssim > self.best_ssim: 
-                    #best_dice_epoch = epoch
+                    best_ssim_epoch = epoch
                     self.best_ssim = test_ssim
-                    #self.save_checkpoint(epoch, state_dict, describe='dice_best')
+                    #self.save_checkpoint(epoch, state_dict, describe='ssim_best')
+
+                if test_lesion > self.best_lesion: 
+                    best_lesion_epoch = epoch
+                    self.best_lesion = test_lesion
+                    #self.save_checkpoint(epoch, state_dict, describe='lesion_best')
 
                 self.plot_result(self.loss, 'Loss', 'Loss')
                 self.plot_result(self.L1, 'L1', 'L1')
                 self.plot_result(self.ssim, 'SSIM', 'SSIM')
-                self.plot_result(self.focal, 'FOCAL', 'FOCAL')
-                self.plot_result(self.dice, 'DICE', 'DICE')
+                # self.plot_result(self.focal, 'FOCAL', 'FOCAL')
+                # self.plot_result(self.dice, 'DICE', 'DICE')
                 self.plot_result(self.lesion, 'LESION', 'LESION')
       
-        if not self.args.multi_gpu or (self.args.multi_gpu and self.args.rank == 0):
-            self.args.logger.info('=====================================================================')
-            for key, value in vars(self.args).items():
-                self.args.logger.info(key + ': ' + str(value))
-            self.args.logger.info(f'Best loss: {self.best_loss}, Best L1: {self.best_L1}, Best dice: {self.best_ssim}, Best loss epoch: {best_loss_epoch}')
-            self.args.logger.info('=====================================================================')
-
+        # if not self.args.multi_gpu or (self.args.multi_gpu and self.args.rank == 0):
+        #     self.args.logger.info('=====================================================================')
+        #     for key, value in vars(self.args).items():
+        #         self.args.logger.info(key + ': ' + str(value))
+        #     #self.args.logger.info(f'Best loss: {self.best_loss}, Best L1: {self.best_L1}, Best dice: {self.best_ssim}, Best loss epoch: {best_loss_epoch}')
+        #     self.args.logger.info(f'Best loss: {self.best_loss}, Best L1: {self.best_L1}, Best dice: {self.best_ssim}, Best loss epoch: {best_loss_epoch}')
+        #     self.args.logger.info('=====================================================================')
+        self.args.logger.info('=====================================================================')
+        self.args.logger.info(f'Best loss epoch: {self.best_loss_epoch}: loss: {self.best_loss}, L1: {self.L1_in_best_epoch}, SSIM: {self.ssim_in_best_epoch}, Lesion: {self.lesion_in_best_epoch}')
+        self.args.logger.info(f'Best in history: L1: {self.best_L1}, Best SSIM: {self.best_ssim}, Lesion: {self.best_lesion}')
 
 ########################################## Trainer ##########################################
 def init_seeds(seed=0, cuda_deterministic=True):
