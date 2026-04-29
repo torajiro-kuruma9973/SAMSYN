@@ -48,7 +48,7 @@ parser.add_argument("--model_type", type = str, default='sam2')
 parser.add_argument("--model_cfg", type = str, default=samsyn_cfg.model_cfg_path)
 parser.add_argument("--sam_med2_ckpt", type = str, default=samsyn_cfg.sam2_checkpoint_path)
 # train
-parser.add_argument('--pretrain_path', type=str, default="checkpoints/sam_model_setp.pth")
+parser.add_argument('--pretrain_path', type=str, default=None)
 parser.add_argument('--resume', action='store_true', default=False)
 parser.add_argument('--device', type=str, default='cuda')
 parser.add_argument('--seed', default=0, type=int)
@@ -375,7 +375,7 @@ class BaseTrainer:
                 #total_loss, l1_val, ssim_val, lasion_val, focal, dice = self.criterion(pred, gt, lesion_mask=current_condition_seg) # here the ssim_val is actually 1-real_ssim.
                 total_loss, l1_val, ssim_val, lasion_val = self.criterion(pred, gt, lesion_mask=current_condition_seg) # here the ssim_val is actually 1-real_ssim.
                                                                             
-                #print(f'metrics, l1_val: {l1_val:.4f}, ssim_val: {ssim_val:.4f}')
+                print(f'Loss: {total_loss:.4f}, l1_val: {l1_val:.4f}, ssim_val: {ssim_val:.4f}, lasion_val: {lasion_val:.4f}')
                 
                 if ssim_val > 0.2: 
                     self.optimizer.zero_grad()  
@@ -411,6 +411,8 @@ class BaseTrainer:
                 
                 #total_loss, l1_val, ssim_val, lesion_val, focal, dice = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg)  
                 total_loss, l1_val, ssim_val, lesion_val = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg) 
+
+                print(f'Loss: {total_loss:.4f}, l1_val: {l1_val:.4f}, ssim_val: {ssim_val:.4f}, lasion_val: {lasion_val:.4f}')
 
                 self.optimizer.zero_grad()  
                 self.scaler.scale(total_loss).backward()  
@@ -570,7 +572,7 @@ class BaseTrainer:
                 self.lesion.append({'train':avg_lesion, 'val': test_lesion})
 
                 #self.args.logger.info(f'Epoch: {epoch+1} LR: {self.current_lr:.8f}: Train loss: {avg_loss:.5f}, L1: {avg_L1:.5f}, SSIM: {avg_ssim:.5f}, focal: {avg_focal:.5f}, dice: {avg_dice:.5f}, lesion: {avg_lesion:.5f}| Test loss: {test_loss:.5f}, L1: {test_L1:.5f}, SSIM: {test_ssim:.5f}, focal: {test_focal:.5f}, dice: {test_dice:.5f}, lesion: {test_lesion:.5f}')
-                self.args.logger.info(f'Epoch: {epoch+1} LR: {self.current_lr:.8f}: Train loss: {avg_loss:.5f}, L1: {avg_L1:.5f}, SSIM: {avg_ssim:.5f}, lesion: {avg_lesion:.5f}| Test loss: {test_loss:.5f}, L1: {test_L1:.5f}, SSIM: {test_ssim:.5f}, focal: {test_focal:.5f}, dice: {test_dice:.5f}, lesion: {test_lesion:.5f}')
+                self.args.logger.info(f'Epoch: {epoch+1} LR: {self.current_lr:.8f}: Train loss: {avg_loss:.5f}, L1: {avg_L1:.5f}, SSIM: {avg_ssim:.5f}, lesion: {avg_lesion:.5f}| Test loss: {test_loss:.5f}, L1: {test_L1:.5f}, SSIM: {test_ssim:.5f}, lesion: {test_lesion:.5f}')
                 state_dict = self.model.state_dict()
                  #save latest checkpoint
                 self.save_checkpoint(epoch, state_dict, describe='latest')
