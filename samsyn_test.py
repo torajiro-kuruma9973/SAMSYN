@@ -373,27 +373,30 @@ class BaseTester:
                      }
                 save_dict_to_disk(d, fname)
                   
-                total_loss, L1, ssim, lesion, focal, dice  = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg)
+                #total_loss, L1, ssim, lesion, focal, dice  = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg)
+                total_loss, L1, ssim, lesion  = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg)
      
                 self.model.reset_state(train_state)  
 
                 batch_loss.append(total_loss.item())  
                 batch_L1.append(L1.item())  
                 batch_ssim.append(ssim.item())   
-                batch_focal.append(focal.item()) 
-                batch_dice.append(dice.item()) 
+                # batch_focal.append(focal.item()) 
+                # batch_dice.append(dice.item()) 
                 batch_lesion.append(lesion.item()) 
 
             epoch_loss += np.mean(batch_loss)
             epoch_L1 += np.mean(batch_L1)
             epoch_ssim += np.mean(batch_ssim)
-            epoch_focal += np.mean(batch_focal)
-            epoch_dice += np.mean(batch_dice)
+            # epoch_focal += np.mean(batch_focal)
+            # epoch_dice += np.mean(batch_dice)
             epoch_lesion += np.mean(batch_lesion)
 
-        avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_focal / l, epoch_dice / l, epoch_lesion / l
+        #avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_focal / l, epoch_dice / l, epoch_lesion / l
+        avg_loss, avg_L1, avg_ssim, avg_lesion = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_lesion / l
         
-        return avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion, current_case_name
+        #return avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion, current_case_name
+        return avg_loss, avg_L1, avg_ssim, avg_lesion, current_case_name
 
 
     def test(self):
@@ -401,10 +404,12 @@ class BaseTester:
         
         torch.cuda.empty_cache()
 
-        test_loss, test_L1, test_ssim, test_focal, test_dice, test_lesion, current_case_name = self.test_epoch(1)
+        #test_loss, test_L1, test_ssim, test_focal, test_dice, test_lesion, current_case_name = self.test_epoch(1)
+        test_loss, test_L1, test_ssim, test_lesion, current_case_name = self.test_epoch(1)
         print("VAL END...")
         print("===== Test result: =====")
-        print(f"case name: {current_case_name}, Loss: {test_loss}, L1: {test_L1}, SIMM: {test_ssim}, focal: {test_focal}, dice: {test_dice}, lesion: {test_lesion}")
+        #print(f"case name: {current_case_name}, Loss: {test_loss}, L1: {test_L1}, SIMM: {test_ssim}, focal: {test_focal}, dice: {test_dice}, lesion: {test_lesion}")
+        print(f"case name: {current_case_name}, Loss: {test_loss}, L1: {test_L1}, SIMM: {test_ssim}, lesion: {test_lesion}")
 
             
       

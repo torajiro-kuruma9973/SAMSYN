@@ -2,8 +2,10 @@
 
 # ================= 配置区 =================
 N=500                                  # 设定的阈值 N
-SRC_DIR="samsyn_dataset/segs"      # 源文件夹绝对路径 (替换为实际路径)
-DEST_DIR="samsyn_datasets_backup/segs_backup"     # 目标文件夹绝对路径 (替换为实际路径)
+SRC_DIR="/mnt/c/Users/xiaow/Documents/Work/NBIA-PSMA-manifest-1772126181965/aug_pet_nii_files/"      # 源文件夹绝对路径 (替换为实际路径)
+DEST_DIR="/mnt/c/Users/xiaow/Documents/Work/NBIA-PSMA-manifest-1772126181965/aug_pet_nii_files_backup/"     # 目标文件夹绝对路径 (替换为实际路径)
+#DEST_DIR="/mnt/c/Users/xiaow/Documents/Work/NBIA-PSMA-manifest-1772126181965/aug_seg_nii_files/"      # 源文件夹绝对路径 (替换为实际路径)
+#SRC_DIR="/mnt/c/Users/xiaow/Documents/Work/NBIA-PSMA-manifest-1772126181965/aug_seg_nii_files_backup/"     # 目标文件夹绝对路径 (替换为实际路径)
 # ==========================================
 
 # 确保目标文件夹存在，不存在则自动创建

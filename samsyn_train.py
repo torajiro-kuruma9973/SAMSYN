@@ -119,7 +119,7 @@ class BaseTrainer:
     def set_loss_fn(self):
         l_l1 = getattr(self.args, 'lambda_l1', 10.0)
         l_ssim = getattr(self.args, 'lambda_ssim', 10.0)
-        l_lesion = getattr(self.args, 'lambda_lesion', 10.0)
+        l_lesion = getattr(self.args, 'lambda_lesion', 20.0)
         # l_focal = getattr(self.args, 'lambda_focal', 5.0)
         # l_dice = getattr(self.args, 'lambda_dice', 5.0)
         # print(f"🔧 初始化 Loss: L1({l_l1}), SSIM({l_ssim}), Lesion({l_lesion}), focal({l_focal}), dice({l_dice})")
@@ -375,7 +375,7 @@ class BaseTrainer:
                 #total_loss, l1_val, ssim_val, lasion_val, focal, dice = self.criterion(pred, gt, lesion_mask=current_condition_seg) # here the ssim_val is actually 1-real_ssim.
                 total_loss, l1_val, ssim_val, lasion_val = self.criterion(pred, gt, lesion_mask=current_condition_seg) # here the ssim_val is actually 1-real_ssim.
                                                                             
-                print(f'Loss: {total_loss:.4f}, l1_val: {l1_val:.4f}, ssim_val: {ssim_val:.4f}, lasion_val: {lasion_val:.4f}')
+                #print(f'Loss: {total_loss:.4f}, l1_val: {l1_val:.4f}, ssim_val: {ssim_val:.4f}, lasion_val: {lasion_val:.4f}')
                 
                 if ssim_val > 0.2: 
                     self.optimizer.zero_grad()  
@@ -412,7 +412,7 @@ class BaseTrainer:
                 #total_loss, l1_val, ssim_val, lesion_val, focal, dice = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg)  
                 total_loss, l1_val, ssim_val, lesion_val = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg) 
 
-                print(f'Loss: {total_loss:.4f}, l1_val: {l1_val:.4f}, ssim_val: {ssim_val:.4f}, lasion_val: {lasion_val:.4f}')
+                #print(f'Loss: {total_loss:.4f}, l1_val: {l1_val:.4f}, ssim_val: {ssim_val:.4f}, lasion_val: {lasion_val:.4f}')
 
                 self.optimizer.zero_grad()  
                 self.scaler.scale(total_loss).backward()  

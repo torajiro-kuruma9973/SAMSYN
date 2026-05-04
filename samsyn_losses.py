@@ -67,19 +67,63 @@ class PETSynthesisLoss(nn.Module):
         
     #     return lesion_diff.sum() / lesion_pixels_count
 
-    def calc_lesion_aware_loss(self, pred, gt, lesion_mask):
-        """
-        改良版：全局稳定的 Lesion Aware Loss
-        """
-        # 1. 计算绝对误差图
-        diff = torch.abs(pred - gt)
+    # def calc_lesion_aware_loss(self, pred, gt, lesion_mask):
+    #     """
+    #     改良版：全局稳定的 Lesion Aware Loss
+    #     """
+    #     # 1. 计算绝对误差图
+    #     diff = torch.abs(pred - gt)
         
-        # 2. 用 mask 过滤掉非病灶区域
-        lesion_diff = (diff * lesion_mask) * 500
+    #     # 2. 用 mask 过滤掉非病灶区域
+    #     lesion_diff = (diff * lesion_mask) * 500
         
-        # 3. 🌟 直接在全局求平均 (除以 Batch 的总像素数)
-        # 这样病灶越大，额外惩罚越多；病灶越小或没有，惩罚趋近于0。极其稳定！
-        return lesion_diff.mean()
+    #     # 3. 🌟 直接在全局求平均 (除以 Batch 的总像素数)
+    #     # 这样病灶越大，额外惩罚越多；病灶越小或没有，惩罚趋近于0。极其稳定！
+    #     #print(lesion_mask.sum())
+    #     return lesion_diff.mean()
+    
+    def calc_lesion_aware_loss(self, pred, gt, mask, loss_type='mse'):
+        """
+        计算仅在病灶（前景）区域内的平均损失值。
+        
+        参数:
+            pred (torch.Tensor): 模型的预测输出，例如形状 [B, 1, H, W] 或 [B, 1, D, H, W]
+            gt (torch.Tensor): 真实标签 (Ground Truth)，形状需与 pred 一致
+            mask (torch.Tensor): 病灶掩码，1 表示病灶，0 表示背景，形状需与 pred 一致
+            loss_type (str): 损失类型，目前支持 'l1' (MAE) 和 'mse' (L2)
+            
+        返回:
+            torch.Tensor: 病灶区域的平均损失标量
+        """
+        # 1. 计算元素级 (Element-wise) 的全局 Loss
+        # 注意：务必使用 reduction='none'，这样才会返回每个像素的独立 loss，而不是直接求平均
+        if loss_type.lower() == 'l1':
+            base_loss = F.l1_loss(pred, gt, reduction='none')
+        elif loss_type.lower() == 'mse':
+            base_loss = F.mse_loss(pred, gt, reduction='none')
+        else:
+            raise ValueError(f"❌ 不支持的 Loss 类型: {loss_type}")
+            
+        # 2. 确保 mask 是浮点型且与 base_loss 形状对齐
+        mask = mask.to(base_loss.dtype)
+        
+        # 3. 将 Loss 过滤，只保留病灶区域 (背景的 loss 全被乘 0 抹去)
+        lesion_loss_map = base_loss * mask
+        
+        # 4. 计算病灶区域的总像素个数
+        lesion_pixel_count = torch.sum(mask)
+        
+        # 5. 计算平均值并处理边界情况
+        # 如果当前 Batch 或切片中完全没有病灶，直接除以 0 会产生 NaN (Not a Number)
+        if lesion_pixel_count > 0:
+            # 只在有病灶的像素上求平均
+            final_loss = torch.sum(lesion_loss_map) / lesion_pixel_count
+        else:
+            # 如果没有病灶，返回 0.0。
+            # ⚠️ 关键点：必须使用 requires_grad=True 保持计算图不中断，否则反向传播 (backward) 会报错
+            final_loss = torch.tensor(0.0, device=pred.device, dtype=pred.dtype, requires_grad=True)
+            
+        return final_loss
 
     def forward(self, pred, gt, lesion_mask=None):
         """

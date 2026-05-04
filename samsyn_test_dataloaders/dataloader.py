@@ -130,7 +130,7 @@ class dataset_3d(Dataset):
         self.num_objs = args.num_objs
 
         # get lasions coords info from json
-        self.prompts_info = utils.read_json_to_dict("samsyn_json_metadata/seg_points_info_with_idx.json")
+        self.prompts_info = utils.read_json_to_dict(samsyn_cfg.aug_pet_seg_frame_corresponding)
    
     def __len__(self):
         
