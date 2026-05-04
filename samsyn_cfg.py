@@ -7,7 +7,7 @@ obj_id = 1  # give a unique id to each object we interact with (it can be any in
 
 dataset_path = "samsyn_dataset/data/" # nii.gz files.
 labels_path = "samsyn_dataset/labels/" # nii.gz files.
-prompts_path = "samsyn_dataset/super_segs" # nii.gz files.
+prompts_path = "samsyn_dataset/segs" # nii.gz files. "DONT MODIFY THIS PATH!!!!!!!!!!!!"
 
 lasions_coords_info_json = "samsyn_json_metadata/lesion_ct_pixel_coords.json"
 studyId_to_nii_idx_json = "samsyn_json_metadata/name_mapping.json"
@@ -20,7 +20,7 @@ aug_pet_seg_frame_corresponding = "samsyn_json_metadata/seq_and_reverse_seg_poin
 
 interval_thickness = 8 # there are 8 frames in a "short video"
 
-points_num = 6 # number of prompts of points
+points_num = 8 # number of prompts of points
 
 num_intervals = 10
 
