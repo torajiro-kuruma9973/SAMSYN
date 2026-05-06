@@ -16,7 +16,7 @@ nii_idx_with_prompts_coords_json = "samsyn_json_metadata/nii_idx_with_prompts_co
 interval_info = "samsyn_json_metadata/nii_idx_intervals.json"
 pet_pipline_info = "samsyn_json_metadata/pet_inv_meta.json"
 
-aug_pet_seg_frame_corresponding = "samsyn_json_metadata/seq_and_reverse_seg_points_info_with_idx.json"
+aug_pet_seg_frame_corresponding = "samsyn_json_metadata/aug_seg_points_info_with_idx.json"
 
 interval_thickness = 8 # there are 8 frames in a "short video"
 

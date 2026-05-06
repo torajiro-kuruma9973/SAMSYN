@@ -51,8 +51,8 @@ def merge_json_strictly(json1_path, json2_path, output_json_path):
 # 运行示例
 # ===============================
 if __name__ == "__main__":
-    j1 = "samsyn_json_metadata/seg_points_info_with_idx.json"
-    j2 = "samsyn_json_metadata/revers_seg_points_info_with_idx.json"
-    j_out = "./samsyn_json_metadata/seq_and_reverse_seg_points_info_with_idx.json"
+    j1 = "samsyn_json_metadata/seq_and_reverse_seg_points_info_with_idx.json"
+    j2 = "samsyn_json_metadata/left_righy_seg_points_info_with_idx.json"
+    j_out = "./samsyn_json_metadata/aug_seg_points_info_with_idx.json"
     
     merge_json_strictly(j1, j2, j_out)
