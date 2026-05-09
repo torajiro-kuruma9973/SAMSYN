@@ -139,12 +139,11 @@ class ForegroundNormalization(transforms.Transform):
         # ct_narray = (ct_narray - mean) / max(std, 1e-8)
 
         # ct_narray = (ct_narray * 255).astype(np.uint8) #不加对比度高点
-        print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
         print(ct_narray.shape)
         a_transposed = np.transpose(ct_narray, (3, 0, 1, 2))
         coords_2d = np.argwhere(a_transposed[0][0]).tolist()
         print(len(coords_2d))
-        print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
+
         return ct_narray 
 
 
@@ -204,7 +203,7 @@ def get_points_from_mask(prompts, points_num, h, w):
     if len(prompts) < points_num:
         fg = len(prompts)
     else:
-        fg = points_num // 2
+        fg = int(points_num * samsyn_cfg.foreground_rate)
     
     bg = points_num - fg
 

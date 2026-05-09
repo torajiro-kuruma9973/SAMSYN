@@ -204,7 +204,7 @@ def get_points_from_mask(prompts, points_num, h, w):
     if len(prompts) < points_num:
         fg = len(prompts)
     else:
-        fg = points_num // 2
+        fg = int(points_num * samsyn_cfg.foreground_rate)
     
     bg = points_num - fg
 

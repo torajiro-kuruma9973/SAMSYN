@@ -82,7 +82,7 @@ class PETSynthesisLoss(nn.Module):
     #     #print(lesion_mask.sum())
     #     return lesion_diff.mean()
     
-    def calc_lesion_aware_loss(self, pred, gt, mask, loss_type='mse'):
+    def calc_lesion_aware_loss(self, pred, gt, mask, loss_type='l1'):
         """
         计算仅在病灶（前景）区域内的平均损失值。
         

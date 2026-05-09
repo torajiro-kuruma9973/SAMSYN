@@ -22,6 +22,8 @@ interval_thickness = 8 # there are 8 frames in a "short video"
 
 points_num = 8 # number of prompts of points
 
+foreground_rate = 0.8
+
 num_intervals = 10
 
 image_size = 1024
@@ -37,7 +39,7 @@ test_dataset_path = "samsyn_dataset/test_data/" # nii.gz files.
 test_labels_path = "samsyn_dataset/test_labels/" # nii.gz files.
 test_prompts_path = "samsyn_dataset/test_segs/" # nii.gz files.
 
-test_checkpoint_path = "checkpoints/sam_model_loss_best_lesion.pth"
-#test_checkpoint_path = "checkpoints/lv.pth"
+#test_checkpoint_path = "checkpoints/sam_model_loss_best_lesion.pth"
+test_checkpoint_path = "checkpoints/lv_best.pth"
 
 test_results_path = "test_results/"
