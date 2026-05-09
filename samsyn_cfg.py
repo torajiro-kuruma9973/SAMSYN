@@ -32,6 +32,8 @@ num_epochs = 200
 
 lr = 1e-5
 
+condition_frame_pass_threshold = 0.035
+
 summary_writer_log_path = "summary_writer_logs"
 
 #================ Test ================
