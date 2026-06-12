@@ -377,7 +377,8 @@ class BaseTrainer:
                                                                             
                 #print(f'Loss: {total_loss:.4f}, l1_val: {l1_val:.4f}, ssim_val: {ssim_val:.4f}, lasion_val: {lasion_val:.4f}')
                 
-                if ssim_val > 0.1 or cond_lesion_val > samsyn_cfg.condition_frame_pass_threshold: 
+                #if ssim_val > 0.1 or cond_lesion_val > samsyn_cfg.condition_frame_pass_threshold: 
+                if 1 < 0:
                     self.optimizer.zero_grad()  
                     self.scaler.scale(total_loss).backward()  
                     self.scaler.step(self.optimizer)  

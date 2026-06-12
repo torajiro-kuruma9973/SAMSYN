@@ -28,6 +28,36 @@ from torch.utils.data.distributed import DistributedSampler
 from samsyn_json_metadata import utils
 
 
+def random_sample_with_min_gap(points, n, b):
+    """
+    从 points 中随机选择最多 n 个点，并保证任意两个点的距离严格大于 b。
+
+    Args:
+        points: 候选点列表，例如 [19, 20, 306, 307, 308]
+        n: 希望选择的点数
+        b: 最小安全间隔阈值，任意两点需满足 abs(x - y) > b
+
+    Returns:
+        满足间隔条件的随机点列表。若无法选满 a 个，则返回实际能选到的数量。
+    """
+    if n <= 0:
+        return []
+
+    candidates = list(points)
+    random.shuffle(candidates)
+
+    selected = []
+
+    for p in candidates:
+        if all(abs(p - q) > b for q in selected):
+            selected.append(p)
+
+            if len(selected) >= n:
+                break
+
+    return selected
+
+
 def sample_collate_fn(batch):
     assert len(batch) == 1, 'Please set batch size to 1 when testing mode'
     
@@ -161,10 +191,13 @@ class dataset_3d(Dataset):
     
     def _generate_slices(self, slice_info, total_slices_num):
         int_slice_info = [int(x) for x in slice_info]
+        
         assert len(int_slice_info) > 0
 
         if len(int_slice_info) > samsyn_cfg.num_intervals:
-            slices = random.sample(int_slice_info, samsyn_cfg.num_intervals)
+            #slices = random.sample(int_slice_info, samsyn_cfg.num_intervals)
+            slices = random_sample_with_min_gap(int_slice_info, samsyn_cfg.num_intervals, samsyn_cfg.num_intervals/3)
+            
             starting_slices = [x for x in slices]
             # for in case out of bound:
             end_slices = [min(x + samsyn_cfg.interval_thickness, total_slices_num) for x in starting_slices]

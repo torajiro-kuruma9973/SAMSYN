@@ -6,7 +6,7 @@ from samsyn_train_utils import FocalLoss, DiceLoss
 
 class PETSynthesisLoss(nn.Module):
     #def __init__(self, lambda_l1=10.0, lambda_ssim=5.0, lambda_lesion=0.0, lambda_focal=5.0, lambda_dice=5.0, data_range=1.0):
-    def __init__(self, lambda_l1=10.0, lambda_ssim=5.0, lambda_lesion=0.0, data_range=1.0):
+    def __init__(self, lambda_l1=10.0, lambda_ssim=10.0, lambda_lesion=10.0, data_range=1.0):
         """
         初始化加权损失函数
         :param lambda_l1: L1 损失的权重 (基础权重)
@@ -47,40 +47,6 @@ class PETSynthesisLoss(nn.Module):
         # 计算 SSIM，size_average=True 表示对整个 Batch 求平均
         ssim_val = ssim(pred, gt, data_range=data_range, size_average=True)
         return 1.0 - ssim_val
-    
-    # def calc_lesion_aware_loss(self, pred, gt, lesion_mask):
-    #     """
-    #     仅针对病灶区域计算高权重的 L1 损失。
-    #     lesion_mask: 形状应与 pred 相同，病灶区域为 1，非病灶区域为 0。
-    #                 (这就是你之前用 SAM 2 提取出来的 Label!)
-    #     """
-    #     # 计算绝对误差图
-    #     diff = torch.abs(pred - gt)
-        
-    #     # 用 mask 过滤掉非病灶区域 (只保留病灶处的误差)
-    #     lesion_diff = diff * lesion_mask
-        
-    #     # 计算病灶区域的平均误差
-    #     # ⚠️ 加上 1e-8 是为了防止分母为 0 (万一这个 Batch 里刚好没有病灶)
-    #     lesion_pixels_count = lesion_mask.sum() + 1e-8
-    #     print(f"@@@@@@@@ count = {lesion_pixels_count} @@@@@@@@@@@@")
-        
-    #     return lesion_diff.sum() / lesion_pixels_count
-
-    # def calc_lesion_aware_loss(self, pred, gt, lesion_mask):
-    #     """
-    #     改良版：全局稳定的 Lesion Aware Loss
-    #     """
-    #     # 1. 计算绝对误差图
-    #     diff = torch.abs(pred - gt)
-        
-    #     # 2. 用 mask 过滤掉非病灶区域
-    #     lesion_diff = (diff * lesion_mask) * 500
-        
-    #     # 3. 🌟 直接在全局求平均 (除以 Batch 的总像素数)
-    #     # 这样病灶越大，额外惩罚越多；病灶越小或没有，惩罚趋近于0。极其稳定！
-    #     #print(lesion_mask.sum())
-    #     return lesion_diff.mean()
     
     def calc_lesion_aware_loss(self, pred, gt, mask, loss_type='l1'):
         """
