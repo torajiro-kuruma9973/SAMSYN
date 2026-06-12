@@ -196,7 +196,7 @@ class dataset_3d(Dataset):
 
         if len(int_slice_info) > samsyn_cfg.num_intervals:
             #slices = random.sample(int_slice_info, samsyn_cfg.num_intervals)
-            slices = random_sample_with_min_gap(int_slice_info, samsyn_cfg.num_intervals, samsyn_cfg.num_intervals/3)
+            slices = random_sample_with_min_gap(int_slice_info, samsyn_cfg.num_intervals, samsyn_cfg.distant)
             
             starting_slices = [x for x in slices]
             # for in case out of bound:

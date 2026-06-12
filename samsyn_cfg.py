@@ -24,6 +24,8 @@ points_num = 4 # number of prompts of points
 
 foreground_rate = 0.5
 
+distant = 6
+
 num_intervals = 20
 
 image_size = 1024
