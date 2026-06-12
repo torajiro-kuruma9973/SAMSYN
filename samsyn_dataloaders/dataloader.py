@@ -194,20 +194,10 @@ class dataset_3d(Dataset):
         
         assert len(int_slice_info) > 0
 
-        if len(int_slice_info) > samsyn_cfg.num_intervals:
-            #slices = random.sample(int_slice_info, samsyn_cfg.num_intervals)
-            slices = random_sample_with_min_gap(int_slice_info, samsyn_cfg.num_intervals, samsyn_cfg.distant)
-            
-            starting_slices = [x for x in slices]
-            # for in case out of bound:
-            end_slices = [min(x + samsyn_cfg.interval_thickness, total_slices_num) for x in starting_slices]
-        # must not run
-        elif len(int_slice_info) == 0: # no freground, we still select some intevals which dont contain forefround.
-            starting_slices = random.sample(range(total_slices_num), samsyn_cfg.num_intervals)
-            end_slices = [min(x + samsyn_cfg.interval_thickness, total_slices_num) for x in starting_slices]
-        else:
-            starting_slices = [x for x in int_slice_info]
-            end_slices = [min(x + samsyn_cfg.interval_thickness, total_slices_num) for x in starting_slices]
+        slices = random_sample_with_min_gap(int_slice_info, samsyn_cfg.num_intervals, samsyn_cfg.distant)
+        starting_slices = [x for x in slices]
+        end_slices = [min(x + samsyn_cfg.interval_thickness, total_slices_num) for x in starting_slices]
+        print(starting_slices)
         starting_slices.sort()
         end_slices.sort()
         return starting_slices, end_slices

@@ -26,7 +26,7 @@ foreground_rate = 0.5
 
 distant = 6
 
-num_intervals = 20
+num_intervals = 10000 #just let model use all pics
 
 image_size = 1024
 
