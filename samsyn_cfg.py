@@ -16,7 +16,7 @@ studyId_to_nii_idx_json = "samsyn_json_metadata/name_mapping.json"
 #interval_info = "samsyn_json_metadata/nii_idx_intervals.json"
 pet_pipline_info = "samsyn_json_metadata/pet_inv_meta.json"
 
-aug_pet_seg_frame_corresponding = "samsyn_json_metadata/foreground_frames_idx_info.json"
+aug_pet_seg_frame_corresponding = "samsyn_json_metadata/foreground_points_frame_idx_dict.json"
 
 interval_thickness = 8 # there are 8 frames in a "short video"
 

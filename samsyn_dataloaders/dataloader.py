@@ -44,7 +44,7 @@ def random_sample_with_min_gap(points, n, b):
         return []
 
     candidates = list(points)
-    random.shuffle(candidates)
+    #random.shuffle(candidates)
 
     selected = []
 
@@ -197,7 +197,7 @@ class dataset_3d(Dataset):
         slices = random_sample_with_min_gap(int_slice_info, samsyn_cfg.num_intervals, samsyn_cfg.distant)
         starting_slices = [x for x in slices]
         end_slices = [min(x + samsyn_cfg.interval_thickness, total_slices_num) for x in starting_slices]
-        print(starting_slices)
+        #print(starting_slices)
         starting_slices.sort()
         end_slices.sort()
         return starting_slices, end_slices
