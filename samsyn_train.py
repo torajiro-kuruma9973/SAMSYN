@@ -464,7 +464,7 @@ class BaseTrainer:
         #epoch_loss, epoch_L1, epoch_ssim, epoch_focal, epoch_dice, epoch_lesion = 0, 0, 0, 0, 0, 0
         epoch_loss, epoch_L1, epoch_ssim, epoch_lesion = 0, 0, 0, 0
         for step, batch_input in enumerate(tbar): 
-            print(f"@@@@@  test step {step} @@@@@")
+            print(f"test step {step}")
             #batch_loss, batch_L1, batch_ssim, batch_focal, batch_dice, batch_lesion = [], [], [], [], [], []
             batch_loss, batch_L1, batch_ssim, batch_lesion = [], [], [], []
             data_intervals_list = batch_input["data_intervals_list"]
@@ -476,62 +476,63 @@ class BaseTrainer:
             segs_are_full_list = batch_input["segs_are_full_list"]
             conditon_seg_list = batch_input["condition_seg_list"]
 
-            interval_idx = random.randrange(len(data_intervals_list)) # randmly pick up an interval idx
+            for interval_idx in range(len(data_intervals_list)):
+            #interval_idx = random.randrange(len(data_intervals_list)) # randmly pick up an interval idx
 
-            curent_data_interval = data_intervals_list[interval_idx].to(device)
-            current_prompts_coords = prompts_coords_list[interval_idx]
-            current_prompts_obj_classes = prompts_objs_list[interval_idx]
-            current_gt = ground_truth_list[interval_idx].to(device)
-            #current_conditioned_frame_idx = conditioned_frame_idx_list[interval_idx]
-            #current_condition_seg = conditon_seg_list[interval_idx].to(device)
-            current_segs_are_full = segs_are_full_list[interval_idx]
-            if current_segs_are_full:
-                current_interval_seg = interval_seg_list[interval_idx].to(device)
-            else:
-                current_interval_seg = None
-            current_conditioned_frame_idx = 0 # this is reletive idx in a small interval. The above one is absolute idx in an NII file
-            obj_id = 1 # hardcode here!!!!!!!!!! Will be modified
-            predict_labels = {}
-            train_state = self.model.train_init_state(curent_data_interval)
-            
-            with torch.no_grad():
+                curent_data_interval = data_intervals_list[interval_idx].to(device)
+                current_prompts_coords = prompts_coords_list[interval_idx]
+                current_prompts_obj_classes = prompts_objs_list[interval_idx]
+                current_gt = ground_truth_list[interval_idx].to(device)
+                #current_conditioned_frame_idx = conditioned_frame_idx_list[interval_idx]
+                #current_condition_seg = conditon_seg_list[interval_idx].to(device)
+                current_segs_are_full = segs_are_full_list[interval_idx]
+                if current_segs_are_full:
+                    current_interval_seg = interval_seg_list[interval_idx].to(device)
+                else:
+                    current_interval_seg = None
+                current_conditioned_frame_idx = 0 # this is reletive idx in a small interval. The above one is absolute idx in an NII file
+                obj_id = 1 # hardcode here!!!!!!!!!! Will be modified
+                predict_labels = {}
+                train_state = self.model.train_init_state(curent_data_interval)
                 
-                _, _, conditioned_out_mask_logits = self.model.train_add_new_points_or_box(  
-                                inference_state=train_state, frame_idx=current_conditioned_frame_idx, obj_id=obj_id,  
-                                points=current_prompts_coords, labels=current_prompts_obj_classes, clear_old_points=False  
-                )   
-                start_slice = current_conditioned_frame_idx
+                with torch.no_grad():
                     
-                for out_frame_idx, out_obj_ids, out_mask_logits in self.model.train_propagate_in_video(  
-                train_state, start_frame_idx=start_slice, reverse=False):  
-                    # out_mask_logits type is tensor, and the shape is [1,1,1024,1024]
-                    predict_labels[out_frame_idx] = out_mask_logits 
-                
-                gt3d = current_gt[:, 0:1, :, :] # original gt is [8, 3, 1024, 1024] 
-                predict_labels = list(predict_labels.values())
-                predict3d = torch.cat(predict_labels, dim=0)
-                predict3d = torch.sigmoid(predict3d)
-                  
-                # # 1. 检查维度是否完全一致 (排查嫌疑人1)
-                # print(f"2 维度对齐检查 -> Pred: {predict3d.shape} | Target: {gt3d.shape}")
+                    _, _, conditioned_out_mask_logits = self.model.train_add_new_points_or_box(  
+                                    inference_state=train_state, frame_idx=current_conditioned_frame_idx, obj_id=obj_id,  
+                                    points=current_prompts_coords, labels=current_prompts_obj_classes, clear_old_points=False  
+                    )   
+                    start_slice = current_conditioned_frame_idx
+                        
+                    for out_frame_idx, out_obj_ids, out_mask_logits in self.model.train_propagate_in_video(  
+                    train_state, start_frame_idx=start_slice, reverse=False):  
+                        # out_mask_logits type is tensor, and the shape is [1,1,1024,1024]
+                        predict_labels[out_frame_idx] = out_mask_logits 
+                    
+                    gt3d = current_gt[:, 0:1, :, :] # original gt is [8, 3, 1024, 1024] 
+                    predict_labels = list(predict_labels.values())
+                    predict3d = torch.cat(predict_labels, dim=0)
+                    predict3d = torch.sigmoid(predict3d)
+                    
+                    # # 1. 检查维度是否完全一致 (排查嫌疑人1)
+                    # print(f"2 维度对齐检查 -> Pred: {predict3d.shape} | Target: {gt3d.shape}")
 
-                # # 2. 检查网络输出的绝对值域 (排查嫌疑人2 以及网络自身崩溃)
-                # print(f"2 预测值极值 -> Min: {predict3d.min().item():.4f} | Max: {predict3d.max().item():.4f}")
+                    # # 2. 检查网络输出的绝对值域 (排查嫌疑人2 以及网络自身崩溃)
+                    # print(f"2 预测值极值 -> Min: {predict3d.min().item():.4f} | Max: {predict3d.max().item():.4f}")
 
-                # # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
-                # print(f"2 标签极值 -> Min: {gt3d.min().item():.4f} | Max: {gt3d.max().item():.4f}")
-                  
-                #total_loss, L1, ssim, lesion, focal, dice  = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg) 
-                total_loss, L1, ssim, lesion  = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg) 
-     
-                self.model.reset_state(train_state)  
+                    # # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
+                    # print(f"2 标签极值 -> Min: {gt3d.min().item():.4f} | Max: {gt3d.max().item():.4f}")
+                    
+                    #total_loss, L1, ssim, lesion, focal, dice  = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg) 
+                    total_loss, L1, ssim, lesion  = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg) 
+        
+                    self.model.reset_state(train_state)  
 
-                batch_loss.append(total_loss.item())  
-                batch_L1.append(L1.item())  
-                batch_ssim.append(ssim.item())  
-                # batch_focal.append(focal.item()) 
-                # batch_dice.append(dice.item()) 
-                batch_lesion.append(lesion.item()) 
+                    batch_loss.append(total_loss.item())  
+                    batch_L1.append(L1.item())  
+                    batch_ssim.append(ssim.item())  
+                    # batch_focal.append(focal.item()) 
+                    # batch_dice.append(dice.item()) 
+                    batch_lesion.append(lesion.item()) 
 
             epoch_loss += np.mean(batch_loss)
             epoch_L1 += np.mean(batch_L1)
