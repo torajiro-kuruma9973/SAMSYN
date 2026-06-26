@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import samsyn_cfg
+from sympy import false
 import torch
 from PIL import Image, ImageDraw  
 from torch.utils.data import Dataset
@@ -177,7 +178,7 @@ class dataset_3d(Dataset):
         self.num_objs = args.num_objs
 
         # get lasions coords info from json
-        self.prompts_info = utils.read_json_to_dict(samsyn_cfg.aug_pet_seg_frame_corresponding)
+        self.prompts_info = utils.read_json_to_dict(samsyn_cfg.starter_end_info)
    
     def __len__(self):
         
@@ -190,17 +191,16 @@ class dataset_3d(Dataset):
 
     
     def _generate_slices(self, slice_info, total_slices_num):
-        int_slice_info = [int(x) for x in slice_info]
-        
-        assert len(int_slice_info) > 0
-
-        slices = random_sample_with_min_gap(int_slice_info, samsyn_cfg.num_intervals, samsyn_cfg.distant)
-        starting_slices = [x for x in slices]
-        end_slices = [min(x + samsyn_cfg.interval_thickness, total_slices_num) for x in starting_slices]
-        #print(starting_slices)
-        starting_slices.sort()
-        end_slices.sort()
-        return starting_slices, end_slices
+   
+        starters_list = slice_info["starters"]
+        ends_list = slice_info["ends"]
+        # slices = random_sample_with_min_gap(int_slice_info, samsyn_cfg.num_intervals, samsyn_cfg.distant)
+        # starting_slices = [x for x in slices]
+        # end_slices = [min(x + samsyn_cfg.interval_thickness, total_slices_num) for x in starting_slices]
+        # #print(starting_slices)
+        starters_list.sort()
+        ends_list.sort()
+        return starters_list, ends_list
 
 
     def __getitem__(self, index):
@@ -220,8 +220,8 @@ class dataset_3d(Dataset):
         total_slice_num = item_load['image_data'].shape[0]
         # here we should use lesions coords info instead of labels.
         lasions_info = self.prompts_info[case_name]
-        lasions_slice_info = list(lasions_info.keys())
-        starting_slices, end_slices = self._generate_slices(lasions_slice_info, total_slice_num)
+        
+        starting_slices, end_slices = self._generate_slices(lasions_info, total_slice_num)
     
         first_nonzero_slice = 0 # load all pics
         last_nonzero_slice = end_slices[-1]
@@ -267,15 +267,14 @@ class dataset_3d(Dataset):
 
     def process_3d_slices_with_prompts(self, case_name, starting_slice, end_slice, lasions_info, h, w):
         start_slice = starting_slice
-        seg_idx = lasions_info[str(start_slice)] # pet idx --> seg frame idx
-        seg_end = seg_idx + (end_slice - starting_slice)
+        seg_idx = starting_slice
+        seg_end = end_slice
         seg_frame = self.seg3d[seg_idx] # get a frame of seg
         
-        assert len(list(lasions_info.keys())) > 0 # the folders which dont have foreground have been deleted.
-        
         seg_2d = self.transform_2d_seg({"seg":seg_frame}) #[1, 1024, 1024] tesnsor already.
-        seg_2d_tensor = seg_2d['seg'][0]
-        
+        seg_2d_tensor = seg_2d['seg'][0] #[1024, 1024]
+        seg_2d_tensor = seg_2d_tensor.to(torch.float32)
+    
         points = torch.nonzero(seg_2d_tensor).tolist() # get foregrounds' coords
         objs = seg_2d_tensor[seg_2d_tensor != 0].tolist() # get foregrounds' obj ids.
         coords = [x[::-1] for x in points]  # [x,y] --> [y,x]
@@ -315,16 +314,18 @@ class dataset_3d(Dataset):
             # # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
             # print(f"3 标签极值 -> Min: {item_2d['label'].min().item():.4f} | Max: {item_2d['label'].max().item():.4f}")
         # if this interval has a full segmentations (number of segs =  number of interval slices), we can wholly use it as loss function
-        segs_are_full = self.check_slices_exist(lasions_info, start_slice, end_slice)
-        if segs_are_full:
-            interval_seg = torch.zeros(end_slice-starting_slice, 1, self.image_size, self.image_size) # [slice_num, 1, 1024, 1024]
-            segs = self.seg3d[seg_idx:seg_end]
+        #segs_are_full = self.check_slices_exist(lasions_info, start_slice, end_slice)
+        segs_are_full = false
+        # if segs_are_full:
+        #     interval_seg = torch.zeros(end_slice-starting_slice, 1, self.image_size, self.image_size) # [slice_num, 1, 1024, 1024]
+        #     segs = self.seg3d[seg_idx:seg_end]
         
-            for i in range(segs.shape[0]):
-                seg = self.transform_2d_seg({"seg":segs[i]})
-                interval_seg[i] = seg["seg"]
-        else:
-            interval_seg = None
+        #     for i in range(segs.shape[0]):
+        #         seg = self.transform_2d_seg({"seg":segs[i]})
+        #         interval_seg[i] = seg["seg"]
+        # else:
+        #     interval_seg = None
+        interval_seg = None
         return {'data_interval':image_data, 
                 'ground_truth': all_label, 
                 'prompt_coords':point_coords, 

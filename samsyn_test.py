@@ -238,14 +238,13 @@ class BaseTester:
 
     def set_loss_fn(self):
         l_l1 = getattr(self.args, 'lambda_l1', 10.0)
-        l_ssim = getattr(self.args, 'lambda_ssim', 5.0)
-        l_lesion = getattr(self.args, 'lambda_lesion', 20.0)
-        print(f"🔧 初始化 Loss: L1({l_l1}), SSIM({l_ssim}), Lesion({l_lesion})")
+        l_ssim = getattr(self.args, 'lambda_ssim', 10.0)
+        print(f"🔧 初始化 Loss: L1({l_l1}), SSIM({l_ssim})")
         
         self.criterion = PETSynthesisLoss(
             lambda_l1=l_l1,
             lambda_ssim=l_ssim,
-            lambda_lesion=l_lesion,
+            
             data_range=1.0 
         ).to(device)
 
@@ -306,10 +305,10 @@ class BaseTester:
         self.model.eval()
         l = len(self.test_dataloaders)
         tbar = tqdm(self.test_dataloaders, desc=f'Epoch {epoch+1} / {self.args.num_epochs}')
-        epoch_loss, epoch_L1, epoch_ssim, epoch_focal, epoch_dice, epoch_lesion = 0, 0, 0, 0, 0, 0
+        epoch_loss, epoch_L1, epoch_ssim = 0, 0, 0
         for step, batch_input in enumerate(tbar): 
             print(f"@@@@@  test step {step} @@@@@")
-            batch_loss, batch_L1, batch_ssim, batch_focal, batch_dice, batch_lesion = [], [], [], [], [], []
+            batch_loss, batch_L1, batch_ssim  = [], [], []
             data_intervals_list = batch_input["data_intervals_list"]
             prompts_coords_list = batch_input["prompts_coords_list"]
             prompts_objs_list = batch_input["prompts_objs_list"]
@@ -330,11 +329,11 @@ class BaseTester:
             #env_info = utils.read_json_to_dict("samsyn_json_metadata/pet_inv_meta.json")
             current_conditioned_frame_idx = 0 # this is reletive idx in a small interval. The above one is absolute idx in an NII file
             current_case_name = case_name_list[interval_idx]
-            current_segs_are_full = segs_are_full_list[interval_idx]
-            if current_segs_are_full:
-                current_interval_seg = interval_seg_list[interval_idx].to(device)
-            else:
-                current_interval_seg = None
+            # current_segs_are_full = segs_are_full_list[interval_idx]
+            # if current_segs_are_full:
+            #     current_interval_seg = interval_seg_list[interval_idx].to(device)
+            # else:
+            #     current_interval_seg = None
             obj_id = 1 # hardcode here!!!!!!!!!! Will be modified
             predict_labels = {}
             train_state = self.model.train_init_state(curent_data_interval)
@@ -373,30 +372,21 @@ class BaseTester:
                      }
                 save_dict_to_disk(d, fname)
                   
-                #total_loss, L1, ssim, lesion, focal, dice  = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg)
-                total_loss, L1, ssim, lesion  = self.criterion(predict3d, gt3d, lesion_mask=current_interval_seg)
+                total_loss, L1, ssim  = self.criterion(predict3d, gt3d)
      
                 self.model.reset_state(train_state)  
 
                 batch_loss.append(total_loss.item())  
                 batch_L1.append(L1.item())  
                 batch_ssim.append(ssim.item())   
-                # batch_focal.append(focal.item()) 
-                # batch_dice.append(dice.item()) 
-                batch_lesion.append(lesion.item()) 
 
             epoch_loss += np.mean(batch_loss)
             epoch_L1 += np.mean(batch_L1)
             epoch_ssim += np.mean(batch_ssim)
-            # epoch_focal += np.mean(batch_focal)
-            # epoch_dice += np.mean(batch_dice)
-            epoch_lesion += np.mean(batch_lesion)
 
-        #avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_focal / l, epoch_dice / l, epoch_lesion / l
-        avg_loss, avg_L1, avg_ssim, avg_lesion = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_lesion / l
+        avg_loss, avg_L1, avg_ssim = epoch_loss / l, epoch_L1 / l, epoch_ssim / l
         
-        #return avg_loss, avg_L1, avg_ssim, avg_focal, avg_dice, avg_lesion, current_case_name
-        return avg_loss, avg_L1, avg_ssim, avg_lesion, current_case_name
+        return avg_loss, avg_L1, avg_ssim, current_case_name
 
 
     def test(self):
@@ -404,12 +394,11 @@ class BaseTester:
         
         torch.cuda.empty_cache()
 
-        #test_loss, test_L1, test_ssim, test_focal, test_dice, test_lesion, current_case_name = self.test_epoch(1)
-        test_loss, test_L1, test_ssim, test_lesion, current_case_name = self.test_epoch(1)
+        test_loss, test_L1, test_ssim, current_case_name = self.test_epoch(1)
         print("VAL END...")
         print("===== Test result: =====")
-        #print(f"case name: {current_case_name}, Loss: {test_loss}, L1: {test_L1}, SIMM: {test_ssim}, focal: {test_focal}, dice: {test_dice}, lesion: {test_lesion}")
-        print(f"case name: {current_case_name}, Loss: {test_loss}, L1: {test_L1}, SIMM: {test_ssim}, lesion: {test_lesion}")
+        
+        print(f"case name: {current_case_name}, Loss: {test_loss}, L1: {test_L1}, SIMM: {test_ssim}")
 
             
       
