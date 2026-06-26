@@ -11,9 +11,9 @@ prompts_path = "samsyn_dataset/segs" # nii.gz files. "DONT MODIFY THIS PATH!!!!!
 
 starter_end_info = "samsyn_json_metadata/new_version_starters_ends_info.json"
 
-pet_pipline_info = "samsyn_json_metadata/pet_inv_meta.json"
+#pet_pipline_info = "samsyn_json_metadata/pet_inv_meta.json"
 
-aug_pet_seg_frame_corresponding = "samsyn_json_metadata/fake_range.json"
+test_starter_end_info = "samsyn_json_metadata/enhanced_orinal_intv_info.json"
 
 interval_thickness = 8 # there are 8 frames in a "short video"
 
