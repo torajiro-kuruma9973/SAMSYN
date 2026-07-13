@@ -8,6 +8,7 @@ import samsyn_cfg
 from tqdm import tqdm
 from torch.backends import cudnn
 import torch
+import torch.nn.functional as F
 import torch.nn as nn
 import torch.distributed as dist
 import torch.nn.functional as F
@@ -75,113 +76,38 @@ device = args.device
 MODEL_SAVE_PATH = join(args.work_dir, args.task_name)
 os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
 
-def save_tensors_as_jpg(tensor1, tensor2, name1, name2, save_dir="./debug_images"):
+
+def downsample_pet(volume: torch.Tensor, size=(512, 512), mode='bilinear') -> torch.Tensor:
     """
-    将两个形状为 [B, 1, H, W] 的 Tensor 按批次依次保存为 JPG 图像。
-    
-    参数:
-        tensor1: 第一个张量, 形状如 [8, 1, 1024, 1024], 值域应在 [0, 1]
-        tensor2: 第二个张量, 形状如 [8, 1, 1024, 1024], 值域应在 [0, 1]
-        name1: tensor1 生成文件的前缀名
-        name2: tensor2 生成文件的前缀名
-        save_dir: 图像保存的目录路径
+    对PET 3D影像tensor进行下采样。
+
+    Args:
+        volume: 输入tensor，形状为 [D, C, H, W]，例如 [8, 1, 1024, 1024]
+                 值域应在 [0, 1] 之间（已归一化+gamma缩放）
+        size:   目标空间尺寸，默认 (512, 512)
+        mode:   插值方式，可选 'bilinear'（默认，平滑）、
+                'nearest'（保留原始值，不引入新数值）、
+                'area'（下采样常用，抗锯齿效果好）
+
+    Returns:
+        下采样后的tensor，形状为 [D, C, 512, 512]，值域仍在 [0, 1]
     """
-    # 1. 确保输出目录存在
-    os.makedirs(save_dir, exist_ok=True)
-    
-    # 2. 剥离计算图，转移到 CPU，并转为 Numpy 数组
-    # (如果输入已经是 numpy array，这段代码依然能兼容)
-    if isinstance(tensor1, torch.Tensor):
-        arr1 = tensor1.detach().cpu().numpy()
-        arr2 = tensor2.detach().cpu().numpy()
+    assert volume.dim() == 4, f"期望4维输入 [D, C, H, W]，但得到 {volume.shape}"
+
+    if mode == 'bilinear':
+        out = F.interpolate(volume, size=size, mode='bilinear', align_corners=False)
+    elif mode == 'nearest':
+        out = F.interpolate(volume, size=size, mode='nearest')
+    elif mode == 'area':
+        out = F.interpolate(volume, size=size, mode='area')
     else:
-        arr1, arr2 = tensor1, tensor2
-        
-    batch_size = arr1.shape[0]
-    
-    for i in range(batch_size):
-        # 3. 取出单张切片并去掉 Channel 维度: [1, 1024, 1024] -> [1024, 1024]
-        img1_np = np.squeeze(arr1[i], axis=0)
-        img2_np = np.squeeze(arr2[i], axis=0)
-        
-        # 4. 强行截断在 [0, 1] 之间（防止有微小的越界），并缩放到 [0, 255]
-        img1_uint8 = (np.clip(img1_np, 0.0, 1.0) * 255.0).astype(np.uint8)
-        img2_uint8 = (np.clip(img2_np, 0.0, 1.0) * 255.0).astype(np.uint8)
-        
-        # 5. 拼凑文件名，使用 :02d 保证两位数对齐 (例如 00, 01, 02)
-        path1 = os.path.join(save_dir, f"{name1}_{i:02d}.jpg")
-        path2 = os.path.join(save_dir, f"{name2}_{i:02d}.jpg")
-        
-        # 6. 转为 PIL Image (mode='L' 代表 8-bit 灰度图) 并保存
-        Image.fromarray(img1_uint8, mode='L').save(path1)
-        Image.fromarray(img2_uint8, mode='L').save(path2)
-        
-    print(f"✅ 成功将 {batch_size} 对对比图保存至目录: {os.path.abspath(save_dir)}")
+        raise ValueError(f"不支持的mode: {mode}")
 
-def tensor_to_pet_nifti(pred_tensor, reference_nii_path, inv_meta, save_path, output_suv=True):
-        """
-        将高分辨率 [0, 1] Tensor 下采样并逆变换为真实的 3D PET NIfTI 图像。
-        
-        参数:
-            pred_tensor: 模型输出的 tensor，形状类似 [8, 1, 1024, 1024]
-            reference_nii_path: 真实的 PET NIfTI 参考文件路径
-            inv_meta: 预处理时生成的字典
-            save_path: NIfTI 保存路径
-            output_suv: 是否保留为真实的 SUV 物理值
-        """
-        # 1. 加载参考模板，获取真实的物理空间信息和形状
-        ref_sitk = sitk.ReadImage(reference_nii_path)
-        # SimpleITK 的 GetSize() 返回的是 (X, Y, Z)
-        ref_size_x, ref_size_y, ref_size_z = ref_sitk.GetSize() 
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        print(save_path)
-        # 2. 动态下采样 (Downsample)
-        # 确保 tensor 在进行插值时是 float 类型
-        pred_tensor = pred_tensor.float()
-        
-        # 你的 pred_tensor 是 [8, 1, 1024, 1024] = [Batch(Z), Channel, Height(Y), Width(X)]
-        # 我们使用双线性插值 (bilinear)，将其平滑缩放回真实的分辨率
-        if pred_tensor.shape[-2:] != (ref_size_y, ref_size_x):
-            pred_tensor = F.interpolate(
-                pred_tensor, 
-                size=(ref_size_y, ref_size_x), 
-                mode='bilinear', 
-                align_corners=False
-            )
-        
-        # 3. 剥离 Tensor 到 Numpy，并挤压掉多余的 Channel 维度
-        img_array = pred_tensor.detach().cpu().numpy()
-        img_array = np.squeeze(img_array, axis=1) # 变成 [8, Y_真实, X_真实]
+    # 保险起见裁剪回[0,1]，避免bilinear插值边缘产生的微小越界
+    out = out.clamp(0.0, 1.0)
+    return out
 
-        # --- 后续完全是之前推导的数学逆变换 ---
-        # log_min = inv_meta["log_min"]
-        # log_max = inv_meta["log_max"]
-        # suv_factor = inv_meta["suv_factor"]
 
-        log_min = 0.0
-        log_max = 2.772588722239781
-        suv_factor = 0.0006631289109771332
-
-        # 逆归一化 -> 逆对数
-        img_array = img_array * (log_max - log_min) + log_min
-        img_array = np.expm1(img_array)
-
-        if not output_suv:
-            img_array = img_array / suv_factor
-            
-        img_array = img_array.astype(np.float32)
-
-        # 4. 把 Numpy 数组转回 SimpleITK 对象
-        pred_sitk = sitk.GetImageFromArray(img_array)
-
-        # 5. 🌟 灵魂一步：完美拷贝所有的物理信息 (Origin, Spacing, Direction)
-        # 此时因为 pred_sitk 的 Shape 已经通过 interpolate 变得和 ref_sitk 完全一致
-        # 这一步拷贝将会天衣无缝！
-        #pred_sitk.CopyInformation(ref_sitk)
-
-        # 6. 落盘保存
-        sitk.WriteImage(pred_sitk, save_path)
-        print(f"✅ 生成的 PET NIfTI 已下采样至 {ref_size_x}x{ref_size_y} 并保存至: {save_path}")
 
 def save_dict_to_disk(data_dict, save_path):
     """
@@ -226,7 +152,7 @@ class BaseTester:
         self.ssim = []
         self.set_loss_fn()
         self.name_mapping_dict = utils.read_json_to_dict(samsyn_cfg.studyId_to_nii_idx_json)
-        self.pipepine_info_dict = utils.read_json_to_dict(samsyn_cfg.pet_pipline_info)
+        #self.pipepine_info_dict = utils.read_json_to_dict(samsyn_cfg.pet_pipline_info)
 
         self.model = self.model.module if self.args.multi_gpu else self.model
 
@@ -304,10 +230,11 @@ class BaseTester:
     def test_epoch(self, epoch):
         self.model.eval()
         l = len(self.test_dataloaders)
+        print(f"Total test data length is: {l}")
         tbar = tqdm(self.test_dataloaders, desc=f'Epoch {epoch+1} / {self.args.num_epochs}')
         epoch_loss, epoch_L1, epoch_ssim = 0, 0, 0
         for step, batch_input in enumerate(tbar): 
-            print(f"@@@@@  test step {step} @@@@@")
+            print(f"test step {step}")
             batch_loss, batch_L1, batch_ssim  = [], [], []
             data_intervals_list = batch_input["data_intervals_list"]
             prompts_coords_list = batch_input["prompts_coords_list"]
@@ -318,67 +245,72 @@ class BaseTester:
             interval_seg_list = batch_input["interval_seg_list"]
             segs_are_full_list = batch_input["segs_are_full_list"]
 
-            interval_idx = random.randrange(len(data_intervals_list)) # randmly pick up an interval idx
-            
-            curent_data_interval = data_intervals_list[interval_idx].to(device)
-            current_prompts_coords = prompts_coords_list[interval_idx]
-            current_prompts_obj_classes = prompts_objs_list[interval_idx]
-            current_gt = ground_truth_list[interval_idx].to(device)
-            conditioned_frame_offset_in_nii = conditioned_frame_idx_list[interval_idx]
-            curent_interval_thinckness = curent_data_interval.shape[0]
-            #env_info = utils.read_json_to_dict("samsyn_json_metadata/pet_inv_meta.json")
-            current_conditioned_frame_idx = 0 # this is reletive idx in a small interval. The above one is absolute idx in an NII file
-            current_case_name = case_name_list[interval_idx]
-            # current_segs_are_full = segs_are_full_list[interval_idx]
-            # if current_segs_are_full:
-            #     current_interval_seg = interval_seg_list[interval_idx].to(device)
-            # else:
-            #     current_interval_seg = None
-            obj_id = 1 # hardcode here!!!!!!!!!! Will be modified
-            predict_labels = {}
-            train_state = self.model.train_init_state(curent_data_interval)
-            
-            with torch.no_grad():
+            for interval_idx in range(len(data_intervals_list)):
+                print(f"interval_idx {interval_idx}")
+                curent_data_interval = data_intervals_list[interval_idx].to(device)
+                current_prompts_coords = prompts_coords_list[interval_idx]
+                current_prompts_obj_classes = prompts_objs_list[interval_idx]
+                current_gt = ground_truth_list[interval_idx].to(device)
+                conditioned_frame_offset_in_nii = conditioned_frame_idx_list[interval_idx]
+                curent_interval_thinckness = curent_data_interval.shape[0]
+                #env_info = utils.read_json_to_dict("samsyn_json_metadata/pet_inv_meta.json")
+                current_conditioned_frame_idx = 0 # this is reletive idx in a small interval. The above one is absolute idx in an NII file
+                current_case_name = case_name_list[interval_idx]
+                # current_segs_are_full = segs_are_full_list[interval_idx]
+                # if current_segs_are_full:
+                #     current_interval_seg = interval_seg_list[interval_idx].to(device)
+                # else:
+                #     current_interval_seg = None
+                obj_id = 1 # hardcode here!!!!!!!!!! Will be modified
+                predict_labels = {}
+                train_state = self.model.train_init_state(curent_data_interval)
                 
-                _, _, conditioned_out_mask_logits = self.model.train_add_new_points_or_box(  
-                                inference_state=train_state, frame_idx=current_conditioned_frame_idx, obj_id=obj_id,  
-                                points=current_prompts_coords, labels=current_prompts_obj_classes, clear_old_points=False  
-                )   
-                start_slice = current_conditioned_frame_idx
+                with torch.no_grad():
                     
-                for out_frame_idx, out_obj_ids, out_mask_logits in self.model.train_propagate_in_video(  
-                train_state, start_frame_idx=start_slice, reverse=False):  
-                    # out_mask_logits type is tensor, and the shape is [1,1,1024,1024]
-                    predict_labels[out_frame_idx] = out_mask_logits 
-                
-                gt3d = current_gt[:, 0:1, :, :] # original gt is [8, 3, 1024, 1024] 
-                predict_labels = list(predict_labels.values())
-                predict3d = torch.cat(predict_labels, dim=0)
-                predict3d = torch.sigmoid(predict3d)
-                fname = samsyn_cfg.test_results_path + str(current_case_name) + "_tensor.pth"
-                key = str(current_case_name) + ".nii.gz"
-                studyID = self.name_mapping_dict[key]
-                suv = self.pipepine_info_dict[studyID]["suv_factor"]
-                log_min = self.pipepine_info_dict[studyID]["log_min"]
-                log_max = self.pipepine_info_dict[studyID]["log_max"]
-                d = {"case_name": current_case_name,
-                     "slice_offset": conditioned_frame_offset_in_nii,
-                     "thickness": curent_interval_thinckness,
-                     "tensor": predict3d,
-                     "studyID": studyID,
-                     "suv": suv,
-                     "min": log_min,
-                     "max": log_max
-                     }
-                save_dict_to_disk(d, fname)
-                  
-                total_loss, L1, ssim  = self.criterion(predict3d, gt3d)
-     
-                self.model.reset_state(train_state)  
+                    _, _, conditioned_out_mask_logits = self.model.train_add_new_points_or_box(  
+                                    inference_state=train_state, frame_idx=current_conditioned_frame_idx, obj_id=obj_id,  
+                                    points=current_prompts_coords, labels=current_prompts_obj_classes, clear_old_points=False  
+                    )   
+                    start_slice = current_conditioned_frame_idx
+                        
+                    for out_frame_idx, out_obj_ids, out_mask_logits in self.model.train_propagate_in_video(  
+                    train_state, start_frame_idx=start_slice, reverse=False):  
+                        # out_mask_logits type is tensor, and the shape is [1,1,1024,1024]
+                        predict_labels[out_frame_idx] = out_mask_logits 
+                    
+                    gt3d = current_gt[:, 0:1, :, :] # original gt is [8, 3, 1024, 1024] 
+                    predict_labels = list(predict_labels.values())
+                    predict3d = torch.cat(predict_labels, dim=0)
+                    predict3d = torch.sigmoid(predict3d)
 
-                batch_loss.append(total_loss.item())  
-                batch_L1.append(L1.item())  
-                batch_ssim.append(ssim.item())   
+                    predict3d512 = downsample_pet(predict3d)
+    
+                    fname = samsyn_cfg.test_results_path + str(current_case_name) + "_" + str(interval_idx) + "_tensor.pth"
+                    key = str(current_case_name) + ".nii.gz"
+                    studyID = self.name_mapping_dict[key]
+                    suv = 50
+                    #log_min = self.pipepine_info_dict[studyID]["log_min"]
+                    #log_max = self.pipepine_info_dict[studyID]["log_max"]
+                    d = {"case_name": current_case_name,
+                        "slice_offset": conditioned_frame_offset_in_nii,
+                        "thickness": curent_interval_thinckness,
+                        "tensor": predict3d,
+                        "studyID": studyID,
+                        "suv": suv,
+                        #"min": log_min,
+                        #"max": log_max，
+                        "gamma": 0.5
+                        }
+                    save_dict_to_disk(d, fname) 
+                    
+                    total_loss, L1, ssim  = self.criterion(predict3d, gt3d)
+                    print(f"total loss: {total_loss}, L1 loss: {L1}, ssim: {1.0 - ssim}")
+        
+                    self.model.reset_state(train_state)  
+
+                    batch_loss.append(total_loss.item())  
+                    batch_L1.append(L1.item())  
+                    batch_ssim.append(ssim.item())                                          
 
             epoch_loss += np.mean(batch_loss)
             epoch_L1 += np.mean(batch_L1)

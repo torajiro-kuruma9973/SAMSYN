@@ -1,7 +1,7 @@
-#sam2_checkpoint_path = "checkpoints/sam2.1_hiera_tiny.pt"
-sam2_checkpoint_path = "checkpoints/sam2.1_hiera_small.pt"
-#model_cfg_path = "configs/sam2.1/sam2.1_hiera_t.yaml"
-model_cfg_path = "configs/sam2.1/sam2.1_hiera_s.yaml"
+sam2_checkpoint_path = "checkpoints/sam2.1_hiera_base_plus.pt"
+#sam2_checkpoint_path = "checkpoints/sam2.1_hiera_small.pt"
+model_cfg_path = "configs/sam2.1/sam2.1_hiera_b+.yaml"
+#model_cfg_path = "configs/sam2.1/sam2.1_hiera_s.yaml"
 con_frame_idx = 0  # the frame index we interact with
 obj_id = 1  # give a unique id to each object we interact with (it can be any integers)
 
@@ -23,7 +23,7 @@ foreground_rate = 0.5
 
 distant = 6
 
-num_intervals = 10 #just let model use all pics
+num_intervals = 300 #just let model use all pics
 
 image_size = 1024
 
@@ -40,6 +40,8 @@ test_dataset_path = "samsyn_dataset/test_data/" # nii.gz files.
 test_labels_path = "samsyn_dataset/test_labels/" # nii.gz files.
 test_prompts_path = "samsyn_dataset/test_segs/" # nii.gz files.
 
-test_checkpoint_path = "checkpoints/lv_best.pth"
+test_checkpoint_path = "checkpoints/new_version_sam_model_loss_best.pth"
+
+studyId_to_nii_idx_json = "samsyn_json_metadata/name_mapping.json"
 
 test_results_path = "test_results/"
