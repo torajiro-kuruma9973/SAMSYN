@@ -3,10 +3,11 @@ import torch
 import torch.nn.functional as F
 from pytorch_msssim import ssim
 from samsyn_train_utils import FocalLoss, DiceLoss
+import warnings
 
 class PETSynthesisLoss(nn.Module):
    
-    def __init__(self, lambda_l1=10.0, lambda_ssim=10.0, data_range=1.0):
+    def __init__(self, lambda_l1=5.0, lambda_ssim=10.0, lambda_high_suv=20.0, data_range=1.0):
         """
         初始化加权损失函数
         :param lambda_l1: L1 损失的权重 (基础权重)
@@ -15,6 +16,7 @@ class PETSynthesisLoss(nn.Module):
         super(PETSynthesisLoss, self).__init__()
         self.lambda_l1 = lambda_l1
         self.lambda_ssim = lambda_ssim
+        self.lambda_high_suv = lambda_high_suv
         
         self.data_range = data_range
 
@@ -24,6 +26,72 @@ class PETSynthesisLoss(nn.Module):
         输入 shape 可以是 [8, 1024, 1024] 或 [8, 1, 1024, 1024]
         """
         return F.l1_loss(pred, gt)
+    
+    def topk_brightness_l1_loss(self, pred: torch.Tensor, gt: torch.Tensor, a: float = 0.1) -> float:
+        """
+        对每一帧，取 gt 中最亮的前 a 比例像素的坐标，
+        仅在这些坐标上计算 pred 与 gt 的 L1 loss，
+        最后对所有帧、所有选中像素求平均（等价于 F.l1_loss 的 mean reduction）。
+
+        Args:
+            pred (torch.Tensor): 模型推理结果，形状 [N, 1, 1024, 1024]，
+                                数值范围 [0, 1]。
+            gt (torch.Tensor): 真实值，形状 [N, 1, 1024, 1024]，
+                                数值范围 [0, 1]。
+            a (float): 最亮像素比例，默认 0.2，取值范围 (0, 1]。
+
+        Returns:
+            float: 标量 loss 值。
+        """
+        assert 0.0 < a <= 1.0, f"a must be in (0, 1], got {a}"
+
+        # ---- 形状 / 数值范围校验 ----
+        assert pred.shape == gt.shape, (
+            f"pred and gt must have the same shape, got {pred.shape} vs {gt.shape}"
+        )
+        N, C, H, W = pred.shape
+        assert C == 1 and H == 1024 and W == 1024, (
+            f"expected shape [N, 1, 1024, 1024], got {pred.shape}"
+        )
+        assert 1 <= N <= 8, f"N must satisfy 1 <= N <= 8, got {N}"
+
+        # 数值应在 [0, 1]（已做归一化）。这里用 assert 做一次防御性检查，
+        # 如果你的 pipeline 里存在浮点误差导致轻微越界，可把 assert 换成 clamp。
+        assert pred.min() >= 0.0 and pred.max() <= 1.0, "pred values must be in [0, 1]"
+        assert gt.min() >= 0.0 and gt.max() <= 1.0, "gt values must be in [0, 1]"
+
+        # ---- gt 梯度检查（仅提示，不强制阻断训练）----
+        if gt.requires_grad:
+            warnings.warn(
+                "gt.requires_grad=True. topk_brightness_l1_loss 内部会对 gt 调用 detach() "
+                "来选取最亮像素坐标，因此不会有梯度经由『选择索引』这一步回传，"
+                "但请确认这是你期望的行为（gt 通常不需要梯度）。"
+            )
+
+        total_pixels = H * W  # 1024 * 1024
+        k = int(total_pixels * a)  # 向下取整
+        assert k > 0, f"a={a} too small, computed k=0 (total_pixels={total_pixels})"
+
+        # 用于挑选坐标的 gt 必须 detach，保证"选择"这一步不参与反向传播
+        gt_for_index = gt.detach()
+
+        pred_flat = pred.reshape(N, total_pixels)
+        gt_flat_for_index = gt_for_index.reshape(N, total_pixels)
+        gt_flat = gt.reshape(N, total_pixels)
+
+        # 每帧独立选出最亮的 k 个坐标（严格 k 个，largest=True）
+        _, topk_idx = torch.topk(
+            gt_flat_for_index, k=k, dim=1, largest=True, sorted=False
+        )
+
+        pred_topk = torch.gather(pred_flat, dim=1, index=topk_idx)  # [N, k]
+        gt_topk = torch.gather(gt_flat, dim=1, index=topk_idx)      # [N, k]
+
+        # 直接复用 F.l1_loss 的 mean reduction：
+        # 等价于 sum(|pred_topk - gt_topk|) / (N * k)，
+        # 与 F.l1_loss(pred, gt) 对整张图求 mean 的语义完全一致
+        loss = F.l1_loss(pred_topk, gt_topk, reduction="mean")
+        return loss
     
     def calc_ssim_loss(self, pred, gt, data_range=1.0):
         """
@@ -85,6 +153,7 @@ class PETSynthesisLoss(nn.Module):
             
     #     return final_loss
 
+
     def forward(self, pred, gt):
         """
         前向传播计算总 Loss
@@ -94,8 +163,9 @@ class PETSynthesisLoss(nn.Module):
         
         loss_l1 = self.calc_l1_loss(pred, gt)
         loss_ssim = self.calc_ssim_loss(pred, gt, data_range=self.data_range)
+        loss_high_suv = self.topk_brightness_l1_loss(pred, gt)
         
+        total_loss = (self.lambda_l1 * loss_l1) + (self.lambda_ssim * loss_ssim) + (self.lambda_high_suv * loss_high_suv)
+        #print(f"self.lambda_l1 = {self.lambda_l1}, self.lambda_ssim = {self.lambda_ssim}, self.lambda_high_suv = {self.lambda_high_suv}")
         
-        total_loss = (self.lambda_l1 * loss_l1) + (self.lambda_ssim * loss_ssim) 
-        
-        return total_loss, loss_l1, loss_ssim
+        return total_loss, loss_l1, loss_ssim, loss_high_suv

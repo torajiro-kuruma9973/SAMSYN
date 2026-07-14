@@ -145,11 +145,11 @@ class BaseTester:
         self.test_dataloaders = test_dataloaders
         self.args = args
         self.best_loss = np.inf
-        self.best_L1 = 0.0
-        self.best_ssim = 0.0
+        # self.best_L1 = 0.0
+        # self.best_ssim = 0.0
         self.loss = []
-        self.L1 = []
-        self.ssim = []
+        # self.L1 = []
+        # self.ssim = []
         self.set_loss_fn()
         self.name_mapping_dict = utils.read_json_to_dict(samsyn_cfg.studyId_to_nii_idx_json)
         #self.pipepine_info_dict = utils.read_json_to_dict(samsyn_cfg.pet_pipline_info)
@@ -163,14 +163,15 @@ class BaseTester:
             self.start_epoch = 0
 
     def set_loss_fn(self):
-        l_l1 = getattr(self.args, 'lambda_l1', 10.0)
+        l_l1 = getattr(self.args, 'lambda_l1', 5.0)
         l_ssim = getattr(self.args, 'lambda_ssim', 10.0)
+        l_suv = getattr(self.args, 'lambda_suv', 20.0)
         print(f"🔧 初始化 Loss: L1({l_l1}), SSIM({l_ssim})")
         
         self.criterion = PETSynthesisLoss(
             lambda_l1=l_l1,
             lambda_ssim=l_ssim,
-            
+            lambda_high_suv = l_suv,
             data_range=1.0 
         ).to(device)
 
@@ -210,21 +211,6 @@ class BaseTester:
         else:
             self.start_epoch, self.start_step = 0, 0
             print(f"No checkpoint found at {ckp_path}, start training from scratch")
-    
-    def save_checkpoint(self, epoch, state_dict, describe="last"):
-        torch.save({
-            "epoch": epoch + 1,
-            "model_state_dict": state_dict,
-            "optimizer_state_dict": self.optimizer.state_dict(),
-            "lr_scheduler_state_dict": self.lr_scheduler.state_dict() if self.lr_scheduler else None,
-            "loss": self.loss,
-            "L1": self.L1,
-            "ssim": self.ssim,
-            "best_loss": self.best_loss,
-            "best_L1": self.best_L1,
-            "best_ssim": self.best_ssim,
-            "args": self.args,
-        }, join(MODEL_SAVE_PATH, f"sam_model_{describe}.pth"))
 
 
     def test_epoch(self, epoch):
@@ -232,10 +218,10 @@ class BaseTester:
         l = len(self.test_dataloaders)
         print(f"Total test data length is: {l}")
         tbar = tqdm(self.test_dataloaders, desc=f'Epoch {epoch+1} / {self.args.num_epochs}')
-        epoch_loss, epoch_L1, epoch_ssim = 0, 0, 0
+        epoch_loss, epoch_L1, epoch_ssim, epoch_suv = 0, 0, 0, 0
         for step, batch_input in enumerate(tbar): 
             print(f"test step {step}")
-            batch_loss, batch_L1, batch_ssim  = [], [], []
+            batch_loss, batch_L1, batch_ssim, batch_suv  = [], [], [], []
             data_intervals_list = batch_input["data_intervals_list"]
             prompts_coords_list = batch_input["prompts_coords_list"]
             prompts_objs_list = batch_input["prompts_objs_list"]
@@ -294,7 +280,7 @@ class BaseTester:
                     d = {"case_name": current_case_name,
                         "slice_offset": conditioned_frame_offset_in_nii,
                         "thickness": curent_interval_thinckness,
-                        "tensor": predict3d,
+                        "tensor": predict3d512,
                         "studyID": studyID,
                         "suv": suv,
                         #"min": log_min,
@@ -303,22 +289,24 @@ class BaseTester:
                         }
                     save_dict_to_disk(d, fname) 
                     
-                    total_loss, L1, ssim  = self.criterion(predict3d, gt3d)
+                    total_loss, L1, ssim, suv  = self.criterion(predict3d, gt3d)
                     print(f"total loss: {total_loss}, L1 loss: {L1}, ssim: {1.0 - ssim}")
         
                     self.model.reset_state(train_state)  
 
                     batch_loss.append(total_loss.item())  
                     batch_L1.append(L1.item())  
-                    batch_ssim.append(ssim.item())                                          
+                    batch_ssim.append(ssim.item())  
+                    batch_suv.append(suv.item())                                          
 
             epoch_loss += np.mean(batch_loss)
             epoch_L1 += np.mean(batch_L1)
             epoch_ssim += np.mean(batch_ssim)
+            epoch_suv += np.mean(batch_suv)
 
-        avg_loss, avg_L1, avg_ssim = epoch_loss / l, epoch_L1 / l, epoch_ssim / l
+        avg_loss, avg_L1, avg_ssim, avg_suv = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_suv / l
         
-        return avg_loss, avg_L1, avg_ssim, current_case_name
+        return avg_loss, avg_L1, avg_ssim, avg_suv, current_case_name
 
 
     def test(self):
@@ -326,11 +314,11 @@ class BaseTester:
         
         torch.cuda.empty_cache()
 
-        test_loss, test_L1, test_ssim, current_case_name = self.test_epoch(1)
+        test_loss, test_L1, test_ssim, test_suv, current_case_name = self.test_epoch(1)
         print("VAL END...")
         print("===== Test result: =====")
         
-        print(f"case name: {current_case_name}, Loss: {test_loss}, L1: {test_L1}, SIMM: {test_ssim}")
+        print(f"case name: {current_case_name}, Loss: {test_loss}, L1: {test_L1}, SIMM: {test_ssim}, SUV: {test_suv}")
 
             
       

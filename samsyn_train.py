@@ -94,15 +94,15 @@ class BaseTrainer:
         self.test_dataloaders = test_dataloaders
         self.args = args
         self.best_loss_epoch = 0
-        self.best_loss = np.inf,
-        self.L1_in_best_epoch = 0.0,
-        self.ssim_in_best_epoch = 0.0,
-        self.best_L1 = 0.0
-        self.best_ssim = 0.0
+        self.best_loss = np.inf
+        # self.L1_in_best_epoch = 0.0,
+        # self.ssim_in_best_epoch = 0.0,
+        # self.best_L1 = 0.0
+        # self.best_ssim = 0.0
         self.loss = []
         self.L1 = []
         self.ssim = []
-
+        self.high_suv = []
         self.set_loss_fn()
         self.set_optimizer()
         self.set_lr_scheduler()
@@ -115,12 +115,13 @@ class BaseTrainer:
             self.start_epoch = 0
 
     def set_loss_fn(self):
-        l_l1 = getattr(self.args, 'lambda_l1', 10.0)
+        l_l1 = getattr(self.args, 'lambda_l1', 5.0)
         l_ssim = getattr(self.args, 'lambda_ssim', 10.0)
-       
+        l_suv = getattr(self.args, 'lambda_high_suv', 20.0)
         self.criterion = PETSynthesisLoss(
             lambda_l1=l_l1,
             lambda_ssim=l_ssim,
+            lambda_high_suv = l_suv,
             data_range=1.0 
         ).to(device)
 
@@ -197,14 +198,14 @@ class BaseTrainer:
                 if self.lr_scheduler and 'lr_scheduler_state_dict' in last_ckpt:
                     self.lr_scheduler.load_state_dict(last_ckpt['lr_scheduler_state_dict'])
                 self.loss = last_ckpt['loss']
-                self.L1 = last_ckpt['L1']
-                self.ssim = last_ckpt['ssim']
+                # self.L1 = last_ckpt['L1']
+                # self.ssim = last_ckpt['ssim']
                 self.best_loss = last_ckpt['best_loss']
                 self.best_loss_epoch = last_ckpt['best_loss_epoch']
-                self.L1_in_best_epoch = last_ckpt['L1_in_best_epoch']
-                self.ssim_in_best_epoch = last_ckpt['ssim_in_best_epoch']
-                self.best_L1 = last_ckpt['best_L1']
-                self.best_ssim = last_ckpt['best_ssim']
+                # self.L1_in_best_epoch = last_ckpt['L1_in_best_epoch']
+                # self.ssim_in_best_epoch = last_ckpt['ssim_in_best_epoch']
+                # self.best_L1 = last_ckpt['best_L1']
+                # self.best_ssim = last_ckpt['best_ssim']
             else:
                 self.start_epoch = 0
             print(f"Loaded checkpoint from {ckp_path} (epoch {self.start_epoch}, step: {self.start_step})")
@@ -220,14 +221,14 @@ class BaseTrainer:
             "optimizer_state_dict": self.optimizer.state_dict(),
             "lr_scheduler_state_dict": self.lr_scheduler.state_dict() if self.lr_scheduler else None,
             "loss": self.loss,
-            "L1": self.L1,
-            "ssim": self.ssim,
+            # "L1": self.L1,
+            # "ssim": self.ssim,
             "best_loss": self.best_loss,
             "best_loss_epoch": self.best_loss_epoch,
-            "L1_in_best_epoch": self.L1_in_best_epoch,
-            "ssim_in_best_epoch": self.ssim_in_best_epoch,
-            "best_L1": self.best_L1,
-            "best_ssim": self.best_ssim,
+            # "L1_in_best_epoch": self.L1_in_best_epoch,
+            # "ssim_in_best_epoch": self.ssim_in_best_epoch,
+            # "best_L1": self.best_L1,
+            # "best_ssim": self.best_ssim,
             "args": self.args,
         }, join(MODEL_SAVE_PATH, f"sam_model_{describe}.pth"))
 
@@ -294,11 +295,11 @@ class BaseTrainer:
         l = len(self.dataloaders)
         
         tbar = tqdm(self.dataloaders, desc=f'Epoch {epoch+1} / {self.args.num_epochs}')
-        epoch_loss, epoch_L1, epoch_ssim = 0, 0, 0, 
+        epoch_loss, epoch_L1, epoch_ssim, epoch_suv = 0, 0, 0, 0
         
         for step, batch_input in enumerate(tbar): 
             
-            batch_loss, batch_L1, batch_ssim = [], [], []
+            batch_loss, batch_L1, batch_ssim, batch_suv = [], [], [], []
             
             data_intervals_list = batch_input["data_intervals_list"]
             prompts_coords_list = batch_input["prompts_coords_list"]
@@ -311,7 +312,7 @@ class BaseTrainer:
             segs_are_full_list = batch_input["segs_are_full_list"]
 
             for interval_idx in range(len(data_intervals_list)):
-                print(f"interval idx = {interval_idx}")
+                #print(f"interval idx = {interval_idx}")
                 current_step = epoch * l + step * self.args.num_intervals + interval_idx
 
                 curent_data_interval = data_intervals_list[interval_idx].to(device)
@@ -352,7 +353,7 @@ class BaseTrainer:
                 # # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
                 # print(f"1 标签极值 -> Min: {gt.min().item():.4f} | Max: {gt.max().item():.4f}")
         
-                total_loss, l1_val, ssim_val = self.criterion(pred, gt) # here the ssim_val is actually 1-real_ssim.
+                # total_loss, l1_val, ssim_val, suv_val = self.criterion(pred, gt) # here the ssim_val is actually 1-real_ssim.
                                                                             
                 
                 #if ssim_val > 0.1 or cond_lesion_val > samsyn_cfg.condition_frame_pass_threshold: 
@@ -388,7 +389,7 @@ class BaseTrainer:
                 # if current_segs_are_full:
                 #     print(f"2 维度对齐检查 -> Pred: {predict3d.shape} | segs: {current_interval_seg.shape}")
                  
-                total_loss, l1_val, ssim_val = self.criterion(predict3d, gt3d) 
+                total_loss, l1_val, ssim_val, suv_val = self.criterion(predict3d, gt3d) 
 
                 self.optimizer.zero_grad()  
                 self.scaler.scale(total_loss).backward()  
@@ -399,6 +400,7 @@ class BaseTrainer:
                 batch_loss.append(total_loss.item())  
                 batch_L1.append(l1_val.item())  
                 batch_ssim.append(ssim_val.item()) 
+                batch_suv.append(suv_val.item())
                 
                 self.update_learning_rate(current_step)
                 
@@ -411,23 +413,24 @@ class BaseTrainer:
             epoch_loss += np.mean(batch_loss)
             epoch_L1 += np.mean(batch_L1)
             epoch_ssim += np.mean(batch_ssim)
+            epoch_suv += np.mean(batch_suv)
 
         if self.args.multi_gpu:
             print("Setting is error! Multy-GPU is not allowed...")
         else:
-            avg_loss, avg_L1, avg_ssim = epoch_loss / l, epoch_L1 / l, epoch_ssim / l
+            avg_loss, avg_L1, avg_ssim, avg_suv = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_suv / l
             
-        return avg_loss, avg_L1, avg_ssim
+        return avg_loss, avg_L1, avg_ssim, avg_suv
 
 
     def test_epoch(self, epoch):
         self.model.eval()
         l = len(self.test_dataloaders)
         tbar = tqdm(self.test_dataloaders, desc=f'Epoch {epoch+1} / {self.args.num_epochs}')
-        epoch_loss, epoch_L1, epoch_ssim = 0, 0, 0
+        epoch_loss, epoch_L1, epoch_ssim, epoch_suv = 0, 0, 0, 0
         for step, batch_input in enumerate(tbar): 
             #print(f"test step {step}")
-            batch_loss, batch_L1, batch_ssim = [], [], []
+            batch_loss, batch_L1, batch_ssim, batch_suv = [], [], [], []
             data_intervals_list = batch_input["data_intervals_list"]
             prompts_coords_list = batch_input["prompts_coords_list"]
             prompts_objs_list = batch_input["prompts_objs_list"]
@@ -483,21 +486,23 @@ class BaseTrainer:
                     # # 3. 顺手再次确认一下这一个 Batch 的 Target 是否真的是 [0, 1]
                     # print(f"2 标签极值 -> Min: {gt3d.min().item():.4f} | Max: {gt3d.max().item():.4f}")
                     
-                    total_loss, L1, ssim  = self.criterion(predict3d, gt3d) 
+                    total_loss, L1, ssim, suv  = self.criterion(predict3d, gt3d) 
         
                     self.model.reset_state(train_state)  
 
                     batch_loss.append(total_loss.item())  
                     batch_L1.append(L1.item())  
                     batch_ssim.append(ssim.item())  
+                    batch_suv.append(suv.item()) 
 
             epoch_loss += np.mean(batch_loss)
             epoch_L1 += np.mean(batch_L1)
             epoch_ssim += np.mean(batch_ssim)
+            epoch_suv += np.mean(batch_suv)
 
-        avg_loss, avg_L1, avg_ssim = epoch_loss / l, epoch_L1 / l, epoch_ssim / l
+        avg_loss, avg_L1, avg_ssim, avg_suv = epoch_loss / l, epoch_L1 / l, epoch_ssim / l, epoch_suv / l
         
-        return avg_loss, avg_L1, avg_ssim
+        return avg_loss, avg_L1, avg_ssim, avg_suv
 
 
     def train(self):
@@ -514,18 +519,19 @@ class BaseTrainer:
                 self.dataloaders.sampler.set_epoch(epoch)
             print("TRAIN START...")
             
-            avg_loss, avg_L1, avg_ssim = self.train_epoch(epoch)
+            avg_loss, avg_L1, avg_ssim, avg_suv = self.train_epoch(epoch)
             print("TRAIN END...")
             
-            test_loss, test_L1, test_ssim = self.test_epoch(epoch)
+            test_loss, test_L1, test_ssim, test_suv = self.test_epoch(epoch)
             print("VAL END...")
             
             if not self.args.multi_gpu or (self.args.multi_gpu and self.args.rank == 0):
                 self.loss.append({'train':avg_loss, 'val': test_loss})
                 self.L1.append({'train':avg_L1, 'val': test_L1})
                 self.ssim.append({'train':avg_ssim, 'val': test_ssim})
+                self.high_suv.append({'train':avg_suv, 'val': test_suv})
 
-                self.args.logger.info(f'Epoch: {epoch+1} LR: {self.current_lr:.8f}: Train loss: {avg_loss:.5f}, L1: {avg_L1:.5f}, SSIM: {avg_ssim:.5f} | Test loss: {test_loss:.5f}, L1: {test_L1:.5f}, SSIM: {test_ssim:.5f}')
+                self.args.logger.info(f'Epoch: {epoch+1} LR: {self.current_lr:.8f}: Train loss: {avg_loss:.5f}, L1: {avg_L1:.5f}, SSIM: {avg_ssim:.5f}, SUV loss: {avg_suv:.5f} | Test loss: {test_loss:.5f}, L1: {test_L1:.5f}, SSIM: {test_ssim:.5f}, SUV: {test_suv:.5f}')
                 state_dict = self.model.state_dict()
                  #save latest checkpoint
                 self.save_checkpoint(epoch, state_dict, describe='latest')
@@ -538,22 +544,23 @@ class BaseTrainer:
                     self.best_loss_epoch = epoch
                     self.save_checkpoint(epoch, state_dict, describe='loss_best')
                 
-                if test_L1 > self.best_L1: 
-                    self.best_L1 = test_L1
-                    # self.save_checkpoint(epoch, state_dict, describe='iou_best')
+                # if test_L1 > self.best_L1: 
+                #     self.best_L1 = test_L1
+                #     # self.save_checkpoint(epoch, state_dict, describe='iou_best')
 
-                # save train dice best checkpoint
-                if test_ssim > self.best_ssim: 
-                    best_ssim_epoch = epoch
-                    self.best_ssim = test_ssim
-                    #self.save_checkpoint(epoch, state_dict, describe='ssim_best')
+                # # save train dice best checkpoint
+                # if test_ssim > self.best_ssim: 
+                #     best_ssim_epoch = epoch
+                #     self.best_ssim = test_ssim
+                #     #self.save_checkpoint(epoch, state_dict, describe='ssim_best')
 
                 self.plot_result(self.loss, 'Loss', 'Loss')
                 self.plot_result(self.L1, 'L1', 'L1')
                 self.plot_result(self.ssim, 'SSIM', 'SSIM')
+                self.plot_result(self.high_suv, 'SUV', 'SUV')
 
-        self.args.logger.info(f'Best loss epoch: {self.best_loss_epoch}: loss: {self.best_loss}, L1: {self.L1_in_best_epoch}, SSIM: {self.ssim_in_best_epoch}')
-        self.args.logger.info(f'Best in history: L1: {self.best_L1}, Best SSIM: {self.best_ssim}')
+        self.args.logger.info(f'Best loss epoch: {self.best_loss_epoch}: loss: {self.best_loss}')
+        #self.args.logger.info(f'Best in history: L1: {self.best_L1}, Best SSIM: {self.best_ssim}')
         self.args.logger.info('=====================================================================')
 
 ########################################## Trainer ##########################################
